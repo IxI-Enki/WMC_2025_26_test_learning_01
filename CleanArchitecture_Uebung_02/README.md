@@ -53,21 +53,47 @@
 
 ---
 
-### ✏️ 3. Commands & Queries mit Handlers und Validators
+### ✏️ 3. DTOs erstellen
+
+**Aufgabe:** Data Transfer Objects für API-Responses erstellen
+
+📁 **Datei:** `Application/Dtos/` (aktuell nur .gitkeep vorhanden)
+
+**Was zu erstellen ist:**
+
+- `GetBookDto.cs` - DTO für Book-Responses
+
+  ```csharp
+  public record GetBookDto(int Id, string ISBN, string Title, int AuthorId, 
+      string AuthorName, int PublicationYear, int AvailableCopies);
+  ```
+
+- `GetAuthorDto.cs` - DTO für Author-Responses
+- `GetLoanDto.cs` - DTO für Loan-Responses
+
+**💡 Tipp:** DTOs sind einfache Records ohne Logik!
+
+---
+
+### ✏️ 4. Commands & Queries mit Handlers und Validators
 
 **Aufgabe:** Alle Commands/Queries mit Handler und Validator selbst erstellen
 
-📁 **Book-Features (Beispiele vorhanden, aber mit NotImplementedException):**
+📁 **Book-Features (nur Ordner mit .gitkeep vorhanden):**
 
 - `Application/Features/Books/Commands/CreateBook/`
-  - CreateBookCommandHandler ❌
-  - CreateBookCommandValidator ❌
+  - CreateBookCommand.cs ❌
+  - CreateBookCommandHandler.cs ❌
+  - CreateBookCommandValidator.cs ❌
 - `Application/Features/Books/Commands/DeleteBook/`
-  - DeleteBookCommandHandler ❌
+  - DeleteBookCommand.cs ❌
+  - DeleteBookCommandHandler.cs ❌
 - `Application/Features/Books/Queries/GetAllBooks/`
-  - GetAllBooksQueryHandler ❌
+  - GetAllBooksQuery.cs ❌
+  - GetAllBooksQueryHandler.cs ❌
 - `Application/Features/Books/Queries/GetBookById/`
-  - GetBookByIdQueryHandler ❌
+  - GetBookByIdQuery.cs ❌
+  - GetBookByIdQueryHandler.cs ❌
 
 📁 **Loan-Features (nur Ordner vorhanden):**
 
@@ -80,7 +106,7 @@
 
 ---
 
-### ✏️ 4. Dependency Injection
+### ✏️ 5. Dependency Injection
 
 **Aufgabe:** Services bei DI registrieren
 
@@ -97,7 +123,7 @@ services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 
 ---
 
-### ✏️ 5. Services implementieren
+### ✏️ 6. Services implementieren
 
 **Aufgabe:** Uniqueness Checker implementieren
 
@@ -110,7 +136,7 @@ services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 
 ---
 
-### ✏️ 6. Controller implementieren
+### ✏️ 7. Controller implementieren
 
 **Aufgabe:** Controller-Endpoints implementieren
 
@@ -138,7 +164,7 @@ public async Task<IActionResult> GetAll(CancellationToken ct)
 
 ---
 
-### ✏️ 7. Repository-Methoden für spezielle Abfragen
+### ✏️ 8. Repository-Methoden für spezielle Abfragen
 
 **Aufgabe:** Spezifische Repository-Methoden implementieren
 
@@ -161,6 +187,41 @@ public async Task<IActionResult> GetAll(CancellationToken ct)
 - Verwende `.Where()`, `.OrderBy()`, `.ToListAsync()`
 
 **Laut Kollegin:** Die Repositories sind normalerweise fertig, aber spezielle Methoden müssen hinzugefügt werden!
+
+---
+
+## ✅ WICHTIGER HINWEIS: DataSeeder (FERTIG IMPLEMENTIERT!)
+
+**Laut Kollegin (Zeile 33 im Prompt):**
+> "In der Infrastruktur wird DataSeeder und Repositories fertig sein."
+
+**Status in dieser Übung:**
+
+- ✅ **DataSeeder ist VOLLSTÄNDIG implementiert!**
+- ✅ Repositories mit NotImplementedException (nur spezielle Methoden)
+
+**Der DataSeeder:**
+
+- 📁 `Infrastructure/Services/StartupDataSeeder.cs` - **FERTIG!**
+- 📁 `Infrastructure/Services/StartupDataSeederOptions.cs` - **FERTIG!**
+- 📁 `Infrastructure/Data/library-seed-data.json` - Sample-Daten
+- ✅ Ist als IHostedService registriert
+- ✅ Läuft beim Start automatisch
+- ✅ Lädt Authors aus JSON
+- ✅ Ist idempotent (seeded nur einmal)
+
+**Du musst den DataSeeder NICHT implementieren oder verstehen!**
+
+Er läuft automatisch beim ersten Start und befüllt die Datenbank mit:
+
+- 5 Authors (J.K. Rowling, George R.R. Martin, J.R.R. Tolkien, Agatha Christie, Stephen King)
+- Die JSON-Datei kann erweitert werden mit Books
+
+**Beim echten Test:**
+
+- Der DataSeeder wird genau so **vollständig implementiert** sein
+- Du musst ihn **NICHT** anfassen oder ändern
+- Er gibt dir sofort Testdaten zum Arbeiten
 
 ---
 
@@ -226,13 +287,15 @@ public async Task<IActionResult> GetAll(CancellationToken ct)
 
 ## 🚀 Projekt ausführen
 
-### 1. Datenbank erstellen
+### 1. Datenbank erstellen (mit Migrationen)
 
 ```bash
 cd CleanArchitecture_Uebung_02/Infrastructure
-dotnet ef migrations add Initial --startup-project ../Api
+dotnet ef migrations add InitialMigration --startup-project ../Api --output-dir ./Persistence/Migrations
 dotnet ef database update --startup-project ../Api
 ```
+
+**ODER:** Einfach die API starten - der DataSeeder macht Migrationen automatisch!
 
 ### 2. API starten
 
@@ -241,7 +304,17 @@ cd CleanArchitecture_Uebung_02/Api
 dotnet run
 ```
 
-API: `https://localhost:5101/swagger`
+**Was passiert beim Start:**
+
+1. ✅ DataSeeder läuft automatisch (IHostedService)
+2. ✅ Migrationen werden angewendet
+3. ✅ Sample-Daten werden geladen (5 Authors)
+4. ✅ API ist bereit unter: `https://localhost:5101/swagger`
+
+**Sample-Daten nach dem Start:**
+
+- 5 Authors: J.K. Rowling, George R.R. Martin, J.R.R. Tolkien, Agatha Christie, Stephen King
+- Du kannst sofort Books über die API anlegen!
 
 ---
 
@@ -261,19 +334,34 @@ API: `https://localhost:5101/swagger`
 
 ### ☐ Application Layer
 
-- [ ] CreateBookCommandHandler
-- [ ] CreateBookCommandValidator (FluentValidation Rules)
-- [ ] DeleteBookCommandHandler
-- [ ] GetAllBooksQueryHandler
-- [ ] GetBookByIdQueryHandler
-- [ ] BookUniquenessChecker implementieren
+**DTOs:**
+
+- [ ] GetBookDto erstellen
+- [ ] GetAuthorDto erstellen
+- [ ] GetLoanDto erstellen
+
+**Book Commands/Queries:**
+
+- [ ] CreateBookCommand + Handler + Validator erstellen
+- [ ] DeleteBookCommand + Handler erstellen
+- [ ] GetAllBooksQuery + Handler erstellen
+- [ ] GetBookByIdQuery + Handler erstellen
+
+**Loan Commands/Queries:**
+
 - [ ] CreateLoanCommand + Handler + Validator erstellen
 - [ ] ReturnLoanCommand + Handler erstellen
 - [ ] GetLoansByBookQuery + Handler erstellen
 - [ ] GetOverdueLoansQuery + Handler erstellen
+
+**Services & DI:**
+
+- [ ] BookUniquenessChecker implementieren
 - [ ] DependencyInjection: IBookUniquenessChecker registrieren
 
 ### ☐ Infrastructure Layer
+
+**Repository-Methoden (spezielle Abfragen):**
 
 - [ ] BookRepository.GetByISBNAsync
 - [ ] BookRepository.GetBooksByAuthorAsync
@@ -281,6 +369,13 @@ API: `https://localhost:5101/swagger`
 - [ ] LoanRepository.GetLoansByBookIdAsync
 - [ ] LoanRepository.GetActiveLoansByBorrowerAsync
 - [ ] LoanRepository.GetOverdueLoansAsync
+
+**DataSeeder (FERTIG - musst du NICHT machen!):**
+
+- ✅ StartupDataSeeder.cs - VOLLSTÄNDIG implementiert
+- ✅ StartupDataSeederOptions.cs - VOLLSTÄNDIG implementiert
+- ✅ library-seed-data.json - Sample-Daten vorhanden
+- ✅ Als IHostedService registriert
 
 ### ☐ API Layer
 
@@ -310,11 +405,12 @@ API: `https://localhost:5101/swagger`
 1. **Domain:** Validierungen implementieren
 2. **Domain:** Entity Create/Update Methoden
 3. **Infrastructure:** Repository-Methoden (spezielle Abfragen)
-4. **Application:** Services (BookUniquenessChecker)
-5. **Application:** DependencyInjection
-6. **Application:** Commands & Queries (Handler + Validators)
-7. **API:** Controller implementieren
-8. **Tests:** Domain- und API-Tests ausführen
+4. **Application:** DTOs erstellen
+5. **Application:** Services (BookUniquenessChecker)
+6. **Application:** DependencyInjection
+7. **Application:** Commands & Queries (Handler + Validators)
+8. **API:** Controller implementieren
+9. **Tests:** Domain- und API-Tests ausführen
 
 ---
 
@@ -333,6 +429,8 @@ Diese Übung deckt ab:
 6. **Dependency Injection** - Service Registration
 7. **Unit of Work** - Transaktionale Speicherung
 8. **MediatR** - CQRS-Dispatcher
+9. **Hosted Services** - Background Tasks (DataSeeder)
+10. **Data Seeding** - Automatische Datenbefüllung beim Start
 
 ---
 
@@ -349,6 +447,14 @@ Diese Übung deckt ab:
 ### 📖 Frühere Aufgabenstellungen
 
 - `../FruehereAufgabenstellungen/` - zeigt den Stil der Lücken vom Professor
+- `../FruehereAufgabenstellungen/Infrastructure/Services/StartupDataSeeder.cs` - Beispiel DataSeeder
+
+### ✅ DataSeeder in dieser Übung (FERTIG!)
+
+- `Infrastructure/Services/StartupDataSeeder.cs` - **VOLLSTÄNDIG implementiert**
+- `Infrastructure/Services/StartupDataSeederOptions.cs` - **VOLLSTÄNDIG implementiert**
+- `Infrastructure/Data/library-seed-data.json` - Sample-Daten
+- **Du musst diese Dateien NICHT ändern oder implementieren!**
 
 ---
 
@@ -372,6 +478,15 @@ book.DecreaseCopies();
 uow.Books.Update(book);
 await uow.SaveChangesAsync(ct);
 ```
+
+### Wo finde ich den DataSeeder?
+
+Der DataSeeder ist **VOLLSTÄNDIG implementiert** in:
+
+- `Infrastructure/Services/StartupDataSeeder.cs`
+- `Infrastructure/Services/StartupDataSeederOptions.cs`
+
+**Du musst ihn NICHT implementieren!** Er läuft automatisch beim Start.
 
 ### Wie mappe ich Result zu ActionResult?
 

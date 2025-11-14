@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Application.Interfaces.Repositories;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,10 @@ public static class DependencyInjection
         services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<ILoanRepository, LoanRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // DataSeeder als Hosted Service (läuft beim Start automatisch)
+        // WICHTIG: Dieser Service ist VOLLSTÄNDIG implementiert - beim echten Test wird das so sein!
+        services.AddHostedService<StartupDataSeeder>();
 
         return services;
     }

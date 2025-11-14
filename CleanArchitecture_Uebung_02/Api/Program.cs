@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Services;
 using Microsoft.OpenApi.Models;
 
 namespace Api
@@ -12,6 +13,12 @@ namespace Api
 
             var connectionString = builder.Configuration.GetConnectionString("Default") 
                 ?? throw new ArgumentException("Connection string 'Default' not found");
+
+            // DataSeeder Options konfigurieren
+            builder.Services.Configure<StartupDataSeederOptions>(options =>
+            {
+                options.JsonPath = Path.Combine(AppContext.BaseDirectory, "library-seed-data.json");
+            });
 
             builder.Services.AddInfrastructure(connectionString);
             builder.Services.AddApplication();

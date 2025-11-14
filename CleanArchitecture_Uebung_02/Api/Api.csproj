@@ -20,5 +20,12 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="..\Infrastructure\Data\library-seed-data.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>library-seed-data.json</Link>
+    </None>
+  </ItemGroup>
+
 </Project>
 
