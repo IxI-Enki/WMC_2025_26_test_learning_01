@@ -19,7 +19,23 @@ Wie erwähnt soll die Vorlage ein Lückentext sein (implementiere "throw not imp
 
 und erzeuge eine README als Angabe in @CleanArchitecture_Uebung_01 in der du erklärst welche Validations ich implementieren soll und welche Responses etc.
 
+---
 
+Beachte folge Notizen meiner Kollegin:
+
+Für den Test werden diese Dinge zu machen sein:
+Wir müssen Commands mit Validator und Handler etc. selber machen können.
+Validations auf Domain- und Application-Ebene
+Controller sind zu implementieren
+Für Domain-Ebene und API-Ebene wurden Tests erstellt - Methodennamen abgleichen
+Man muss bei der Dependency Injection den Service registrieren - also wie ISensorUniquenessChecker
+
+In der Infrastruktur wird DataSeeder und Repositories fertig sein. - müsste normalerweise neu angelegt werden, aber wäre beim Test zu lang.
+Repository-Methoden für spezielle Abfragen müssen wir hinzufügen - z. B. erste 100 Messungen, die mit x anfangen.
+
+Bei der API müssen die entsprechenden Controller hinzugefügt werden. 
+
+Ich acker mich so durch, dass ich zuerst die Domain und Infrastruktur aufbaue, bevor ich mich an die API mache. Ich finde, wenn man UniquenessChecker und Validation etc. später erst macht, hat man ja überhaupt keinen Überblick, wo dann nachträglich nochmal was ergänzt werden muss.
 
 
 🤓🤜🏻🤛🏻🤖
