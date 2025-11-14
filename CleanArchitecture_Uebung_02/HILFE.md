@@ -104,7 +104,7 @@ Diese Übung deckt ab:
 6. **Dependency Injection** - Service Registration
 7. **Unit of Work** - Transaktionale Speicherung
 8. **MediatR** - CQRS-Dispatcher mit ValidationBehavior Pipeline
-9. **Exception-Handling** - Zentrale ValidationBehavior (ALLE Exceptions → Result<T>)
+9. **Exception-Handling** - Zentrale ValidationBehavior (ALLE Exceptions → `Result<T>` )
 10. **Hosted Services** - Background Tasks (DataSeeder)
 11. **Data Seeding** - Automatische Datenbefüllung beim Start
 
@@ -183,12 +183,14 @@ return result.ToActionResult(this, createdAtAction: nameof(GetById),
 ### Was ist der Unterschied zwischen Domain- und Application-Validation?
 
 **Domain-Validation:**
+
 - Grundlegende Geschäftsregeln
 - Unabhängig vom UseCase
 - In `Domain/Specifications/`
 - Beispiel: "ISBN muss 13 Zeichen haben"
 
 **Application-Validation (FluentValidation):**
+
 - UseCase-spezifische Regeln
 - In Command/Query Validators
 - Kann Domain-Validation ergänzen
@@ -211,11 +213,13 @@ public async Task<IReadOnlyCollection<Book>> GetBooksByAuthorAsync(int authorId,
 ### Was ist der Unterschied zwischen Internal und External Validation?
 
 **Internal Validation:**
+
 - Prüft Properties der Entität selbst
 - Benötigt keine externe Dependencies
 - Beispiel: `CheckISBN(string isbn)`
 
 **External Validation:**
+
 - Prüft gegen Datenbank oder externe Services
 - Benötigt Dependencies (z.B. Repository)
 - Beispiel: `ValidateBookExternal()` mit `IBookUniquenessChecker`
@@ -298,11 +302,13 @@ public class CreateBookCommandValidator : AbstractValidator<CreateBookCommand>
 ### Wie debugge ich ValidationBehavior?
 
 **Setze Breakpoints in:**
+
 1. `ValidationBehavior.Handle()` - Zeile mit `await next()`
 2. Deinem CommandHandler - `Handle()`-Methode
 3. Entity Factory-Methode - z.B. `Book.CreateAsync()`
 
 **Prüfe:**
+
 - Werden Validatoren ausgeführt?
 - Welche Exception wird geworfen?
 - Wird sie korrekt in `Result<T>` umgewandelt?
@@ -394,28 +400,33 @@ public async Task<Result<GetBookDto>> Handle(
 Wenn etwas nicht funktioniert:
 
 ### Domain Layer
+
 - [ ] Sind alle Check-Methoden implementiert?
 - [ ] Werfen Validierungen die richtige `DomainValidationException`?
 - [ ] Sind Factory-Methoden `static`?
 - [ ] Wird `ArgumentNullException` geprüft?
 
 ### Application Layer
+
 - [ ] Sind alle DTOs als `record` definiert?
 - [ ] Implementieren Commands/Queries `IRequest<Result<T>>`?
 - [ ] Sind Handler als `sealed class` definiert?
 - [ ] Ist `IBookUniquenessChecker` in DI registriert?
 
 ### Infrastructure Layer
+
 - [ ] Verwenden Queries `AsNoTracking()`?
 - [ ] Sind Navigation Properties mit `.Include()` geladen?
 - [ ] Gibt Repository `IReadOnlyCollection<T>` zurück?
 
 ### API Layer
+
 - [ ] Verwenden Controller `mediator.Send()`?
 - [ ] Wird `.ToActionResult(this)` aufgerufen?
 - [ ] Sind `ProducesResponseType` Attribute vorhanden?
 
 ### Tests
+
 - [ ] Sind Domain-Tests aktiviert (nicht auskommentiert)?
 - [ ] Verwenden Tests `FluentAssertions`?
 - [ ] Ist `TestWebApplicationFactory` korrekt konfiguriert?
@@ -433,4 +444,3 @@ Wenn etwas nicht funktioniert:
 > **Viel Erfolg beim Üben! 🚀**
 
 **Erstellt für WMC Test-Vorbereitung 2025** 🎓
-
