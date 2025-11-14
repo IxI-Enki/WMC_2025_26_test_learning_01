@@ -46,12 +46,14 @@ WMC_2025_26_test_learning_01/
 ### 📚 Übungen
 
 #### Übung 1: Event Management System
+
 - [CleanArchitecture_Uebung_01/README.md](CleanArchitecture_Uebung_01/README.md)
   > **Entitäten:** Venue, Event, Ticket
   > **Fokus:** NotImplementedException-Stil mit TODOs
   > **Lücken:** Event-Validierungen, Handler, Controller-Methoden
 
 #### Übung 2: Library Management System
+
 - [CleanArchitecture_Uebung_02/README.md](CleanArchitecture_Uebung_02/README.md)
   > **Entitäten:** Book, Author, Loan
   > **Fokus:** Professor-Stil (leere Ordner, leere Controller)
@@ -61,7 +63,6 @@ WMC_2025_26_test_learning_01/
 
 - [CleanArchitecture_Template](CleanArchitecture_Template)
   > Vollständiges Template als Referenz für alle Patterns
-
 - [FruehereAufgabenstellungen](FruehereAufgabenstellungen)
   > Frühere Prüfungsangaben vom Professor (zeigt den Stil der Lücken)
 
@@ -86,4 +87,4 @@ WMC_2025_26_test_learning_01/
 3. **Danach:** Mache [Übung 02](CleanArchitecture_Uebung_02/README.md)
 4. **Optional:** Vergleiche mit [FruehereAufgabenstellungen](FruehereAufgabenstellungen)
 
-**Viel Erfolg beim Lernen! 🚀**
+> **Viel Erfolg beim Lernen! 🚀**
