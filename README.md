@@ -34,5 +34,5 @@ WMC_2025_26_test_learning_01/
 
 ### Zur Referenz
 
-- [CleanArchitecture_Template/README.md](CleanArchitecture_Template/README.md)
-  > enthält die Ausführliche Aufgabenstellung
+- [CleanArchitecture_Template](CleanArchitecture_Template)
+  > enthält das vollständige Template als Referenz
