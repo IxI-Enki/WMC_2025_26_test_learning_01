@@ -267,27 +267,6 @@ Die `ValidationBehavior` (MediatR Pipeline) ist das **zentrale Exception-Handlin
 
 ---
 
-## 🧪 Tests
-
-### Domain-Tests
-
-📁 `Domain.Tests/`
-
-- `BookTests.cs` - Tests für Book (auskommentiert, aktiviere sie!)
-- `LoanSpecificationsTests.cs` - Tests für Loan-Validierungen
-
-**Wichtig:** Die Tests zeigen dir, welche Methodennamen erwartet werden!
-
-### API-Tests
-
-📁 `Api.Tests/`
-
-- `Books/BooksEndpointTests.cs` - Integration Tests
-
-**Laut Kollegin:** Tests für Domain- und API-Ebene sind vorhanden - Methodennamen abgleichen!
-
----
-
 ## 📝 Validierungsregeln - Was zu implementieren ist
 
 ### Book (Domain Validation)
@@ -324,39 +303,6 @@ Die `ValidationBehavior` (MediatR Pipeline) ist das **zentrale Exception-Handlin
 | BorrowerName | MinLength(2)              | "BorrowerName muss mindestens 2 Zeichen haben." |
 | LoanDate     | Not in future             | "LoanDate darf nicht in der Zukunft liegen."    |
 | DueDate      | Auto (LoanDate + 14 Tage) | -                                               |
-
----
-
-## 🚀 Projekt ausführen
-
-### 1. Datenbank erstellen (mit Migrationen)
-
-```bash
-cd CleanArchitecture_Uebung_02/Infrastructure
-dotnet ef migrations add InitialMigration --startup-project ../Api --output-dir ./Persistence/Migrations
-dotnet ef database update --startup-project ../Api
-```
-
-**ODER:** Einfach die API starten - der DataSeeder macht Migrationen automatisch!
-
-### 2. API starten
-
-```bash
-cd CleanArchitecture_Uebung_02/Api
-dotnet run
-```
-
-**Was passiert beim Start:**
-
-1. ✅ DataSeeder läuft automatisch (IHostedService)
-2. ✅ Migrationen werden angewendet
-3. ✅ Sample-Daten werden geladen (5 Authors)
-4. ✅ API ist bereit unter: `https://localhost:5101/swagger`
-
-**Sample-Daten nach dem Start:**
-
-- 5 Authors: J.K. Rowling, George R.R. Martin, J.R.R. Tolkien, Agatha Christie, Stephen King
-- Du kannst sofort Books über die API anlegen!
 
 ---
 
@@ -443,119 +389,19 @@ dotnet run
 
 ---
 
-## 🎯 Arbeitsweise (empfohlen)
+## 📚 Weitere Hilfe
 
-**Wie die Kollegin arbeitet:**
-> "Ich acker mich so durch, dass ich zuerst die Domain und Infrastruktur aufbaue, bevor ich mich an die API mache. Ich finde, wenn man UniquenessChecker und Validation etc. später erst macht, hat man ja überhaupt keinen Überblick, wo dann nachträglich nochmal was ergänzt werden muss."
+Für weitere Informationen siehe **[HILFE.md](./HILFE.md)**:
 
-**Empfohlene Reihenfolge:**
-
-1. **Domain:** Validierungen implementieren
-2. **Domain:** Entity Create/Update Methoden
-3. **Infrastructure:** Repository-Methoden (spezielle Abfragen)
-4. **Application:** DTOs erstellen
-5. **Application:** Services (BookUniquenessChecker)
-6. **Application:** DependencyInjection
-7. **Application:** Commands & Queries (Handler + Validators)
-8. **API:** Controller implementieren
-9. **Tests:** Domain- und API-Tests ausführen
-
----
-
-## 🎓 Design Patterns & Konzepte
-
-Diese Übung deckt ab:
-
-1. **Clean Architecture** - 4 Layer Trennung
-2. **CQRS** - Commands & Queries
-3. **Repository Pattern** - Spezifische Methoden
-4. **Domain-Driven Design** - Factory Methods, Validierungen
-5. **Validation (3 Ebenen)**:
-   - Domain: Specifications
-   - Application: FluentValidation
-   - Database: Foreign Keys, Unique Indexes
-6. **Dependency Injection** - Service Registration
-7. **Unit of Work** - Transaktionale Speicherung
-8. **MediatR** - CQRS-Dispatcher mit ValidationBehavior Pipeline
-9. **Exception-Handling** - Zentrale ValidationBehavior (ALLE Exceptions → Result<T>)
-10. **Hosted Services** - Background Tasks (DataSeeder)
-11. **Data Seeding** - Automatische Datenbefüllung beim Start
-
----
-
-## 📚 Wichtige Dateien zum Nachschlagen
-
-### ✅ Template als Referenz
-
-- `../CleanArchitecture_Template/Domain/Specifications/SensorSpecifications.cs`
-- `../CleanArchitecture_Template/Domain/Entities/Sensor.cs`
-- `../CleanArchitecture_Template/Application/Features/Sensors/Commands/CreateSensor/`
-- `../CleanArchitecture_Template/Application/Services/SensorUniquenessChecker.cs`
-- `../CleanArchitecture_Template/Api/Controllers/SensorsController.cs`
-
-### 📖 Frühere Aufgabenstellungen
-
-- `../FruehereAufgabenstellungen/` - zeigt den Stil der Lücken vom Professor
-- `../FruehereAufgabenstellungen/Infrastructure/Services/StartupDataSeeder.cs` - Beispiel DataSeeder
-
-### ✅ DataSeeder in dieser Übung (FERTIG!)
-
-- `Infrastructure/Services/StartupDataSeeder.cs` - **VOLLSTÄNDIG implementiert**
-- `Infrastructure/Services/StartupDataSeederOptions.cs` - **VOLLSTÄNDIG implementiert**
-- `Infrastructure/Data/library-seed-data.json` - Sample-Daten
-- **Du musst diese Dateien NICHT ändern oder implementieren!**
-
-### ✅ ValidationBehavior & Exception-Handling (FERTIG!)
-
-- `Application/Pipeline/ValidationBehavior.cs` - **VOLLSTÄNDIG implementiert**
-- `Application/Common/Exceptions/ConcurrencyException.cs` - **Hinzugefügt**
-- **Diese Dateien sind 100% Template-kompatibel!**
-- **Du musst diese Dateien NICHT ändern oder implementieren!**
-
----
-
-## 🤔 Häufige Fragen
-
-### Wie verwende ich Mapster?
-
-```csharp
-var dto = entity.Adapt<GetBookDto>();
-// Oder mit Anpassungen:
-var dto = entity.Adapt<GetBookDto>() with { AuthorName = entity.Author.FullName };
-```
-
-### Wie verwende ich das UnitOfWork?
-
-```csharp
-var book = await uow.Books.GetByIdAsync(bookId, ct);
-var loan = Loan.Create(book, borrowerName, DateTime.Now);
-await uow.Loans.AddAsync(loan, ct);
-book.DecreaseCopies();
-uow.Books.Update(book);
-await uow.SaveChangesAsync(ct);
-```
-
-### Wo finde ich den DataSeeder?
-
-Der DataSeeder ist **VOLLSTÄNDIG implementiert** in:
-
-- `Infrastructure/Services/StartupDataSeeder.cs`
-- `Infrastructure/Services/StartupDataSeederOptions.cs`
-
-**Du musst ihn NICHT implementieren!** Er läuft automatisch beim Start.
-
-### Wie mappe ich Result zu ActionResult?
-
-```csharp
-var result = await mediator.Send(command, ct);
-return result.ToActionResult(this, createdAtAction: nameof(GetById), 
-    routeValues: new { id = result?.Value?.Id });
-```
+- 🧪 Tests
+- 🚀 Projekt ausführen
+- 🎯 Empfohlene Arbeitsweise
+- 🎓 Design Patterns & Konzepte
+- 📖 Wichtige Dateien zum Nachschlagen
+- 🤔 Häufige Fragen
 
 ---
 
 > **Viel Erfolg! Diese Übung ist näher am echten Test! 🚀**
-
----
 
 **Erstellt für WMC Test-Vorbereitung 2025** 🎓
