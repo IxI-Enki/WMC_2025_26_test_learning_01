@@ -7,7 +7,5 @@ namespace Application.Interfaces.Repositories;
 /// </summary>
 public interface IBookRepository : IGenericRepository<Book>
 {
-    Task<Book?> GetByISBNAsync(string isbn, CancellationToken ct = default);
-    Task<IReadOnlyCollection<Book>> GetBooksByAuthorAsync(int authorId, CancellationToken ct = default);
+    // TODO: Implementiere die spezifischen Repository-Methoden für Book.
 }
-

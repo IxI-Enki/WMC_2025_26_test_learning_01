@@ -23,4 +23,3 @@ public interface IGenericRepository<T> where T : IBaseEntity
     
     Task<bool> ExistsAsync(int id, CancellationToken ct = default);
 }
-

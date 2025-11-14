@@ -7,9 +7,5 @@ namespace Application.Interfaces;
 /// </summary>
 public interface IUnitOfWork
 {
-    IBookRepository Books { get; }
-    IAuthorRepository Authors { get; }
-    ILoanRepository Loans { get; }
-    Task<int> SaveChangesAsync(CancellationToken ct = default);
+    // TODO: Implementiere die Repositories.
 }
-

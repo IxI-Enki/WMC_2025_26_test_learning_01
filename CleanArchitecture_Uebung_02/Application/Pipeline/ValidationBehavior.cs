@@ -13,7 +13,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, 
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
         // FluentValidation
@@ -76,4 +76,3 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
         throw new InvalidOperationException("TResponse must be Result<T> or Result");
     }
 }
-

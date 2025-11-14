@@ -13,4 +13,3 @@ public class BookUniquenessChecker(IUnitOfWork uow) : IBookUniquenessChecker
         throw new NotImplementedException("BookUniquenessChecker muss noch implementiert werden!");
     }
 }
-
