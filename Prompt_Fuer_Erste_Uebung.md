@@ -19,7 +19,4 @@ Wie erwähnt soll die Vorlage ein Lückentext sein (implementiere "throw not imp
 
 und erzeuge eine README als Angabe in @CleanArchitecture_Uebung_01 in der du erklärst welche Validations ich implementieren soll und welche Responses etc.
 
-
-
-
 🤓🤜🏻🤛🏻🤖
