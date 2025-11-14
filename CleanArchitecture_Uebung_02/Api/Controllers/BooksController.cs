@@ -17,30 +17,28 @@ namespace Api.Controllers;
 public class BooksController(IMediator mediator) : ControllerBase
 {
     /// <summary>
-    /// Liefert alle Bücher sortiert nach Titel.
+    /// TODO: Implementiere GET /api/books - GetAll
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<GetBookDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var result = await mediator.Send(new GetAllBooksQuery(), ct);
-        return result.ToActionResult(this);
+        throw new NotImplementedException("BooksController.GetAll muss noch implementiert werden!");
     }
 
     /// <summary>
-    /// Liefert ein Buch per ID.
+    /// TODO: Implementiere GET /api/books/{id} - GetById
     /// </summary>
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(GetBookDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
-        var result = await mediator.Send(new GetBookByIdQuery(id), ct);
-        return result.ToActionResult(this);
+        throw new NotImplementedException("BooksController.GetById muss noch implementiert werden!");
     }
 
     /// <summary>
-    /// Legt ein neues Buch an.
+    /// TODO: Implementiere POST /api/books - Create
     /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(GetBookDto), StatusCodes.Status201Created)]
@@ -48,21 +46,18 @@ public class BooksController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Create([FromBody] CreateBookCommand command, CancellationToken ct)
     {
-        var result = await mediator.Send(command, ct);
-        return result.ToActionResult(this, createdAtAction: nameof(GetById), 
-            routeValues: new { id = result?.Value?.Id });
+        throw new NotImplementedException("BooksController.Create muss noch implementiert werden!");
     }
 
     /// <summary>
-    /// Löscht ein Buch.
+    /// TODO: Implementiere DELETE /api/books/{id} - Delete
     /// </summary>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
-        var result = await mediator.Send(new DeleteBookCommand(id), ct);
-        return result.ToActionResult(this);
+        throw new NotImplementedException("BooksController.Delete muss noch implementiert werden!");
     }
 }
 

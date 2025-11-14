@@ -48,52 +48,22 @@ public class Book : BaseEntity
     private Book() { } // Für EF Core
 
     /// <summary>
-    /// Erstellt asynchron ein neues Buch mit den angegebenen Eigenschaften.
+    /// TODO: Implementiere CreateAsync für Book.
     /// </summary>
     public static async Task<Book> CreateAsync(string isbn, string title, Author author, 
         int publicationYear, int availableCopies, IBookUniquenessChecker uniquenessChecker, 
         CancellationToken ct = default)
     {
-        ArgumentNullException.ThrowIfNull(author);
-        
-        var trimmedIsbn = (isbn ?? string.Empty).Trim();
-        var trimmedTitle = (title ?? string.Empty).Trim();
-        
-        BookSpecifications.ValidateBookInternal(trimmedIsbn, trimmedTitle, author.Id, publicationYear, availableCopies);
-        await BookSpecifications.ValidateBookExternal(0, trimmedIsbn, uniquenessChecker, ct);
-        
-        return new Book
-        {
-            ISBN = trimmedIsbn,
-            Title = trimmedTitle,
-            Author = author,
-            AuthorId = author.Id,
-            PublicationYear = publicationYear,
-            AvailableCopies = availableCopies
-        };
+        throw new NotImplementedException("Book.CreateAsync muss noch implementiert werden!");
     }
 
     /// <summary>
-    /// Aktualisiert die Eigenschaften des Buches.
+    /// TODO: Implementiere UpdateAsync für Book.
     /// </summary>
     public async Task UpdateAsync(string isbn, string title, int authorId, int publicationYear, 
         int availableCopies, IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
     {
-        var trimmedIsbn = (isbn ?? string.Empty).Trim();
-        var trimmedTitle = (title ?? string.Empty).Trim();
-        
-        if (ISBN == trimmedIsbn && Title == trimmedTitle && AuthorId == authorId && 
-            PublicationYear == publicationYear && AvailableCopies == availableCopies)
-            return; // Keine Änderung
-        
-        BookSpecifications.ValidateBookInternal(trimmedIsbn, trimmedTitle, authorId, publicationYear, availableCopies);
-        await BookSpecifications.ValidateBookExternal(Id, trimmedIsbn, uniquenessChecker, ct);
-        
-        ISBN = trimmedIsbn;
-        Title = trimmedTitle;
-        AuthorId = authorId;
-        PublicationYear = publicationYear;
-        AvailableCopies = availableCopies;
+        throw new NotImplementedException("Book.UpdateAsync muss noch implementiert werden!");
     }
 
     /// <summary>

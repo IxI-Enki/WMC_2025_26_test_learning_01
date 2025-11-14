@@ -32,21 +32,11 @@ public class Author : BaseEntity
     private Author() { } // Für EF Core
 
     /// <summary>
-    /// Erstellt einen neuen Autor.
+    /// TODO: Implementiere Create für Author.
     /// </summary>
     public static Author Create(string firstName, string lastName, DateTime dateOfBirth)
     {
-        var trimmedFirstName = (firstName ?? string.Empty).Trim();
-        var trimmedLastName = (lastName ?? string.Empty).Trim();
-        
-        AuthorSpecifications.ValidateAuthorInternal(trimmedFirstName, trimmedLastName, dateOfBirth);
-        
-        return new Author
-        {
-            FirstName = trimmedFirstName,
-            LastName = trimmedLastName,
-            DateOfBirth = dateOfBirth
-        };
+        throw new NotImplementedException("Author.Create muss noch implementiert werden!");
     }
 
     public string FullName => $"{FirstName} {LastName}";
