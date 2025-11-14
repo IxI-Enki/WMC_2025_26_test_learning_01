@@ -3,260 +3,195 @@
 ## 📋 Übersicht
 
 **Domäne:** Bibliotheksverwaltung mit drei Entitäten:
-- 📚 **Book** (Buch) - *vollständig implementiert als Referenz*
-- ✍️ **Author** (Autor) - *teilweise implementiert*
-- 📖 **Loan** (Ausleihe) - *als Lückentext - DU musst implementieren!*
+- 📚 **Book** (Buch) - *ALLES mit NotImplementedException!*
+- ✍️ **Author** (Autor) - *ALLES mit NotImplementedException!*
+- 📖 **Loan** (Ausleihe) - *ALLES mit NotImplementedException!*
+
+**Wichtig:** Diese Übung entspricht dem Professor-Stil! Fast ALLES ist mit `NotImplementedException` versehen und muss implementiert werden!
 
 ---
 
-## 🎯 Deine Aufgaben
+## 🎯 Was du beim Test implementieren musst (laut Kollegin)
 
-### ✏️ Teil 1: Domain-Validierungen (Loan)
+### ✏️ 1. Domain-Validierungen
+**Aufgabe:** Validations auf Domain-Ebene implementieren
 
-#### 📍 Aufgabe 1.1: LoanSpecifications implementieren
+📁 **Dateien:**
+- `Domain/Specifications/BookSpecifications.cs`
+- `Domain/Specifications/AuthorSpecifications.cs`
+- `Domain/Specifications/LoanSpecifications.cs`
 
-**Datei:** `Domain/Specifications/LoanSpecifications.cs`
+**Was zu tun ist:**
+- Alle `Check...` Methoden implementieren (CheckISBN, CheckTitle, CheckAuthorId, usw.)
+- `ValidateXXXInternal` Methoden implementieren
+- `ValidateXXXExternal` Methoden implementieren (für Uniqueness)
 
-Implementiere folgende Methoden:
-
-##### a) `CheckBookId(int bookId)`
-- **Regel:** BookId muss größer als 0 sein
-- **Fehlermeldung:** "BookId muss größer als 0 sein."
-
-##### b) `CheckBorrowerName(string borrowerName)`
-- **Regeln:**
-  - Darf nicht leer sein
-  - Muss mindestens `BorrowerNameMinLength` (2) Zeichen haben
-- **Fehlermeldungen:**
-  - "BorrowerName darf nicht leer sein."
-  - "BorrowerName muss mindestens 2 Zeichen haben."
-
-##### c) `CheckLoanDate(DateTime loanDate)`
-- **Regel:** LoanDate darf nicht in der Zukunft liegen
-- **Vergleich:** `loanDate > DateTime.Now`
-- **Fehlermeldung:** "LoanDate darf nicht in der Zukunft liegen."
-
-##### d) `ValidateLoanInternal(...)`
-Implementiere die vollständige Validierungsmethode:
-1. Erstelle eine Liste von `DomainValidationResult`
-2. Rufe alle drei Check-Methoden auf
-3. Iteriere über die Ergebnisse
-4. Werfe `DomainValidationException` bei Fehlern
-
-**💡 Tipp:** Schaue dir `BookSpecifications.ValidateBookInternal` als Beispiel an!
-
-**🧪 Tests:** `Domain.Tests/LoanSpecificationsTests.cs`
+**💡 Tipp:** Schaue dir `CleanArchitecture_Template/Domain/Specifications/SensorSpecifications.cs` an!
 
 ---
 
-#### 📍 Aufgabe 1.2: Loan.Create implementieren
+### ✏️ 2. Domain Entities (Create/Update Methoden)
+**Aufgabe:** Factory-Methoden in Entitäten implementieren
 
-**Datei:** `Domain/Entities/Loan.cs`
+📁 **Dateien:**
+- `Domain/Entities/Book.cs` - `CreateAsync`, `UpdateAsync`
+- `Domain/Entities/Author.cs` - `Create`
+- `Domain/Entities/Loan.cs` - `Create`
 
-Implementiere die `Create`-Methode:
-
-```csharp
-public static Loan Create(Book book, string borrowerName, DateTime loanDate)
-{
-    // TODO: Implementiere diese Methode
-    
-    // Schritte:
-    // 1. ArgumentNullException.ThrowIfNull(book)
-    // 2. borrowerName trimmen
-    // 3. LoanSpecifications.ValidateLoanInternal aufrufen
-    // 4. DueDate = loanDate + 14 Tage berechnen
-    // 5. Neues Loan-Objekt erstellen und zurückgeben
-}
-```
-
-**💡 Tipp:** Schaue dir `Book.CreateAsync` als Beispiel an!
+**Was zu tun ist:**
+- ArgumentNullException prüfen
+- Trimmen von Strings
+- Validierungen aufrufen
+- Objekt erstellen und zurückgeben
 
 ---
 
-### ✏️ Teil 2: Repository-Methoden (Infrastructure Layer)
+### ✏️ 3. Commands & Queries mit Handlers und Validators
+**Aufgabe:** Alle Commands/Queries mit Handler und Validator selbst erstellen
 
-#### 📍 Aufgabe 2.1: LoanRepository implementieren
+📁 **Book-Features (Beispiele vorhanden, aber mit NotImplementedException):**
+- `Application/Features/Books/Commands/CreateBook/`
+  - CreateBookCommandHandler ❌
+  - CreateBookCommandValidator ❌
+- `Application/Features/Books/Commands/DeleteBook/`
+  - DeleteBookCommandHandler ❌
+- `Application/Features/Books/Queries/GetAllBooks/`
+  - GetAllBooksQueryHandler ❌
+- `Application/Features/Books/Queries/GetBookById/`
+  - GetBookByIdQueryHandler ❌
 
-**Datei:** `Infrastructure/Persistence/Repositories/LoanRepository.cs`
+📁 **Loan-Features (nur Ordner vorhanden):**
+- `Application/Features/Loans/Commands/CreateLoan/` - komplett erstellen!
+- `Application/Features/Loans/Commands/ReturnLoan/` - komplett erstellen!
+- `Application/Features/Loans/Queries/GetLoansByBook/` - komplett erstellen!
+- `Application/Features/Loans/Queries/GetOverdueLoans/` - komplett erstellen!
 
-Implementiere folgende Methoden:
-
-##### a) `GetLoansByBookIdAsync`
-```csharp
-public async Task<IReadOnlyCollection<Loan>> GetLoansByBookIdAsync(int bookId, CancellationToken ct = default)
-{
-    // Alle Ausleihen für ein Buch
-    // AsNoTracking, Include(l => l.Book), Where, OrderBy(l => l.LoanDate), ToListAsync
-}
-```
-
-##### b) `GetActiveLoansByBorrowerAsync`
-```csharp
-public async Task<IReadOnlyCollection<Loan>> GetActiveLoansByBorrowerAsync(string borrowerName, CancellationToken ct = default)
-{
-    // Aktive Ausleihen (ReturnDate == null) für einen Ausleiher
-    // AsNoTracking, Include(l => l.Book), Where, OrderBy(l => l.DueDate), ToListAsync
-}
-```
-
-##### c) `GetOverdueLoansAsync`
-```csharp
-public async Task<IReadOnlyCollection<Loan>> GetOverdueLoansAsync(CancellationToken ct = default)
-{
-    // Überfällige Ausleihen (ReturnDate == null && DueDate < DateTime.Now)
-    // AsNoTracking, Include(l => l.Book), Where, OrderBy(l => l.DueDate), ToListAsync
-}
-```
-
-**💡 Tipp:** Schaue dir `BookRepository` als Beispiel an!
+**💡 Tipp:** Schaue dir das `CleanArchitecture_Template` an, wie Commands/Queries aufgebaut sind!
 
 ---
 
-### ✏️ Teil 3: Commands & Queries (Application Layer)
+### ✏️ 4. Dependency Injection
+**Aufgabe:** Services bei DI registrieren
 
-Die Ordnerstruktur ist bereits angelegt in:
-- `Application/Features/Loans/Commands/CreateLoan/`
-- `Application/Features/Loans/Commands/ReturnLoan/`
-- `Application/Features/Loans/Queries/GetLoansByBook/`
-- `Application/Features/Loans/Queries/GetOverdueLoans/`
+📁 **Datei:** `Application/DependencyInjection.cs`
 
-#### 📍 Aufgabe 3.1: CreateLoanCommand erstellen
-
-Erstelle folgende Dateien in `Commands/CreateLoan/`:
-
-##### CreateLoanCommand.cs
+**Was zu tun ist:**
 ```csharp
-public readonly record struct CreateLoanCommand(int BookId, string BorrowerName) 
-    : IRequest<Result<GetLoanDto>>;
+// Diese Zeile ist auskommentiert - du musst sie aktivieren:
+services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 ```
 
-##### CreateLoanCommandHandler.cs
-```csharp
-public sealed class CreateLoanCommandHandler(IUnitOfWork uow) 
-    : IRequestHandler<CreateLoanCommand, Result<GetLoanDto>>
-{
-    public async Task<Result<GetLoanDto>> Handle(...)
-    {
-        // 1. Buch laden (GetByIdAsync)
-        // 2. Prüfen ob vorhanden (NotFoundException)
-        // 3. Prüfen ob verfügbar (AvailableCopies > 0)
-        // 4. Loan erstellen (Loan.Create mit DateTime.Now)
-        // 5. Book.DecreaseCopies() aufrufen
-        // 6. Loan hinzufügen (AddAsync)
-        // 7. Book updaten (Update)
-        // 8. Speichern (SaveChangesAsync)
-        // 9. Result.Created zurückgeben
-    }
-}
-```
-
-##### CreateLoanCommandValidator.cs
-```csharp
-public class CreateLoanCommandValidator : AbstractValidator<CreateLoanCommand>
-{
-    public CreateLoanCommandValidator()
-    {
-        RuleFor(x => x.BookId).GreaterThan(0);
-        RuleFor(x => x.BorrowerName).NotEmpty().MinimumLength(2);
-    }
-}
-```
-
-**💡 Tipp:** Schaue dir `CreateBookCommandHandler` als Beispiel an!
+**💡 Tipp:** Im Template ist `ISensorUniquenessChecker` registriert - schau dort!
 
 ---
 
-#### 📍 Aufgabe 3.2: GetLoansByBookQuery erstellen
+### ✏️ 5. Services implementieren
+**Aufgabe:** Uniqueness Checker implementieren
 
-Erstelle in `Queries/GetLoansByBook/`:
+📁 **Datei:** `Application/Services/BookUniquenessChecker.cs`
 
-##### GetLoansByBookQuery.cs
-```csharp
-public readonly record struct GetLoansByBookQuery(int BookId) 
-    : IRequest<Result<IEnumerable<GetLoanDto>>>;
-```
-
-##### GetLoansByBookQueryHandler.cs
-```csharp
-public sealed class GetLoansByBookQueryHandler(IUnitOfWork uow) 
-    : IRequestHandler<GetLoansByBookQuery, Result<IEnumerable<GetLoanDto>>>
-{
-    public async Task<Result<IEnumerable<GetLoanDto>>> Handle(...)
-    {
-        // 1. Repository-Methode aufrufen
-        // 2. Zu DTOs mappen (mit Mapster: entity.Adapt<GetLoanDto>())
-        // 3. BookTitle und IsOverdue setzen
-        // 4. Result.Success zurückgeben
-    }
-}
-```
+**Was zu tun ist:**
+- ISBN-Eindeutigkeit über Repository prüfen
+- Bestehende Bücher mit gleicher ID ignorieren (bei Update)
 
 ---
 
-### ✏️ Teil 4: Controller Endpoints (API Layer)
+### ✏️ 6. Controller implementieren
+**Aufgabe:** Controller-Endpoints implementieren
 
-#### 📍 Aufgabe 4.1: LoansController implementieren
+📁 **Dateien:**
+- `Api/Controllers/BooksController.cs` - alle Methoden ❌
+- `Api/Controllers/LoansController.cs` - komplett leer
 
-**Datei:** `Api/Controllers/LoansController.cs`
+**Was zu tun ist:**
+- MediatR verwenden: `await mediator.Send(...)`
+- Result in ActionResult umwandeln: `.ToActionResult(this)`
+- ProducesResponseType Attribute sind schon da
 
-Der Controller ist bereits angelegt, aber leer. Implementiere:
-
-##### POST /api/loans - CreateLoan
+**Beispiel:**
 ```csharp
-[HttpPost]
-[ProducesResponseType(typeof(GetLoanDto), StatusCodes.Status201Created)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-public async Task<IActionResult> Create([FromBody] CreateLoanCommand command, CancellationToken ct)
+[HttpGet]
+public async Task<IActionResult> GetAll(CancellationToken ct)
 {
-    var result = await mediator.Send(command, ct);
+    var result = await mediator.Send(new GetAllBooksQuery(), ct);
     return result.ToActionResult(this);
 }
 ```
 
-##### GET /api/loans/book/{bookId}
-```csharp
-[HttpGet("book/{bookId:int}")]
-[ProducesResponseType(typeof(IEnumerable<GetLoanDto>), StatusCodes.Status200OK)]
-public async Task<IActionResult> GetByBook(int bookId, CancellationToken ct)
-{
-    var result = await mediator.Send(new GetLoansByBookQuery(bookId), ct);
-    return result.ToActionResult(this);
-}
-```
+---
 
-**💡 Tipp:** Schaue dir `BooksController` als vollständiges Beispiel an!
+### ✏️ 7. Repository-Methoden für spezielle Abfragen
+**Aufgabe:** Spezifische Repository-Methoden implementieren
+
+📁 **Dateien:**
+- `Infrastructure/Persistence/Repositories/BookRepository.cs`
+  - GetByISBNAsync ❌
+  - GetBooksByAuthorAsync ❌
+- `Infrastructure/Persistence/Repositories/AuthorRepository.cs`
+  - GetAuthorsWithBooksAsync ❌
+- `Infrastructure/Persistence/Repositories/LoanRepository.cs`
+  - GetLoansByBookIdAsync ❌
+  - GetActiveLoansByBorrowerAsync ❌
+  - GetOverdueLoansAsync ❌
+
+**💡 Tipp:** 
+- Verwende `Set.AsNoTracking()`
+- Verwende `.Include()` für Navigation Properties
+- Verwende `.Where()`, `.OrderBy()`, `.ToListAsync()`
+
+**Laut Kollegin:** Die Repositories sind normalerweise fertig, aber spezielle Methoden müssen hinzugefügt werden!
 
 ---
 
-### ✏️ Teil 5: Dependency Injection (Application Layer)
+## 🧪 Tests
 
-#### 📍 Aufgabe 5.1: Service registrieren
+### Domain-Tests
+📁 `Domain.Tests/`
+- `BookTests.cs` - Tests für Book (auskommentiert, aktiviere sie!)
+- `LoanSpecificationsTests.cs` - Tests für Loan-Validierungen
 
-**Datei:** `Application/DependencyInjection.cs`
+**Wichtig:** Die Tests zeigen dir, welche Methodennamen erwartet werden!
 
-Falls du einen Uniqueness Checker für Loans brauchst, registriere ihn hier ähnlich wie `BookUniquenessChecker`.
+### API-Tests
+📁 `Api.Tests/`
+- `Books/BooksEndpointTests.cs` - Integration Tests
 
-**💡 Hinweis:** Für diese Übung ist kein Uniqueness Checker für Loans notwendig.
+**Laut Kollegin:** Tests für Domain- und API-Ebene sind vorhanden - Methodennamen abgleichen!
 
 ---
 
-## 🧪 Tests ausführen
+## 📝 Validierungsregeln - Was zu implementieren ist
 
-### Unit Tests
-```bash
-cd CleanArchitecture_Uebung_02
-dotnet test Domain.Tests/Domain.Tests.csproj
-```
+### Book (Domain Validation)
+| Property | Regel | Fehlermeldung |
+|----------|-------|---------------|
+| ISBN | NotEmpty | "ISBN darf nicht leer sein." |
+| ISBN | Length = 13 (ohne Bindestriche) | "ISBN muss genau 13 Zeichen haben (ohne Bindestriche)." |
+| ISBN | OnlyDigits | "ISBN darf nur Ziffern enthalten." |
+| ISBN | Unique | "Ein Buch mit dieser ISBN existiert bereits." |
+| Title | NotEmpty | "Title darf nicht leer sein." |
+| Title | MinLength(1) | "Title muss mindestens 1 Zeichen haben." |
+| AuthorId | > 0 | "AuthorId muss größer als 0 sein." |
+| PublicationYear | >= 1450 | "PublicationYear muss mindestens 1450 sein." |
+| PublicationYear | <= Now + 1 Jahr | "PublicationYear darf nicht mehr als 1 Jahr in der Zukunft liegen." |
+| AvailableCopies | >= 0 | "AvailableCopies muss mindestens 0 sein." |
 
-**Erwartung:**
-- ✅ `BookTests` - sollten grün sein (Beispiel)
-- ❌ `LoanSpecificationsTests` - werden erst grün, wenn du LoanSpecifications implementiert hast
+### Book (FluentValidation)
+**Aufgabe:** Implementiere die Rules in `CreateBookCommandValidator`
+- ISBN: NotEmpty, Length(13)
+- Title: NotEmpty, MinimumLength(1)
+- AuthorId: GreaterThan(0)
+- PublicationYear: GreaterThanOrEqualTo(1450), LessThanOrEqualTo(DateTime.Now.Year + 1)
+- AvailableCopies: GreaterThanOrEqualTo(0)
 
-### Integration Tests
-```bash
-dotnet test Api.Tests/Api.Tests.csproj
-```
+### Loan (Domain Validation)
+| Property | Regel | Fehlermeldung |
+|----------|-------|---------------|
+| BookId | > 0 | "BookId muss größer als 0 sein." |
+| BorrowerName | NotEmpty | "BorrowerName darf nicht leer sein." |
+| BorrowerName | MinLength(2) | "BorrowerName muss mindestens 2 Zeichen haben." |
+| LoanDate | Not in future | "LoanDate darf nicht in der Zukunft liegen." |
+| DueDate | Auto (LoanDate + 14 Tage) | - |
 
 ---
 
@@ -275,29 +210,74 @@ cd CleanArchitecture_Uebung_02/Api
 dotnet run
 ```
 
-Die API läuft auf: `https://localhost:5101/swagger`
+API: `https://localhost:5101/swagger`
 
 ---
 
-## 📝 Validierungsregeln - Übersicht
+## ✅ Checkliste (laut Kollegin)
 
-### Book (vollständig implementiert)
-| Property | Domain Validation | FluentValidation |
-|----------|------------------|------------------|
-| ISBN | NotEmpty, Length(13), OnlyDigits | NotEmpty, Length(13) |
-| Title | NotEmpty, MinLength(1) | NotEmpty, MinLength(1) |
-| AuthorId | > 0 | GreaterThan(0) |
-| PublicationYear | >= 1450, <= Now+1 | GreaterThanOrEqualTo(1450) |
-| AvailableCopies | >= 0 | GreaterThanOrEqualTo(0) |
-| ISBN (Uniqueness) | Unique | - |
+### ☐ Domain Layer
+- [ ] BookSpecifications: alle Check-Methoden
+- [ ] BookSpecifications: ValidateBookInternal
+- [ ] BookSpecifications: ValidateBookExternal
+- [ ] AuthorSpecifications: alle Check-Methoden + Validate
+- [ ] LoanSpecifications: alle Check-Methoden + Validate
+- [ ] Book.CreateAsync
+- [ ] Book.UpdateAsync
+- [ ] Author.Create
+- [ ] Loan.Create
 
-### Loan (DU musst implementieren!)
-| Property | Domain Validation | FluentValidation |
-|----------|------------------|------------------|
-| BookId | > 0 | GreaterThan(0) |
-| BorrowerName | NotEmpty, MinLength(2) | NotEmpty, MinimumLength(2) |
-| LoanDate | Not in future | - |
-| DueDate | Auto-calculated (LoanDate + 14 days) | - |
+### ☐ Application Layer
+- [ ] CreateBookCommandHandler
+- [ ] CreateBookCommandValidator (FluentValidation Rules)
+- [ ] DeleteBookCommandHandler
+- [ ] GetAllBooksQueryHandler
+- [ ] GetBookByIdQueryHandler
+- [ ] BookUniquenessChecker implementieren
+- [ ] CreateLoanCommand + Handler + Validator erstellen
+- [ ] ReturnLoanCommand + Handler erstellen
+- [ ] GetLoansByBookQuery + Handler erstellen
+- [ ] GetOverdueLoansQuery + Handler erstellen
+- [ ] DependencyInjection: IBookUniquenessChecker registrieren
+
+### ☐ Infrastructure Layer
+- [ ] BookRepository.GetByISBNAsync
+- [ ] BookRepository.GetBooksByAuthorAsync
+- [ ] AuthorRepository.GetAuthorsWithBooksAsync
+- [ ] LoanRepository.GetLoansByBookIdAsync
+- [ ] LoanRepository.GetActiveLoansByBorrowerAsync
+- [ ] LoanRepository.GetOverdueLoansAsync
+
+### ☐ API Layer
+- [ ] BooksController.GetAll
+- [ ] BooksController.GetById
+- [ ] BooksController.Create
+- [ ] BooksController.Delete
+- [ ] LoansController: alle Endpoints erstellen
+
+### ☐ Tests & Ausführung
+- [ ] Domain.Tests: BookTests aktivieren (auskommentierte Tests)
+- [ ] Domain.Tests: LoanSpecificationsTests grün machen
+- [ ] Projekt kompiliert ohne Fehler
+- [ ] Datenbank Migration erfolgreich
+- [ ] API läuft und Swagger ist erreichbar
+
+---
+
+## 🎯 Arbeitsweise (empfohlen)
+
+**Wie die Kollegin arbeitet:**
+> "Ich acker mich so durch, dass ich zuerst die Domain und Infrastruktur aufbaue, bevor ich mich an die API mache. Ich finde, wenn man UniquenessChecker und Validation etc. später erst macht, hat man ja überhaupt keinen Überblick, wo dann nachträglich nochmal was ergänzt werden muss."
+
+**Empfohlene Reihenfolge:**
+1. **Domain:** Validierungen implementieren
+2. **Domain:** Entity Create/Update Methoden
+3. **Infrastructure:** Repository-Methoden (spezielle Abfragen)
+4. **Application:** Services (BookUniquenessChecker)
+5. **Application:** DependencyInjection
+6. **Application:** Commands & Queries (Handler + Validators)
+7. **API:** Controller implementieren
+8. **Tests:** Domain- und API-Tests ausführen
 
 ---
 
@@ -305,79 +285,30 @@ Die API läuft auf: `https://localhost:5101/swagger`
 
 Diese Übung deckt ab:
 1. **Clean Architecture** - 4 Layer Trennung
-2. **CQRS** - Commands (CreateLoan) & Queries (GetLoans)
-3. **Repository Pattern** - ILoanRepository mit spezifischen Methoden
-4. **Domain-Driven Design** - Loan.Create Factory Method
+2. **CQRS** - Commands & Queries
+3. **Repository Pattern** - Spezifische Methoden
+4. **Domain-Driven Design** - Factory Methods, Validierungen
 5. **Validation (3 Ebenen)**:
-   - Domain: LoanSpecifications
+   - Domain: Specifications
    - Application: FluentValidation
-   - Database: Foreign Keys, Indexes
-6. **Dependency Injection** - Constructor Injection
+   - Database: Foreign Keys, Unique Indexes
+6. **Dependency Injection** - Service Registration
 7. **Unit of Work** - Transaktionale Speicherung
+8. **MediatR** - CQRS-Dispatcher
 
 ---
 
-## 📚 Wichtige Dateien
+## 📚 Wichtige Dateien zum Nachschlagen
 
-### Vollständig implementiert (als Referenz):
-- ✅ `Domain/Entities/Book.cs`
-- ✅ `Domain/Specifications/BookSpecifications.cs`
-- ✅ `Application/Features/Books/` - alle Commands & Queries
-- ✅ `Infrastructure/Persistence/Repositories/BookRepository.cs`
-- ✅ `Api/Controllers/BooksController.cs`
+### ✅ Template als Referenz:
+- `../CleanArchitecture_Template/Domain/Specifications/SensorSpecifications.cs`
+- `../CleanArchitecture_Template/Domain/Entities/Sensor.cs`
+- `../CleanArchitecture_Template/Application/Features/Sensors/Commands/CreateSensor/`
+- `../CleanArchitecture_Template/Application/Services/SensorUniquenessChecker.cs`
+- `../CleanArchitecture_Template/Api/Controllers/SensorsController.cs`
 
-### Mit Lücken (deine Aufgabe):
-- ❌ `Domain/Specifications/LoanSpecifications.cs`
-- ❌ `Domain/Entities/Loan.cs` (Create-Methode)
-- ❌ `Infrastructure/Persistence/Repositories/LoanRepository.cs`
-- ❌ `Application/Features/Loans/Commands/CreateLoan/` (alle Dateien)
-- ❌ `Application/Features/Loans/Queries/GetLoansByBook/` (alle Dateien)
-- ❌ `Api/Controllers/LoansController.cs`
-
----
-
-## ✅ Checkliste
-
-### Domain Layer
-- [ ] LoanSpecifications.CheckBookId implementiert
-- [ ] LoanSpecifications.CheckBorrowerName implementiert
-- [ ] LoanSpecifications.CheckLoanDate implementiert
-- [ ] LoanSpecifications.ValidateLoanInternal implementiert
-- [ ] Loan.Create implementiert
-- [ ] Domain.Tests: LoanSpecificationsTests grün
-
-### Infrastructure Layer
-- [ ] LoanRepository.GetLoansByBookIdAsync implementiert
-- [ ] LoanRepository.GetActiveLoansByBorrowerAsync implementiert
-- [ ] LoanRepository.GetOverdueLoansAsync implementiert
-
-### Application Layer
-- [ ] CreateLoanCommand erstellt
-- [ ] CreateLoanCommandHandler erstellt
-- [ ] CreateLoanCommandValidator erstellt
-- [ ] GetLoansByBookQuery erstellt
-- [ ] GetLoansByBookQueryHandler erstellt
-
-### API Layer
-- [ ] LoansController.Create implementiert
-- [ ] LoansController.GetByBook implementiert
-
-### Tests & Ausführung
-- [ ] Alle Unit Tests grün
-- [ ] Projekt kompiliert ohne Fehler
-- [ ] Datenbank Migration erfolgreich
-- [ ] API läuft und Swagger ist erreichbar
-- [ ] Loan-Endpoints in Swagger getestet
-
----
-
-## 🎯 Tipps
-
-1. **Starte mit Domain:** Implementiere zuerst die Validierungen
-2. **Tests nutzen:** Die Tests zeigen dir, was erwartet wird
-3. **Referenz nutzen:** Book ist vollständig implementiert - nutze es als Vorlage!
-4. **Schritt für Schritt:** Arbeite die Checkliste der Reihe nach ab
-5. **Template verwenden:** Du darfst das `CleanArchitecture_Template` zur Hilfe nehmen!
+### 📖 Frühere Aufgabenstellungen:
+- `../FruehereAufgabenstellungen/` - zeigt den Stil der Lücken vom Professor
 
 ---
 
@@ -385,15 +316,9 @@ Diese Übung deckt ab:
 
 ### Wie verwende ich Mapster?
 ```csharp
-var dto = entity.Adapt<GetLoanDto>();
+var dto = entity.Adapt<GetBookDto>();
 // Oder mit Anpassungen:
-var dto = entity.Adapt<GetLoanDto>() with { BookTitle = entity.Book.Title };
-```
-
-### Wie prüfe ich auf null?
-```csharp
-if (book == null)
-    throw new NotFoundException($"Book with ID {bookId} not found.");
+var dto = entity.Adapt<GetBookDto>() with { AuthorName = entity.Author.FullName };
 ```
 
 ### Wie verwende ich das UnitOfWork?
@@ -406,11 +331,17 @@ uow.Books.Update(book);
 await uow.SaveChangesAsync(ct);
 ```
 
+### Wie mappe ich Result zu ActionResult?
+```csharp
+var result = await mediator.Send(command, ct);
+return result.ToActionResult(this, createdAtAction: nameof(GetById), 
+    routeValues: new { id = result?.Value?.Id });
+```
+
 ---
 
-**Viel Erfolg! 🚀**
+**Viel Erfolg! Diese Übung ist näher am echten Test! 🚀**
 
 ---
 
 **Erstellt für WMC Test-Vorbereitung 2025** 🎓
-
