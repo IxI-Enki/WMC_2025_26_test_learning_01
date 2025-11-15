@@ -1,0 +1,31 @@
+{
+  "authors": [
+    {
+      "firstName": "J.K.",
+      "lastName": "Rowling",
+      "dateOfBirth": "1965-07-31"
+    },
+    {
+      "firstName": "George R.R.",
+      "lastName": "Martin",
+      "dateOfBirth": "1948-09-20"
+    },
+    {
+      "firstName": "J.R.R.",
+      "lastName": "Tolkien",
+      "dateOfBirth": "1892-01-03"
+    },
+    {
+      "firstName": "Agatha",
+      "lastName": "Christie",
+      "dateOfBirth": "1890-09-15"
+    },
+    {
+      "firstName": "Stephen",
+      "lastName": "King",
+      "dateOfBirth": "1947-09-21"
+    }
+  ],
+  "books": []
+}
+

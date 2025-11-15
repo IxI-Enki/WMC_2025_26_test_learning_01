@@ -21,9 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="..\Infrastructure\Data\library-seed-data.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>library-seed-data.json</Link>
+    <None Update="library-seed-data.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
