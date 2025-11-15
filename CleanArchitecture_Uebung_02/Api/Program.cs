@@ -11,6 +11,9 @@ namespace Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Prüfe ob Infrastructure übersprungen werden soll (für API-Tests!)
+            var skipInfrastructure = builder.Configuration["SkipInfrastructure"]?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
+
             var connectionString = builder.Configuration.GetConnectionString("Default") 
                 ?? throw new ArgumentException("Connection string 'Default' not found");
 
@@ -20,7 +23,11 @@ namespace Api
                 options.JsonPath = Path.Combine(AppContext.BaseDirectory, "library-seed-data.json");
             });
 
-            builder.Services.AddInfrastructure(connectionString);
+            // Conditional Registration: Skip Infrastructure in API-Tests
+            if (!skipInfrastructure)
+            {
+                builder.Services.AddInfrastructure(connectionString);
+            }
             builder.Services.AddApplication();
 
             builder.Services.AddControllers();
