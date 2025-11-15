@@ -12,6 +12,332 @@
 
 ---
 
+## 📐 Domain Model - Entities & Properties
+
+### 📚 Book (Buch)
+
+| Property | Typ | Beschreibung |
+|----------|-----|--------------|
+| `Id` | `int` | Primary Key (von BaseEntity) |
+| `ISBN` | `string` | ISBN-Nummer (13 Zeichen, nur Ziffern) |
+| `Title` | `string` | Buchtitel |
+| `AuthorId` | `int` | Foreign Key zum Author |
+| `Author` | `Author` | Navigation Property zum Author |
+| `PublicationYear` | `int` | Veröffentlichungsjahr |
+| `AvailableCopies` | `int` | Anzahl verfügbarer Exemplare |
+| `Loans` | `ICollection<Loan>` | Navigation Property zu Ausleihen |
+
+**Factory-Methoden (zu implementieren):**
+```csharp
+static Task<Book> CreateAsync(string isbn, string title, Author author, 
+    int publicationYear, int availableCopies, IBookUniquenessChecker uniquenessChecker, 
+    CancellationToken ct = default)
+
+Task UpdateAsync(string isbn, string title, int authorId, int publicationYear, 
+    int availableCopies, IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
+```
+
+**Fertige Methoden:**
+- `DecreaseCopies()` - Reduziert AvailableCopies um 1 (beim Ausleihen)
+- `IncreaseCopies()` - Erhöht AvailableCopies um 1 (beim Zurückgeben)
+
+---
+
+### ✍️ Author (Autor)
+
+| Property | Typ | Beschreibung |
+|----------|-----|--------------|
+| `Id` | `int` | Primary Key (von BaseEntity) |
+| `FirstName` | `string` | Vorname |
+| `LastName` | `string` | Nachname |
+| `DateOfBirth` | `DateTime` | Geburtsdatum |
+| `Books` | `ICollection<Book>` | Navigation Property zu Büchern |
+
+**Computed Property:**
+- `FullName` → `$"{FirstName} {LastName}"` (bereits implementiert)
+
+**Factory-Methode (zu implementieren):**
+```csharp
+static Author Create(string firstName, string lastName, DateTime dateOfBirth)
+```
+
+---
+
+### 📖 Loan (Ausleihe)
+
+| Property | Typ | Beschreibung |
+|----------|-----|--------------|
+| `Id` | `int` | Primary Key (von BaseEntity) |
+| `BookId` | `int` | Foreign Key zum Book |
+| `Book` | `Book` | Navigation Property zum Book |
+| `BorrowerName` | `string` | Name des Ausleihers |
+| `LoanDate` | `DateTime` | Ausleihdatum |
+| `DueDate` | `DateTime` | Rückgabedatum (LoanDate + 14 Tage) |
+| `ReturnDate` | `DateTime?` | Tatsächliches Rückgabedatum (null = noch ausgeliehen) |
+
+**Factory-Methode (zu implementieren):**
+```csharp
+static Loan Create(Book book, string borrowerName, DateTime loanDate)
+// DueDate = LoanDate + 14 Tage
+```
+
+**Fertige Methoden:**
+- `MarkAsReturned(DateTime returnDate)` - Setzt ReturnDate
+- `IsOverdue()` - Prüft ob überfällig (ReturnDate == null && DateTime.Now > DueDate)
+
+---
+
+## 📦 DTOs - Was zu erstellen ist
+
+### GetBookDto
+
+📁 `Application/Dtos/GetBookDto.cs`
+
+```csharp
+namespace Application.Dtos;
+
+public sealed record GetBookDto(
+    int Id, 
+    string ISBN, 
+    string Title, 
+    int AuthorId, 
+    string AuthorName,           // ← Aus Author.FullName!
+    int PublicationYear, 
+    int AvailableCopies
+);
+```
+
+---
+
+### GetAuthorDto
+
+📁 `Application/Dtos/GetAuthorDto.cs`
+
+```csharp
+namespace Application.Dtos;
+
+public sealed record GetAuthorDto(
+    int Id,
+    string FirstName,
+    string LastName,
+    DateTime DateOfBirth
+);
+```
+
+**💡 Tipp:** Im QueryHandler kannst du `author.Adapt<GetAuthorDto>()` verwenden!
+
+---
+
+### GetLoanDto
+
+📁 `Application/Dtos/GetLoanDto.cs`
+
+```csharp
+namespace Application.Dtos;
+
+public sealed record GetLoanDto(
+    int Id,
+    int BookId,
+    string BookTitle,            // ← Aus Book.Title!
+    string BorrowerName,
+    DateTime LoanDate,
+    DateTime DueDate,
+    DateTime? ReturnDate,
+    bool IsOverdue               // ← Berechnet: ReturnDate == null && DateTime.Now > DueDate
+);
+```
+
+---
+
+## 📝 Commands & Queries - Signaturen
+
+### CreateBookCommand
+
+📁 `Application/Features/Books/Commands/CreateBook/CreateBookCommand.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Books.Commands.CreateBook;
+
+public readonly record struct CreateBookCommand(
+    string ISBN,
+    string Title,
+    int AuthorId,
+    int PublicationYear,
+    int AvailableCopies
+) : IRequest<Result<GetBookDto>>;
+```
+
+---
+
+### DeleteBookCommand
+
+📁 `Application/Features/Books/Commands/DeleteBook/DeleteBookCommand.cs`
+
+```csharp
+using Application.Common.Results;
+using MediatR;
+
+namespace Application.Features.Books.Commands.DeleteBook;
+
+public readonly record struct DeleteBookCommand(int Id) : IRequest<Result<bool>>;
+```
+
+---
+
+### GetAllBooksQuery
+
+📁 `Application/Features/Books/Queries/GetAllBooks/GetAllBooksQuery.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Books.Queries.GetAllBooks;
+
+public readonly record struct GetAllBooksQuery : IRequest<Result<IReadOnlyCollection<GetBookDto>>>;
+```
+
+---
+
+### GetBookByIdQuery
+
+📁 `Application/Features/Books/Queries/GetBookById/GetBookByIdQuery.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Books.Queries.GetBookById;
+
+public readonly record struct GetBookByIdQuery(int Id) : IRequest<Result<GetBookDto>>;
+```
+
+---
+
+### CreateLoanCommand
+
+📁 `Application/Features/Loans/Commands/CreateLoan/CreateLoanCommand.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Loans.Commands.CreateLoan;
+
+public readonly record struct CreateLoanCommand(
+    int BookId,
+    string BorrowerName,
+    DateTime LoanDate
+) : IRequest<Result<GetLoanDto>>;
+```
+
+---
+
+### ReturnLoanCommand
+
+📁 `Application/Features/Loans/Commands/ReturnLoan/ReturnLoanCommand.cs`
+
+```csharp
+using Application.Common.Results;
+using MediatR;
+
+namespace Application.Features.Loans.Commands.ReturnLoan;
+
+public readonly record struct ReturnLoanCommand(
+    int LoanId,
+    DateTime ReturnDate
+) : IRequest<Result<bool>>;
+```
+
+---
+
+### GetLoansByBookQuery
+
+📁 `Application/Features/Loans/Queries/GetLoansByBook/GetLoansByBookQuery.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Loans.Queries.GetLoansByBook;
+
+public readonly record struct GetLoansByBookQuery(int BookId) 
+    : IRequest<Result<IReadOnlyCollection<GetLoanDto>>>;
+```
+
+---
+
+### GetOverdueLoansQuery
+
+📁 `Application/Features/Loans/Queries/GetOverdueLoans/GetOverdueLoansQuery.cs`
+
+```csharp
+using Application.Common.Results;
+using Application.Dtos;
+using MediatR;
+
+namespace Application.Features.Loans.Queries.GetOverdueLoans;
+
+public readonly record struct GetOverdueLoansQuery 
+    : IRequest<Result<IReadOnlyCollection<GetLoanDto>>>;
+```
+
+---
+
+## 🔌 Repository-Interfaces - Methodensignaturen
+
+### IBookRepository
+
+📁 `Application/Interfaces/Repositories/IBookRepository.cs`
+
+```csharp
+public interface IBookRepository : IGenericRepository<Book>
+{
+    Task<Book?> GetByISBNAsync(string isbn, CancellationToken ct = default);
+    Task<IReadOnlyCollection<Book>> GetBooksByAuthorAsync(int authorId, CancellationToken ct = default);
+}
+```
+
+---
+
+### IAuthorRepository
+
+📁 `Application/Interfaces/Repositories/IAuthorRepository.cs`
+
+```csharp
+public interface IAuthorRepository : IGenericRepository<Author>
+{
+    Task<IReadOnlyCollection<Author>> GetAuthorsWithBooksAsync(CancellationToken ct = default);
+}
+```
+
+**💡 Tipp:** Diese Signatur ist **bereits** im Code vorhanden!
+
+---
+
+### ILoanRepository
+
+📁 `Application/Interfaces/Repositories/ILoanRepository.cs`
+
+```csharp
+public interface ILoanRepository : IGenericRepository<Loan>
+{
+    Task<IReadOnlyCollection<Loan>> GetLoansByBookIdAsync(int bookId, CancellationToken ct = default);
+    Task<IReadOnlyCollection<Loan>> GetActiveLoansByBorrowerAsync(string borrowerName, CancellationToken ct = default);
+    Task<IReadOnlyCollection<Loan>> GetOverdueLoansAsync(CancellationToken ct = default);
+}
+```
+
+---
+
 ## 🎯 Was du beim Test implementieren musst (laut Kollegin)
 
 ### ✏️ 1. Domain-Validierungen
@@ -61,17 +387,11 @@
 
 **Was zu erstellen ist:**
 
-- `GetBookDto.cs` - DTO für Book-Responses
+- `GetBookDto.cs` - DTO für Book-Responses (siehe Abschnitt "📦 DTOs" oben für vollständige Definition!)
+- `GetAuthorDto.cs` - DTO für Author-Responses (siehe Abschnitt "📦 DTOs" oben!)
+- `GetLoanDto.cs` - DTO für Loan-Responses (siehe Abschnitt "📦 DTOs" oben!)
 
-  ```csharp
-  public record GetBookDto(int Id, string ISBN, string Title, int AuthorId, 
-      string AuthorName, int PublicationYear, int AvailableCopies);
-  ```
-
-- `GetAuthorDto.cs` - DTO für Author-Responses
-- `GetLoanDto.cs` - DTO für Loan-Responses
-
-**💡 Tipp:** DTOs sind einfache Records ohne Logik!
+**💡 Tipp:** DTOs sind einfache Records ohne Logik! Die vollständigen Definitionen findest du im Abschnitt "📦 DTOs" oben.
 
 ---
 
@@ -82,27 +402,29 @@
 📁 **Book-Features (nur Ordner mit .gitkeep vorhanden):**
 
 - `Application/Features/Books/Commands/CreateBook/`
-  - CreateBookCommand.cs ❌
+  - CreateBookCommand.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
   - CreateBookCommandHandler.cs ❌
   - CreateBookCommandValidator.cs ❌
 - `Application/Features/Books/Commands/DeleteBook/`
-  - DeleteBookCommand.cs ❌
+  - DeleteBookCommand.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
   - DeleteBookCommandHandler.cs ❌
 - `Application/Features/Books/Queries/GetAllBooks/`
-  - GetAllBooksQuery.cs ❌
+  - GetAllBooksQuery.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
   - GetAllBooksQueryHandler.cs ❌
 - `Application/Features/Books/Queries/GetBookById/`
-  - GetBookByIdQuery.cs ❌
+  - GetBookByIdQuery.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
   - GetBookByIdQueryHandler.cs ❌
 
 📁 **Loan-Features (nur Ordner vorhanden):**
 
-- `Application/Features/Loans/Commands/CreateLoan/` - komplett erstellen!
-- `Application/Features/Loans/Commands/ReturnLoan/` - komplett erstellen!
-- `Application/Features/Loans/Queries/GetLoansByBook/` - komplett erstellen!
-- `Application/Features/Loans/Queries/GetOverdueLoans/` - komplett erstellen!
+- `Application/Features/Loans/Commands/CreateLoan/` - komplett erstellen! (Signaturen siehe oben)
+- `Application/Features/Loans/Commands/ReturnLoan/` - komplett erstellen! (Signaturen siehe oben)
+- `Application/Features/Loans/Queries/GetLoansByBook/` - komplett erstellen! (Signaturen siehe oben)
+- `Application/Features/Loans/Queries/GetOverdueLoans/` - komplett erstellen! (Signaturen siehe oben)
 
-**💡 Tipp:** Schaue dir das `CleanArchitecture_Template` an, wie Commands/Queries aufgebaut sind!
+**💡 Tipp:** 
+- Schaue dir das `CleanArchitecture_Template` an, wie Commands/Queries aufgebaut sind!
+- Die **exakten Signaturen** findest du im Abschnitt "📝 Commands & Queries - Signaturen" oben!
 
 ---
 
@@ -171,22 +493,25 @@ public async Task<IActionResult> GetAll(CancellationToken ct)
 📁 **Dateien:**
 
 - `Infrastructure/Persistence/Repositories/BookRepository.cs`
-  - GetByISBNAsync ❌
-  - GetBooksByAuthorAsync ❌
+  - GetByISBNAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
+  - GetBooksByAuthorAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
 - `Infrastructure/Persistence/Repositories/AuthorRepository.cs`
-  - GetAuthorsWithBooksAsync ❌
+  - GetAuthorsWithBooksAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
 - `Infrastructure/Persistence/Repositories/LoanRepository.cs`
-  - GetLoansByBookIdAsync ❌
-  - GetActiveLoansByBorrowerAsync ❌
-  - GetOverdueLoansAsync ❌
+  - GetLoansByBookIdAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
+  - GetActiveLoansByBorrowerAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
+  - GetOverdueLoansAsync ❌ (Signatur siehe Abschnitt "🔌 Repository-Interfaces" oben!)
 
 **💡 Tipp:**
 
 - Verwende `Set.AsNoTracking()`
 - Verwende `.Include()` für Navigation Properties
 - Verwende `.Where()`, `.OrderBy()`, `.ToListAsync()`
+- Die **exakten Methodensignaturen** findest du im Abschnitt "🔌 Repository-Interfaces" oben!
 
 **Laut Kollegin:** Die Repositories sind normalerweise fertig, aber spezielle Methoden müssen hinzugefügt werden!
+
+**⚠️ WICHTIG:** Du musst die Methodensignaturen auch in den **Interfaces** (`IBookRepository`, `ILoanRepository`) hinzufügen! (Siehe Abschnitt "🔌 Repository-Interfaces" oben)
 
 ---
 
@@ -349,14 +674,20 @@ Die `ValidationBehavior` (MediatR Pipeline) ist das **zentrale Exception-Handlin
 
 ### ☐ Infrastructure Layer
 
-**Repository-Methoden (spezielle Abfragen):**
+**Repository-Interfaces (Methodensignaturen hinzufügen):**
 
-- [ ] BookRepository.GetByISBNAsync
-- [ ] BookRepository.GetBooksByAuthorAsync
-- [ ] AuthorRepository.GetAuthorsWithBooksAsync
-- [ ] LoanRepository.GetLoansByBookIdAsync
-- [ ] LoanRepository.GetActiveLoansByBorrowerAsync
-- [ ] LoanRepository.GetOverdueLoansAsync
+- [ ] IBookRepository: GetByISBNAsync, GetBooksByAuthorAsync hinzufügen
+- [ ] ILoanRepository: GetLoansByBookIdAsync, GetActiveLoansByBorrowerAsync, GetOverdueLoansAsync hinzufügen
+- [ ] IAuthorRepository: GetAuthorsWithBooksAsync (bereits vorhanden ✅)
+
+**Repository-Methoden (Implementierungen):**
+
+- [ ] BookRepository.GetByISBNAsync implementieren
+- [ ] BookRepository.GetBooksByAuthorAsync implementieren
+- [ ] AuthorRepository.GetAuthorsWithBooksAsync implementieren
+- [ ] LoanRepository.GetLoansByBookIdAsync implementieren
+- [ ] LoanRepository.GetActiveLoansByBorrowerAsync implementieren
+- [ ] LoanRepository.GetOverdueLoansAsync implementieren
 
 **DataSeeder (FERTIG - musst du NICHT machen!):**
 

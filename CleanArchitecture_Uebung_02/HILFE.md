@@ -144,13 +144,54 @@ Diese Übung deckt ab:
 
 ## 🤔 Häufige Fragen
 
+### Wo finde ich alle Entity Properties, DTO-Definitionen und Command-Signaturen?
+
+**Alle Informationen sind in der [README.md](./README.md) zu finden:**
+
+1. **📐 Domain Model - Entities & Properties**
+   - Book, Author, Loan mit allen Properties
+   - Factory-Methoden Signaturen
+   
+2. **📦 DTOs - Was zu erstellen ist**
+   - GetBookDto (mit AuthorName!)
+   - GetAuthorDto
+   - GetLoanDto (mit BookTitle und IsOverdue!)
+
+3. **📝 Commands & Queries - Signaturen**
+   - Alle Command-Definitionen (CreateBookCommand, DeleteBookCommand, etc.)
+   - Alle Query-Definitionen (GetAllBooksQuery, GetBookByIdQuery, etc.)
+
+4. **🔌 Repository-Interfaces - Methodensignaturen**
+   - IBookRepository (GetByISBNAsync, GetBooksByAuthorAsync)
+   - IAuthorRepository (GetAuthorsWithBooksAsync)
+   - ILoanRepository (GetLoansByBookIdAsync, GetActiveLoansByBorrowerAsync, GetOverdueLoansAsync)
+
+**💡 Tipp:** Die README ist dein "Cheat Sheet" mit allen exakten Definitionen!
+
+---
+
 ### Wie verwende ich Mapster?
 
+**Einfaches Mapping:**
 ```csharp
 var dto = entity.Adapt<GetBookDto>();
-// Oder mit Anpassungen:
-var dto = entity.Adapt<GetBookDto>() with { AuthorName = entity.Author.FullName };
 ```
+
+**Mit manuellen Anpassungen (wenn Mapster nicht alles automatisch mappt):**
+```csharp
+// GetBookDto hat AuthorName, aber Book hat Author.FullName
+var dto = book.Adapt<GetBookDto>() with 
+{ 
+    AuthorName = book.Author.FullName 
+};
+```
+
+**Collection mapping:**
+```csharp
+var dtos = books.Adapt<IReadOnlyCollection<GetBookDto>>();
+```
+
+**💡 Tipp:** Mapster mappt automatisch Properties mit gleichem Namen. Für computed Properties wie `AuthorName` musst du manuell mappen!
 
 ### Wie verwende ich das UnitOfWork?
 
@@ -250,10 +291,12 @@ public sealed class CreateBookCommandHandler(
         CreateBookCommand request, 
         CancellationToken ct)
     {
+        // 1. Author laden
         var author = await uow.Authors.GetByIdAsync(request.AuthorId, ct);
         if (author is null)
             return Result<GetBookDto>.NotFound("Author not found");
 
+        // 2. Book erstellen (Factory-Methode mit Validation)
         var book = await Book.CreateAsync(
             request.ISBN, 
             request.Title, 
@@ -263,13 +306,96 @@ public sealed class CreateBookCommandHandler(
             uniquenessChecker, 
             ct);
 
+        // 3. Speichern
         await uow.Books.AddAsync(book, ct);
         await uow.SaveChangesAsync(ct);
 
-        return Result<GetBookDto>.Created(book.Adapt<GetBookDto>());
+        // 4. DTO zurückgeben (mit AuthorName!)
+        var dto = new GetBookDto(
+            book.Id,
+            book.ISBN,
+            book.Title,
+            book.AuthorId,
+            book.Author.FullName,  // ← AuthorName aus Author.FullName!
+            book.PublicationYear,
+            book.AvailableCopies
+        );
+
+        return Result<GetBookDto>.Created(dto);
     }
 }
 ```
+
+**💡 Tipp für GetBookDto:**
+- `book.Adapt<GetBookDto>()` funktioniert **NICHT** für `AuthorName`, weil das Property heißt `Author.FullName`!
+- Du musst das DTO **manuell** erstellen oder `with` verwenden:
+  ```csharp
+  var dto = book.Adapt<GetBookDto>() with { AuthorName = book.Author.FullName };
+  ```
+
+---
+
+### Wie erstelle ich einen QueryHandler mit Include?
+
+**Query:**
+```csharp
+public readonly record struct GetAllBooksQuery : IRequest<Result<IReadOnlyCollection<GetBookDto>>>;
+```
+
+**Handler:**
+```csharp
+public sealed class GetAllBooksQueryHandler(IUnitOfWork uow) 
+    : IRequestHandler<GetAllBooksQuery, Result<IReadOnlyCollection<GetBookDto>>>
+{
+    public async Task<Result<IReadOnlyCollection<GetBookDto>>> Handle(
+        GetAllBooksQuery request, 
+        CancellationToken ct)
+    {
+        // 1. Alle Books laden mit Author (Navigation Property!)
+        var books = await uow.Books.GetAllAsync(
+            orderBy: q => q.OrderBy(b => b.Title),  // Sortieren nach Title
+            ct: ct);
+
+        // ⚠️ PROBLEM: GetAllAsync lädt Author NICHT automatisch!
+        // Du musst entweder:
+        // a) Eine spezielle Repository-Methode mit .Include(b => b.Author) erstellen
+        // b) Oder GenericRepository erweitern
+
+        // 2. DTOs manuell erstellen (wegen AuthorName!)
+        var dtos = books.Select(b => new GetBookDto(
+            b.Id,
+            b.ISBN,
+            b.Title,
+            b.AuthorId,
+            b.Author?.FullName ?? "Unknown",  // ← Null-Check!
+            b.PublicationYear,
+            b.AvailableCopies
+        )).ToList();
+
+        return Result<IReadOnlyCollection<GetBookDto>>.Success(dtos);
+    }
+}
+```
+
+**💡 WICHTIG:** 
+- `GetAllAsync` aus `GenericRepository` lädt **KEINE** Navigation Properties!
+- Du musst eine **spezielle Methode** in `IBookRepository` erstellen:
+  ```csharp
+  Task<IReadOnlyCollection<Book>> GetAllBooksWithAuthorAsync(CancellationToken ct = default);
+  ```
+- In der Implementierung verwendest du `.Include(b => b.Author)`:
+  ```csharp
+  public async Task<IReadOnlyCollection<Book>> GetAllBooksWithAuthorAsync(CancellationToken ct = default)
+  {
+      return await Set
+          .AsNoTracking()
+          .Include(b => b.Author)  // ← Navigation Property laden!
+          .OrderBy(b => b.Title)
+          .ToListAsync(ct);
+  }
+  ```
+
+---
 
 **3. Validator (Class):**
 
