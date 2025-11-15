@@ -1,8 +1,12 @@
 # 🎯 WMC Übung 2 - Implementierungs-Roadmap
 
+> **Letzte Aktualisierung:** 2025-11-15 (nach IBookUniquenessChecker DI-Fix)
+>
+> **Status:** 🟢 Phase 1 (Authors) teilweise, 🟡 Phase 2 (Books) in Arbeit
+
 ## 📊 Entitäten-Abhängigkeiten (wie im Template)
 
-```
+```d
 ┌─────────┐
 │ Author  │ ◄─── Keine Abhängigkeiten (standalone)
 └────┬────┘
@@ -81,11 +85,11 @@ Für Authors können wir entweder:
 - Fokus liegt auf Books (laut Übungsstellung)
 
 ```
-□ Application/Dtos/GetAuthorDto.cs (bereits vorhanden)
+✅ Application/Dtos/GetAuthorDto.cs (bereits vorhanden)
   
-□ Application/Features/Authors/Queries/GetAllAuthors/
-  - GetAllAuthorsQuery.cs
-  - GetAllAuthorsQueryHandler.cs
+✅ Application/Features/Authors/Queries/GetAllAuthors/
+  ✅ GetAllAuthorsQuery.cs
+  ✅ GetAllAuthorsQueryHandler.cs
   
 □ Application/Features/Authors/Queries/GetAuthorById/
   - GetAuthorByIdQuery.cs
@@ -98,9 +102,9 @@ Für Authors können wir entweder:
 
 #### 3️⃣ API-Ebene
 ```
-□ Api/Controllers/AuthorsController.cs (erstellen!)
-  - [HttpGet] GetAll()
-  - [HttpGet("{id:int}")] GetById()
+✅ Api/Controllers/AutorsController.cs (erstellt!)
+  ✅ [HttpGet] GetAll() - implementiert!
+  □ [HttpGet("{id:int}")] GetById() - noch NotImplementedException
 ```
 
 **Referenz:** Template `SensorsController.cs` (Zeilen 25-45)
@@ -124,7 +128,8 @@ Für Authors können wir entweder:
 - ✅ `Book.CreateAsync()` ist implementiert
 - ✅ `Book.DecreaseCopies()` & `IncreaseCopies()` sind fertig
 - ✅ `BookRepository` ist fertig (Infrastructure)
-- ⚠️ `GetAllBooksQueryHandler` ist vorhanden, aber wirft NotImplementedException
+- ✅ `GetAllBooksQueryHandler` ist **IMPLEMENTIERT** (nicht mehr NotImplementedException!)
+- ✅ `IBookUniquenessChecker` ist in DI registriert (DependencyInjection.cs)
 
 ### 🔨 Was zu tun ist:
 
@@ -149,23 +154,25 @@ Für Authors können wir entweder:
 ```
 ✅ Application/Dtos/GetBookDto.cs (bereits vorhanden)
 
-□ Application/Features/Books/Queries/GetAllBooks/
-  ⚠️ GetAllBooksQueryHandler.cs → NotImplementedException entfernen!
-     - await uow.Books.GetAllAsync() aufrufen
-     - .Include(b => b.Author) für Navigation Property
-     - Zu GetBookDto mappen
-     - Result.Success() zurückgeben
+✅ Application/Features/Books/Queries/GetAllBooks/
+  ✅ GetAllBooksQuery.cs (vorhanden)
+  ✅ GetAllBooksQueryHandler.cs - IMPLEMENTIERT!
+     ✅ await uow.Books.GetAllAsync() aufgerufen
+     ✅ Zu GetBookDto gemappt mit Mapster
+     ✅ Result.Success() zurückgegeben
+     ⚠️ ACHTUNG: .Include(b => b.Author) fehlt noch für Navigation Property!
 
 □ Application/Features/Books/Queries/GetBookById/
   - GetBookByIdQueryHandler.cs erstellen
   
-□ Application/Features/Books/Commands/CreateBook/
-  ⚠️ CreateBookCommandHandler.cs → NotImplementedException entfernen!
-     - Author aus DB laden (uow.Authors.GetByIdAsync)
-     - Book.CreateAsync() aufrufen
-     - uow.Books.AddAsync()
-     - uow.SaveChangesAsync()
-  ⚠️ CreateBookCommandValidator.cs → FluentValidation implementieren
+⚠️ Application/Features/Books/Commands/CreateBook/
+  ✅ CreateBookCommand.cs (vorhanden)
+  ⚠️ CreateBookCommandHandler.cs → NotImplementedException noch drin!
+     TODO: - Author aus DB laden (uow.Authors.GetByIdAsync)
+           - Book.CreateAsync() aufrufen
+           - uow.Books.AddAsync()
+           - uow.SaveChangesAsync()
+  □ CreateBookCommandValidator.cs → FluentValidation implementieren
   
 □ Application/Features/Books/Commands/DeleteBook/
   - DeleteBookCommandHandler.cs erstellen
@@ -182,12 +189,12 @@ Für Authors können wir entweder:
 
 #### 3️⃣ API-Ebene
 ```
-□ Api/Controllers/BooksController.cs
-  ⚠️ GetAll() → NotImplementedException entfernen
-  - GetById() implementieren
-  - Create() implementieren
-  - Update() implementieren (neu!)
-  - Delete() implementieren
+✅ Api/Controllers/BooksController.cs
+  ✅ GetAll() → FUNKTIONIERT! (ruft GetAllBooksQueryHandler auf)
+  □ GetById() → noch NotImplementedException
+  □ Create() → noch NotImplementedException
+  □ Update() → noch nicht erstellt
+  □ Delete() → noch NotImplementedException
 ```
 
 **Referenz:** Template `SensorsController.cs` (volle Struktur)
@@ -329,9 +336,9 @@ Für Authors können wir entweder:
 **Laut Kollegin:** "Man muss bei der Dependency Injection den Service registrieren"
 
 ```
-□ Application/DependencyInjection.cs
-  - IBookUniquenessChecker registrieren (aktuell auskommentiert!)
-    • services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
+✅ Application/DependencyInjection.cs
+  ✅ IBookUniquenessChecker registriert! (Zeile 27)
+    ✅ services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 ```
 
 **Referenz:** Template `Application/DependencyInjection.cs`
@@ -387,31 +394,73 @@ Für Authors können wir entweder:
 ## ⚡ Quick Start
 
 ```bash
-# 1. Phase 1 starten - Authors
-# 2. Tests laufen lassen
+# 1. Tests laufen lassen
 dotnet test CleanArchitecture_Uebung_02/Domain.Tests
 dotnet test CleanArchitecture_Uebung_02/Api.Tests
 
-# 3. API starten und via Swagger testen
+# 2. API starten und via Swagger testen
 cd CleanArchitecture_Uebung_02/Api
 dotnet run
 
-# 4. Swagger öffnen: https://localhost:7085/swagger
+# 3. Swagger öffnen: https://localhost:7085/swagger
+```
+
+### 🧪 Was jetzt testbar ist:
+
+```bash
+# Via Swagger testen:
+✅ GET /api/autors → 5 Autoren aus DataSeeder (J.K. Rowling, etc.)
+✅ GET /api/books → Leeres Array (noch keine Books in DB)
+
+# Nächste Schritte:
+1. CreateBookCommandHandler implementieren (Zeile 19 in CreateBookCommandHandler.cs)
+2. POST /api/books testen → Erstes Buch anlegen
+3. GET /api/books erneut → Sollte dann das neue Buch zeigen
 ```
 
 ---
 
-## 🎯 Erfolgskriterien
+## 🎯 Erfolgskriterien & Aktueller Status
 
-✅ **Phase 1 (Authors):** GET /api/authors liefert 5 Autoren aus DataSeeder  
-✅ **Phase 2 (Books):** POST /api/books erstellt ein Buch, GET zeigt es mit Author-Infos  
-✅ **Phase 3 (Loans):** POST /api/loans leiht ein Buch aus (AvailableCopies -1)  
-✅ **Alle Tests:** Grün in Domain.Tests und Api.Tests  
-✅ **DataSeeder:** Läuft beim Start automatisch und befüllt Authors
+| Phase                   | Kriterium                                           | Status |
+| ----------------------- | --------------------------------------------------- | ------ |
+| **Phase 1 (Authors)**   | GET /api/autors liefert 5 Autoren aus DataSeeder   | ✅     |
+| **Phase 1 (Authors)**   | GET /api/autors/{id} liefert einzelnen Autor       | ⚠️     |
+| **Phase 2 (Books)**     | GET /api/books liefert Liste (aktuell leer)         | ✅     |
+| **Phase 2 (Books)**     | POST /api/books erstellt ein Buch                   | ⚠️     |
+| **Phase 2 (Books)**     | GET /api/books zeigt Bücher mit Author-Infos       | ⏳     |
+| **Phase 3 (Loans)**     | POST /api/loans leiht ein Buch aus (AvailableCopies -1) | ⏳ |
+| **Tests**               | Domain.Tests ausführbar                             | ✅     |
+| **Tests**               | Api.Tests ausführbar                                | ✅     |
+| **DataSeeder**          | Läuft beim Start und befüllt Authors               | ✅     |
+| **DI**                  | IBookUniquenessChecker registriert                  | ✅     |
+
+**Legende:** ✅ Fertig | ⚠️ Teilweise | ⏳ Noch nicht gestartet
+
+---
+
+## 🎯 Nächste konkrete Schritte (Priorität)
+
+1. **GetAllBooksQueryHandler verbessern:**
+   - `.Include(b => b.Author)` hinzufügen für Navigation Properties
+   - Mapster-Config für Author-Daten in GetBookDto prüfen
+
+2. **CreateBookCommandHandler implementieren:**
+   - Author aus DB laden mit `uow.Authors.GetByIdAsync(request.AuthorId)`
+   - `Book.CreateAsync()` aufrufen
+   - `uow.Books.AddAsync()` und `uow.SaveChangesAsync()`
+   - DTO zurückgeben
+
+3. **CreateBookCommandValidator implementieren:**
+   - FluentValidation Rules für ISBN, Title, PublicationYear, etc.
+
+4. **GetAuthorById implementieren:**
+   - Query, Handler, Controller-Endpunkt
 
 ---
 
 **Viel Erfolg! 🤓🤜🏻🤛🏻🤖**
 
 *Erstellt am: 2025-11-15*  
+*Aktualisiert am: 2025-11-15 (nach DI-Fix & Partial Implementation)*  
 *Basierend auf: CleanArchitecture_Template & Kollegin-Notizen*
