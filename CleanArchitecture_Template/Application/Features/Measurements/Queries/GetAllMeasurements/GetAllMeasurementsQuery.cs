@@ -4,4 +4,5 @@ using MediatR;
 
 namespace Application.Features.Measurements.Queries.GetAllMeasurements;
 
-public record GetAllMeasurementsQuery : IRequest<Result<IReadOnlyCollection<GetMeasurementDto>>>;
+public record GetAllMeasurementsQuery :
+    IRequest<Result<IReadOnlyCollection<GetMeasurementDto>>>;

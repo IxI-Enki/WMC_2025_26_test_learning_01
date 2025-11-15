@@ -24,4 +24,9 @@ public class BookRepository(AppDbContext ctx) : GenericRepository<Book>(ctx), IB
     {
         throw new NotImplementedException("BookRepository.GetBooksByAuthorAsync muss noch implementiert werden!");
     }
+
+    public Task<IReadOnlyCollection<Book>> GetBooksByhAuthorAsync( int authorId, CancellationToken ct = default )
+    {
+        throw new NotImplementedException( );
+    }
 }

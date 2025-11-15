@@ -9,7 +9,8 @@ namespace Application.Features.Measurements.Queries.GetMeasurementById;
 /// <summary>
 /// Handler zum Abrufen einer Messung per Id.
 /// </summary>
-public sealed class GetMeasurementByIdQueryHandler(IUnitOfWork uow) : IRequestHandler<GetMeasurementByIdQuery, Result<GetMeasurementDto>>
+public sealed class GetMeasurementByIdQueryHandler(IUnitOfWork uow) :
+    IRequestHandler<GetMeasurementByIdQuery, Result<GetMeasurementDto>>
 {
     /// <summary>
     /// Lädt die Messung und mappt sie auf ein DTO. Gibt null zurück, wenn nicht vorhanden.

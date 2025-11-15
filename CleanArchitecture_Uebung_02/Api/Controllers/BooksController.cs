@@ -49,6 +49,8 @@ public class BooksController( IMediator mediator ) : ControllerBase
     [ProducesResponseType( StatusCodes.Status409Conflict )]
     public async Task<IActionResult> Create( [FromBody] CreateBookCommand command, CancellationToken ct )
     {
+        
+
         throw new NotImplementedException( "BooksController.Create muss noch implementiert werden!" );
     }
 

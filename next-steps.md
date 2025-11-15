@@ -415,4 +415,3 @@ dotnet run
 
 *Erstellt am: 2025-11-15*  
 *Basierend auf: CleanArchitecture_Template & Kollegin-Notizen*
-
