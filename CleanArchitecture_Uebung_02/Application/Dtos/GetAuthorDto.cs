@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos
 {
-    internal class GetAuthorDto(
-        
+    public sealed record GetAuthorDto(
+        int Id,
+        string FirstName,
+        string LastName,
+        DateTime DateOfBirth
+        //ICollection<GetBookDto> Books
         );
 }

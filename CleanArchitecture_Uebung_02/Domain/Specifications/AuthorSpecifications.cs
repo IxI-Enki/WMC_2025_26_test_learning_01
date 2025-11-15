@@ -7,27 +7,46 @@ public static class AuthorSpecifications
 {
     public const int NameMinLength = 2;
 
-    /// <summary>
-    /// TODO: Implementiere CheckFirstName, CheckLastName, CheckDateOfBirth und ValidateAuthorInternal.
-    /// </summary>
-    public static DomainValidationResult CheckFirstName(string firstName)
+    public static DomainValidationResult CheckFirstName( string firstName )
     {
-        throw new NotImplementedException("CheckFirstName muss noch implementiert werden!");
+        //throw new NotImplementedException("CheckFirstName muss noch implementiert werden!");
+        return
+            firstName.Length >= NameMinLength
+                ? DomainValidationResult.Success( nameof( firstName ) )
+                : DomainValidationResult.Failure(
+                    nameof( firstName ),
+                    $"Der Vorname muss mindestens {NameMinLength} Zeichen lang sein."
+                );
     }
 
-    public static DomainValidationResult CheckLastName(string lastName)
+    public static DomainValidationResult CheckLastName( string lastName )
     {
-        throw new NotImplementedException("CheckLastName muss noch implementiert werden!");
+        //throw new NotImplementedException("CheckLastName muss noch implementiert werden!");
+        return
+            lastName.Length >= NameMinLength
+                ? DomainValidationResult.Success( nameof( lastName ) )
+                : DomainValidationResult.Failure(
+                    nameof( lastName ),
+                    $"Der Nachname muss mindestens {NameMinLength} Zeichen lang sein."
+                );
     }
 
-    public static DomainValidationResult CheckDateOfBirth(DateTime dateOfBirth)
+    public static DomainValidationResult CheckDateOfBirth( DateTime dateOfBirth )
     {
-        throw new NotImplementedException("CheckDateOfBirth muss noch implementiert werden!");
+        //throw new NotImplementedException( "CheckDateOfBirth muss noch implementiert werden!" );
+        return
+            dateOfBirth < DateTime.Now
+                ? DomainValidationResult.Success( nameof( dateOfBirth ) )
+                : DomainValidationResult.Failure(
+                    nameof( dateOfBirth ),
+                    "Das Geburtsdatum muss in der Vergangenheit liegen."
+                );
     }
 
-    public static void ValidateAuthorInternal(string firstName, string lastName, DateTime dateOfBirth)
+    public static void ValidateAuthorInternal( string firstName, string lastName, DateTime dateOfBirth )
     {
-        throw new NotImplementedException("ValidateAuthorInternal muss noch implementiert werden!");
+
+        throw new NotImplementedException( "ValidateAuthorInternal muss noch implementiert werden!" );
     }
 }
 

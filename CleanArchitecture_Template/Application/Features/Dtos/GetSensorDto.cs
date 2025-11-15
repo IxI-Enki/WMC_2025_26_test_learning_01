@@ -4,4 +4,7 @@ namespace Application.Features.Dtos;
 /// Datenübertragungsobjekt (DTO) für Sensoren ohne RowVersion/Concurrency-Token.
 /// Als Referenztyp (record class), um Nullability sauber zu erzwingen.
 /// </summary>
-public sealed record GetSensorDto(int Id, string Location, string Name);
+public sealed record GetSensorDto(
+    int Id, 
+    string Location, 
+    string Name);

@@ -8,18 +8,22 @@ public static class LoanSpecifications
     public const int StandardLoanDurationDays = 14;
 
     /// <summary>
-    /// TODO: Implementiere die CheckBookId Validierung.
+    /// CheckBookId Validierung.
     /// 
     /// Regel: BookId muss größer als 0 sein
     /// Fehlermeldung: "BookId muss größer als 0 sein."
     /// </summary>
-    public static DomainValidationResult CheckBookId(int bookId)
+    public static DomainValidationResult CheckBookId( int bookId )
     {
-        throw new NotImplementedException("CheckBookId muss noch implementiert werden!");
+        //throw new NotImplementedException("CheckBookId muss noch implementiert werden!");
+        return
+            bookId > 0
+            ? DomainValidationResult.Success( nameof( bookId ) )
+            : DomainValidationResult.Failure( nameof( bookId ), "BookId muss größer als 0 sein." );
     }
 
     /// <summary>
-    /// TODO: Implementiere die CheckBorrowerName Validierung.
+    /// CheckBorrowerName Validierung.
     /// 
     /// Regeln:
     /// - Darf nicht leer sein
@@ -29,20 +33,30 @@ public static class LoanSpecifications
     /// - "BorrowerName darf nicht leer sein."
     /// - "BorrowerName muss mindestens {BorrowerNameMinLength} Zeichen haben."
     /// </summary>
-    public static DomainValidationResult CheckBorrowerName(string borrowerName)
+    public static DomainValidationResult CheckBorrowerName( string borrowerName )
     {
-        throw new NotImplementedException("CheckBorrowerName muss noch implementiert werden!");
+        //throw new NotImplementedException("CheckBorrowerName muss noch implementiert werden!");
+        return
+            string.IsNullOrWhiteSpace( borrowerName )
+            ? DomainValidationResult.Failure( nameof( borrowerName ), "BorrowerName darf nicht leer sein." )
+            : borrowerName.Length < BorrowerNameMinLength
+                ? DomainValidationResult.Failure( nameof( borrowerName ), $"BorrowerName muss mindestens {BorrowerNameMinLength} Zeichen haben." )
+                : DomainValidationResult.Success( nameof( borrowerName ) );
     }
 
     /// <summary>
-    /// TODO: Implementiere die CheckLoanDate Validierung.
+    /// CheckLoanDate Validierung.
     /// 
     /// Regel: LoanDate darf nicht in der Zukunft liegen
     /// Fehlermeldung: "LoanDate darf nicht in der Zukunft liegen."
     /// </summary>
-    public static DomainValidationResult CheckLoanDate(DateTime loanDate)
+    public static DomainValidationResult CheckLoanDate( DateTime loanDate )
     {
-        throw new NotImplementedException("CheckLoanDate muss noch implementiert werden!");
+        //throw new NotImplementedException( "CheckLoanDate muss noch implementiert werden!" );
+        return
+            loanDate <= DateTime.Now
+            ? DomainValidationResult.Success( nameof( loanDate ) )
+            : DomainValidationResult.Failure( nameof( loanDate ), "LoanDate darf nicht in der Zukunft liegen." );
     }
 
     /// <summary>
@@ -54,9 +68,10 @@ public static class LoanSpecifications
     /// 3. Über alle Ergebnisse iterieren
     /// 4. Bei Fehler eine DomainValidationException werfen
     /// </summary>
-    public static void ValidateLoanInternal(int bookId, string borrowerName, DateTime loanDate)
+    public static void ValidateLoanInternal( int bookId, string borrowerName, DateTime loanDate )
     {
-        throw new NotImplementedException("ValidateLoanInternal muss noch implementiert werden!");
+        return;
+        throw new NotImplementedException( "ValidateLoanInternal muss noch implementiert werden!" );
     }
 }
 

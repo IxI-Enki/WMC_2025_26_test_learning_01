@@ -16,18 +16,19 @@
 
 ### 📚 Book (Buch)
 
-| Property | Typ | Beschreibung |
-|----------|-----|--------------|
-| `Id` | `int` | Primary Key (von BaseEntity) |
-| `ISBN` | `string` | ISBN-Nummer (13 Zeichen, nur Ziffern) |
-| `Title` | `string` | Buchtitel |
-| `AuthorId` | `int` | Foreign Key zum Author |
-| `Author` | `Author` | Navigation Property zum Author |
-| `PublicationYear` | `int` | Veröffentlichungsjahr |
-| `AvailableCopies` | `int` | Anzahl verfügbarer Exemplare |
-| `Loans` | `ICollection<Loan>` | Navigation Property zu Ausleihen |
+| Property          | Typ                 | Beschreibung                          |
+| ----------------- | ------------------- | ------------------------------------- |
+| `Id`              | `int`               | Primary Key (von BaseEntity)          |
+| `ISBN`            | `string`            | ISBN-Nummer (13 Zeichen, nur Ziffern) |
+| `Title`           | `string`            | Buchtitel                             |
+| `AuthorId`        | `int`               | Foreign Key zum Author                |
+| `Author`          | `Author`            | Navigation Property zum Author        |
+| `PublicationYear` | `int`               | Veröffentlichungsjahr                 |
+| `AvailableCopies` | `int`               | Anzahl verfügbarer Exemplare          |
+| `Loans`           | `ICollection<Loan>` | Navigation Property zu Ausleihen      |
 
 **Factory-Methoden (zu implementieren):**
+
 ```csharp
 static Task<Book> CreateAsync(string isbn, string title, Author author, 
     int publicationYear, int availableCopies, IBookUniquenessChecker uniquenessChecker, 
@@ -38,6 +39,7 @@ Task UpdateAsync(string isbn, string title, int authorId, int publicationYear,
 ```
 
 **Fertige Methoden:**
+
 - `DecreaseCopies()` - Reduziert AvailableCopies um 1 (beim Ausleihen)
 - `IncreaseCopies()` - Erhöht AvailableCopies um 1 (beim Zurückgeben)
 
@@ -45,18 +47,20 @@ Task UpdateAsync(string isbn, string title, int authorId, int publicationYear,
 
 ### ✍️ Author (Autor)
 
-| Property | Typ | Beschreibung |
-|----------|-----|--------------|
-| `Id` | `int` | Primary Key (von BaseEntity) |
-| `FirstName` | `string` | Vorname |
-| `LastName` | `string` | Nachname |
-| `DateOfBirth` | `DateTime` | Geburtsdatum |
-| `Books` | `ICollection<Book>` | Navigation Property zu Büchern |
+| Property      | Typ                 | Beschreibung                   |
+| ------------- | ------------------- | ------------------------------ |
+| `Id`          | `int`               | Primary Key (von BaseEntity)   |
+| `FirstName`   | `string`            | Vorname                        |
+| `LastName`    | `string`            | Nachname                       |
+| `DateOfBirth` | `DateTime`          | Geburtsdatum                   |
+| `Books`       | `ICollection<Book>` | Navigation Property zu Büchern |
 
 **Computed Property:**
+
 - `FullName` → `$"{FirstName} {LastName}"` (bereits implementiert)
 
 **Factory-Methode (zu implementieren):**
+
 ```csharp
 static Author Create(string firstName, string lastName, DateTime dateOfBirth)
 ```
@@ -65,23 +69,25 @@ static Author Create(string firstName, string lastName, DateTime dateOfBirth)
 
 ### 📖 Loan (Ausleihe)
 
-| Property | Typ | Beschreibung |
-|----------|-----|--------------|
-| `Id` | `int` | Primary Key (von BaseEntity) |
-| `BookId` | `int` | Foreign Key zum Book |
-| `Book` | `Book` | Navigation Property zum Book |
-| `BorrowerName` | `string` | Name des Ausleihers |
-| `LoanDate` | `DateTime` | Ausleihdatum |
-| `DueDate` | `DateTime` | Rückgabedatum (LoanDate + 14 Tage) |
-| `ReturnDate` | `DateTime?` | Tatsächliches Rückgabedatum (null = noch ausgeliehen) |
+| Property       | Typ         | Beschreibung                                          |
+| -------------- | ----------- | ----------------------------------------------------- |
+| `Id`           | `int`       | Primary Key (von BaseEntity)                          |
+| `BookId`       | `int`       | Foreign Key zum Book                                  |
+| `Book`         | `Book`      | Navigation Property zum Book                          |
+| `BorrowerName` | `string`    | Name des Ausleihers                                   |
+| `LoanDate`     | `DateTime`  | Ausleihdatum                                          |
+| `DueDate`      | `DateTime`  | Rückgabedatum (LoanDate + 14 Tage)                    |
+| `ReturnDate`   | `DateTime?` | Tatsächliches Rückgabedatum (null = noch ausgeliehen) |
 
 **Factory-Methode (zu implementieren):**
+
 ```csharp
 static Loan Create(Book book, string borrowerName, DateTime loanDate)
 // DueDate = LoanDate + 14 Tage
 ```
 
 **Fertige Methoden:**
+
 - `MarkAsReturned(DateTime returnDate)` - Setzt ReturnDate
 - `IsOverdue()` - Prüft ob überfällig (ReturnDate == null && DateTime.Now > DueDate)
 
@@ -422,7 +428,8 @@ public interface ILoanRepository : IGenericRepository<Loan>
 - `Application/Features/Loans/Queries/GetLoansByBook/` - komplett erstellen! (Signaturen siehe oben)
 - `Application/Features/Loans/Queries/GetOverdueLoans/` - komplett erstellen! (Signaturen siehe oben)
 
-**💡 Tipp:** 
+**💡 Tipp:**
+
 - Schaue dir das `CleanArchitecture_Template` an, wie Commands/Queries aufgebaut sind!
 - Die **exakten Signaturen** findest du im Abschnitt "📝 Commands & Queries - Signaturen" oben!
 

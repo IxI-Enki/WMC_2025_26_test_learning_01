@@ -98,11 +98,8 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
             Author.Create("Stephen", "King", new DateTime(1947, 9, 21))
         };
 
-        // Manuelle ID-Zuweisung für Beziehungen (wird von EF später überschrieben)
-        for (int i = 0; i < authors.Count; i++)
-        {
-            authors[i].GetType().GetProperty("Id")?.SetValue(authors[i], i + 1);
-        }
+        // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
+        // (genau wie im CleanArchitecture_Template)
 
         var books = new List<Book>();
         // Da Book.CreateAsync async ist und Domain-Validierungen hat, erstellen wir Books direkt über Reflection
@@ -124,11 +121,8 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
             Author.Create(a.FirstName, a.LastName, a.DateOfBirth)
         ).ToList();
 
-        // IDs zuweisen für Beziehungen
-        for (int i = 0; i < authors.Count; i++)
-        {
-            authors[i].GetType().GetProperty("Id")?.SetValue(authors[i], i + 1);
-        }
+        // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
+        // (genau wie im CleanArchitecture_Template)
 
         return new SeedData
         {

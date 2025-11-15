@@ -50,4 +50,3 @@ public class TestWebApplicationFactory<TProgram> : WebApplicationFactory<TProgra
         });
     }
 }
-

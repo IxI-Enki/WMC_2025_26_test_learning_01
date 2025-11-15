@@ -49,6 +49,9 @@ public class Loan : BaseEntity
     /// </summary>
     public static Loan Create(Book book, string borrowerName, DateTime loanDate)
     {
+
+
+
         throw new NotImplementedException("Loan.Create muss noch implementiert werden!");
     }
 

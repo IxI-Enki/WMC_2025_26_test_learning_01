@@ -32,10 +32,15 @@ public class Measurement : BaseEntity
 
     private Measurement() { } // Für EF Core
 
-    public static Measurement Create(Sensor sensor, double value, DateTime timestamp)
+    public static Measurement Create(
+        Sensor sensor, 
+        double value, 
+        DateTime timestamp)
     {
         ArgumentNullException.ThrowIfNull(sensor);
+
         ValidateMeasurementProperties(sensor.Id);
+
         return new Measurement { Sensor = sensor, SensorId = sensor.Id, Value = value, Timestamp = timestamp };
     }
 

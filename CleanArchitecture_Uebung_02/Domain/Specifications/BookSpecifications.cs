@@ -1,4 +1,4 @@
-using Domain.Common;
+﻿using Domain.Common;
 using Domain.Contracts;
 using Domain.Exceptions;
 
@@ -11,66 +11,81 @@ public static class BookSpecifications
     public const int MinPublicationYear = 1450;
     public const int MinAvailableCopies = 0;
 
-    /// <summary>
-    /// TODO: Implementiere die CheckISBN Validierung.
-    /// 
-    /// Regeln:
-    /// - Darf nicht leer sein
-    /// - Muss genau ISBNLength (13) Zeichen haben (ohne Bindestriche/Leerzeichen)
-    /// - Darf nur Ziffern enthalten
-    /// </summary>
-    public static DomainValidationResult CheckISBN(string isbn)
+    public static DomainValidationResult CheckISBN( string isbn )
     {
-        throw new NotImplementedException("CheckISBN muss noch implementiert werden!");
+        //throw new NotImplementedException( "CheckISBN muss noch implementiert werden!" );
+        return
+            (string.IsNullOrWhiteSpace( isbn ))
+            ? DomainValidationResult.Failure( "isbn", "ISBN darf nicht leer sein." )
+            : (isbn.Length != ISBNLength)
+            ? DomainValidationResult.Failure( "isbn", $"ISBN muss genau {ISBNLength} Zeichen haben (ohne Bindestriche)." )  // ✅ RICHTIG
+            : (!isbn.All( char.IsDigit ))
+            ? DomainValidationResult.Failure( "isbn", "ISBN darf nur Ziffern enthalten." )
+            : DomainValidationResult.Success( "isbn" );
     }
 
-    /// <summary>
-    /// TODO: Implementiere die CheckTitle Validierung.
-    /// </summary>
-    public static DomainValidationResult CheckTitle(string title)
+    public static DomainValidationResult CheckTitle( string title )
     {
-        throw new NotImplementedException("CheckTitle muss noch implementiert werden!");
+        // throw new NotImplementedException( "CheckTitle muss noch implementiert werden!" );
+        return
+            (string.IsNullOrWhiteSpace( title ))
+
+            ? DomainValidationResult.Failure( "title", "Titel darf nicht leer sein." )
+
+            : (title.Length < TitleMinLength)
+
+            ? DomainValidationResult.Failure( "title", $"Title muss mindestens {TitleMinLength} Zeichen haben (ohne Bindestriche)." )
+
+            : DomainValidationResult.Success( "title" );
     }
 
-    /// <summary>
-    /// TODO: Implementiere die CheckAuthorId Validierung.
-    /// </summary>
-    public static DomainValidationResult CheckAuthorId(int authorId)
+    public static DomainValidationResult CheckAuthorId( int authorId )
     {
-        throw new NotImplementedException("CheckAuthorId muss noch implementiert werden!");
+        //throw new NotImplementedException("CheckAuthorId muss noch implementiert werden!");
+        return authorId <= 0
+            ? DomainValidationResult.Failure( "authorId", "AuthorId muss größer als 0 sein." )
+            : DomainValidationResult.Success( "authorId" );
     }
 
-    /// <summary>
-    /// TODO: Implementiere die CheckPublicationYear Validierung.
-    /// </summary>
-    public static DomainValidationResult CheckPublicationYear(int publicationYear)
+    public static DomainValidationResult CheckPublicationYear( int publicationYear )
     {
-        throw new NotImplementedException("CheckPublicationYear muss noch implementiert werden!");
+        // throw new NotImplementedException( "CheckPublicationYear muss noch implementiert werden!" );
+        return publicationYear < MinPublicationYear || publicationYear > DateTime.Now.Year + 1
+            ? DomainValidationResult.Failure( "publicationYear", $"PublicationYear muss zwischen {MinPublicationYear} und {DateTime.Now.Year} liegen." )
+            : DomainValidationResult.Success( "publicationYear" );
+
     }
 
-    /// <summary>
-    /// TODO: Implementiere die CheckAvailableCopies Validierung.
-    /// </summary>
-    public static DomainValidationResult CheckAvailableCopies(int availableCopies)
+    public static DomainValidationResult CheckAvailableCopies( int availableCopies )
     {
-        throw new NotImplementedException("CheckAvailableCopies muss noch implementiert werden!");
+        // throw new NotImplementedException( "CheckAvailableCopies muss noch implementiert werden!" );
+        return availableCopies < MinAvailableCopies
+            ? DomainValidationResult.Failure( "availableCopies", $"AvailableCopies muss mindestens {MinAvailableCopies} sein." )
+            : DomainValidationResult.Success( "availableCopies" );
     }
 
     /// <summary>
     /// TODO: Implementiere ValidateBookInternal.
     /// </summary>
-    public static void ValidateBookInternal(string isbn, string title, int authorId, 
-        int publicationYear, int availableCopies)
+    public static void ValidateBookInternal(
+        string isbn,
+        string title,
+        int authorId,
+        int publicationYear,
+        int availableCopies )
     {
-        throw new NotImplementedException("ValidateBookInternal muss noch implementiert werden!");
+        throw new NotImplementedException( "ValidateBookInternal muss noch implementiert werden!" );
+        return;
     }
 
     /// <summary>
     /// TODO: Implementiere ValidateBookExternal.
     /// </summary>
-    public static async Task ValidateBookExternal(int id, string isbn, 
-        IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
+    public static async Task ValidateBookExternal( int id, string isbn,
+        IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default )
     {
-        throw new NotImplementedException("ValidateBookExternal muss noch implementiert werden!");
+        throw new NotImplementedException( "ValidateBookExternal muss noch implementiert werden!" );
+        return;
+
     }
 }
