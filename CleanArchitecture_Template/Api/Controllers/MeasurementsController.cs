@@ -33,7 +33,7 @@ public class MeasurementsController(IMediator mediator) : ControllerBase
     /// <summary>
     /// Liefert einen Messwert per Id, falls vorhanden.
     /// Sonst 404 Not Found.
-    /// </summary>
+    /// </summary>      
     [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(GetMeasurementDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
