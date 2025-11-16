@@ -1,3 +1,5 @@
+using Domain.Specifications;
+
 namespace Domain.Entities;
 
 /// <summary>
@@ -38,21 +40,27 @@ public class Loan : BaseEntity
     private Loan() { } // Für EF Core
 
     /// <summary>
-    /// TODO: Implementiere die CreateAsync-Methode für Loan.
-    /// 
-    /// Diese Methode soll:
-    /// 1. ArgumentNullException.ThrowIfNull(book) aufrufen
-    /// 2. borrowerName trimmen
-    /// 3. LoanSpecifications.ValidateLoanInternal aufrufen
-    /// 4. Ein neues Loan-Objekt erstellen und zurückgeben
-    /// 5. DueDate soll LoanDate + 14 Tage sein
+    /// Erstellt eine neue Loan-Entität (Factory-Methode).
+    /// Führt Domänenvalidierungen durch und wirft DomainValidationException bei Fehlern.
     /// </summary>
     public static Loan Create(Book book, string borrowerName, DateTime loanDate)
     {
-
-
-
-        throw new NotImplementedException("Loan.CreateAsync muss noch implementiert werden!");
+        ArgumentNullException.ThrowIfNull(book);
+        
+        var trimmedBorrowerName = (borrowerName ?? string.Empty).Trim();
+        
+        // Domänenvalidierungen
+        LoanSpecifications.ValidateLoanInternal(book.Id, trimmedBorrowerName, loanDate);
+        
+        return new Loan
+        {
+            Book = book,
+            BookId = book.Id,
+            BorrowerName = trimmedBorrowerName,
+            LoanDate = loanDate,
+            DueDate = loanDate.AddDays(LoanSpecifications.StandardLoanDurationDays),
+            ReturnDate = null
+        };
     }
 
     /// <summary>

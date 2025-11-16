@@ -60,18 +60,25 @@ public static class LoanSpecifications
     }
 
     /// <summary>
-    /// TODO: Implementiere die ValidateLoanInternal Methode.
-    /// 
-    /// Diese Methode soll:
-    /// 1. Eine Liste von DomainValidationResult erstellen
-    /// 2. CheckBookId, CheckBorrowerName und CheckLoanDate aufrufen
-    /// 3. Über alle Ergebnisse iterieren
-    /// 4. Bei Fehler eine DomainValidationException werfen
+    /// Validiert interne Loan-Eigenschaften (strukturelle Validierung).
+    /// Sammelt alle Validierungsergebnisse und wirft DomainValidationException bei Fehlern.
     /// </summary>
     public static void ValidateLoanInternal( int bookId, string borrowerName, DateTime loanDate )
     {
-        return;
-        throw new NotImplementedException( "ValidateLoanInternal muss noch implementiert werden!" );
+        var validationResults = new List<DomainValidationResult>
+        {
+            CheckBookId(bookId),
+            CheckBorrowerName(borrowerName),
+            CheckLoanDate(loanDate)
+        };
+        
+        foreach (var result in validationResults)
+        {
+            if (!result.IsValid)
+            {
+                throw new DomainValidationException(result.Property, result.ErrorMessage!);
+            }
+        }
     }
 }
 
