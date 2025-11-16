@@ -1,7 +1,9 @@
 using Api.Extensions;
+using Application.Common.Models;
 using Application.Dtos;
 using Application.Features.Books.Commands.CreateBook;
 using Application.Features.Books.Commands.DeleteBook;
+using Application.Features.Books.Commands.UpdateBook;
 using Application.Features.Books.Queries.GetAllBooks;
 using Application.Features.Books.Queries.GetBookById;
 using MediatR;
@@ -56,7 +58,28 @@ public class BooksController( IMediator mediator ) : ControllerBase
     }
 
     /// <summary>
-    /// TODO: Implementiere DELETE /api/books/{id} - Delete
+    /// PUT /api/books/{id} - Update
+    /// </summary>
+    [HttpPut( "{id:int}" )]
+    [ProducesResponseType( typeof( GetBookDto ), StatusCodes.Status200OK )]
+    [ProducesResponseType( StatusCodes.Status400BadRequest )]
+    [ProducesResponseType( StatusCodes.Status404NotFound )]
+    [ProducesResponseType( StatusCodes.Status409Conflict )]
+    public async Task<IActionResult> Update( int id, [FromBody] UpdateBookCommand command, CancellationToken ct )
+    {
+        if (id != command.Id)
+        {
+            Result<GetBookDto> badResult = Result<GetBookDto>.ValidationError(
+                "The route ID does not match the book ID in the request body.");
+            return badResult.ToActionResult(this);
+        }
+        
+        var result = await mediator.Send(command, ct);
+        return result.ToActionResult(this);
+    }
+
+    /// <summary>
+    /// DELETE /api/books/{id} - Delete
     /// </summary>
     [HttpDelete( "{id:int}" )]
     [ProducesResponseType( StatusCodes.Status204NoContent )]
