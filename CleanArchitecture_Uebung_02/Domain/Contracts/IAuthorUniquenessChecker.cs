@@ -13,5 +13,6 @@ public interface IAuthorUniquenessChecker
     /// <param name="ct">Cancellation Token.</param>
     /// <returns>True, wenn das Buch eindeutig ist.</returns>
     Task<bool> IsUniqueAsync(int id, string fullName, CancellationToken ct = default);
+
 }
 

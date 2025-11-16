@@ -16,12 +16,14 @@ public class CreateMeasurementCommandHandler(IUnitOfWork uow, ISensorUniquenessC
     {
         // Sensor anhand Location/Name holen oder anlegen
         var sensor = await uow.Sensors.GetByLocationAndNameAsync(request.Location, request.Name,  cancellationToken);
+
         if (sensor is null)
         {
             //try
             //{
                 //sensor = new Sensor(request.Location, request.Name);
                 sensor = await Sensor.CreateAsync(request.Location, request.Name, uniquenessChecker, cancellationToken);
+
                 await uow.Sensors.AddAsync(sensor, cancellationToken);
                 // Save to get sensor.Id for FK
                 await uow.SaveChangesAsync(cancellationToken);

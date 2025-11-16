@@ -50,7 +50,6 @@ public class Author : BaseEntity
         return new Author { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth };
     }
 
-
     public async Task UpdateAsync(
         string firstName,
         string lastName,
@@ -121,4 +120,3 @@ public class Author : BaseEntity
                   "Ein Author mit der gleichem Namen existiert bereits." );
     }
 }
-

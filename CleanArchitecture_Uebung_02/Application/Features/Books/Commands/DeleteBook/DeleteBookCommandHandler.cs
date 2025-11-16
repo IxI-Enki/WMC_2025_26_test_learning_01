@@ -9,7 +9,7 @@ public sealed class DeleteBookCommandHandler( IUnitOfWork uow ) : IRequestHandle
     public async Task<Result<bool>> Handle( DeleteBookCommand request, CancellationToken cancellationToken )
     {
         // Sensor laden
-        var entity = await uow.Books.GetByIdAsync(request.Id, cancellationToken);
+        var entity = await uow.Books.GetByISBN(request.Id, cancellationToken);
         if(entity is null)
         {
             return Result<bool>.NotFound( $"Book with Id {request.Id} not found." );

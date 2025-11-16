@@ -10,7 +10,7 @@ public class GenericRepository<T>(AppDbContext dbContext) : IGenericRepository<T
     protected AppDbContext DbContext { get; } = dbContext;
     protected DbSet<T> Set { get; } = dbContext.Set<T>();
 
-    public virtual async Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
+    public virtual async Task<T?> GetByISBN(int id, CancellationToken ct = default)
         => await Set.FindAsync([id], ct);
 
     public virtual async Task<IReadOnlyCollection<T>> GetAllAsync(

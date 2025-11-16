@@ -7,7 +7,9 @@ namespace Application.Interfaces.Repositories;
 /// </summary>
 public interface IAuthorRepository : IGenericRepository<Author>
 {
-    Task<IReadOnlyCollection<Author>> GetAuthorsWithBooksAsync(CancellationToken ct = default);
-    Task<Author?> GetByFullName( string fullName, CancellationToken ct );
+    Task<IReadOnlyCollection<Author>> GetAuthorsWithBooksAsync( CancellationToken ct );
+    Task<Author?> GetByFullName( string fullName, CancellationToken ct = default );
+    Task<Author?> GetByIdAsync( int id, CancellationToken ct = default );
+    Task<Author?> GetByISBNAsync( string isbn, CancellationToken ct = default );
 }
 

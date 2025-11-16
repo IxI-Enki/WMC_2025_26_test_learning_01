@@ -13,7 +13,7 @@ public interface IGenericRepository<T> where T : IBaseEntity
         Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         Expression<Func<T, bool>>? filter = null);
 
-    Task<T?> GetByIdAsync(int id, CancellationToken ct = default);
+    Task<T?> GetByISBN(int id, CancellationToken ct = default);
     
     Task AddAsync(T entity, CancellationToken ct = default);
     

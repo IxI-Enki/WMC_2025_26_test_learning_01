@@ -8,7 +8,7 @@
 
 ## 📊 Entitäten-Abhängigkeiten (wie im Template)
 
-```diagram
+```diagram|
 ┌─────────┐
 │ Author  │ ◄─── Keine Abhängigkeiten (standalone) ──► siehe Sensor
 └────┬────┘                                                  ↳ Sensor.Id
