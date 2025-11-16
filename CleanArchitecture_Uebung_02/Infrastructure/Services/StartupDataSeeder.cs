@@ -6,77 +6,111 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
+using System.Globalization;
 
 namespace Infrastructure.Services;
 
 /*
- * WICHTIG: Dieser DataSeeder ist VOLLSTÄNDIG implementiert!
+ * CSV-basierter DataSeeder nach Template-Pattern!
  * 
- * Beim echten Test wird so ein Seeder fertig sein - du musst ihn NICHT implementieren!
- * Er lädt beim Start automatisch Sample-Daten aus JSON.
- * 
- * Verwendung:
  * dotnet ef migrations add InitialMigration --project ./Infrastructure --startup-project ./Api --output-dir ./Persistence/Migrations
  * dotnet ef database update --project ./Infrastructure --startup-project ./Api
  */
 
 /// <summary>
-/// Hosted Service, der beim Start Migrationen ausführt und die DB einmalig mit Sample-Daten befüllt.
+/// Hosted Service, der beim Start Migrationen ausführt und die DB einmalig aus CSV befüllt.
+/// Verwendet das EXAKTE Pattern des CleanArchitecture_Template!
 /// </summary>
 public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServiceProvider serviceProvider) 
     : IHostedService
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private readonly string _jsonPath = options.Value.JsonPath;
+    private readonly string _csvPath = options.Value.CsvPath;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        
-        // Migrationen automatisch anwenden
-        await dbContext.Database.MigrateAsync(cancellationToken);
 
-        // Nur seeden, wenn noch keine Authors existieren (idempotent)
-        if (await dbContext.Authors.AnyAsync(cancellationToken)) 
-            return;
+        if (dbContext.Database.CanConnect())
+        {
+            // Nur seeden, wenn noch keine Authors existieren (idempotent)
+            if (await dbContext.Authors.AnyAsync(cancellationToken)) return;
+            await dbContext.Database.EnsureDeletedAsync(cancellationToken);
+        }
 
-        var seedData = await ReadSeedDataFromJson(cancellationToken);
-        
-        // Authors UND Books hinzufügen (EF Core tracked die Relationships automatisch)
-        dbContext.Authors.AddRange(seedData.Authors);
-        dbContext.Books.AddRange(seedData.Books);
-        
-        // EINE SaveChanges-Operation für beide - EF Core setzt die FKs automatisch!
+        await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+        await dbContext.Database.EnsureCreatedAsync(cancellationToken);
+
+        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+        var allBooks = await ReadBooksFromCsv(uow, cancellationToken);
+        dbContext.Books.AddRange(allBooks);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
-    /// Lädt die Seed-Daten aus JSON (Thread-sicher).
+    /// Lädt die CSV nur einmalig (Thread-sicher) und baut Author- und Book-Objekte.
+    /// Pattern: Authors werden SOFORT gespeichert (um IDs zu bekommen), dann Books erstellt.
     /// </summary>
-    private async Task<SeedData> ReadSeedDataFromJson(CancellationToken cancellationToken)
+    private async Task<IEnumerable<Book>> ReadBooksFromCsv(IUnitOfWork uow, CancellationToken cancellationToken)
     {
         await _lock.WaitAsync(cancellationToken);
+        var authorChecker = new SeedDataUniquenessChecker();
+        var bookChecker = new SeedDataUniquenessChecker();
+        
         try
         {
-            if (!File.Exists(_jsonPath))
+            if (!File.Exists(_csvPath))
             {
-                // Falls keine JSON-Datei vorhanden, Default-Daten verwenden
-                return await CreateDefaultSeedData();
+                throw new Exception($"CSV file {_csvPath} doesn't exist");
             }
 
-            var jsonContent = await File.ReadAllTextAsync(_jsonPath, cancellationToken);
-            var seedData = JsonSerializer.Deserialize<SeedDataDto>(jsonContent, new JsonSerializerOptions
+            var lines = await File.ReadAllLinesAsync(_csvPath, cancellationToken);
+            var authors = new Dictionary<string, Author>(); // Key: "FirstName|LastName"
+            var books = new List<Book>();
+
+            for (int i = 1; i < lines.Length; i++) // i=1: Header überspringen
             {
-                PropertyNameCaseInsensitive = true
-            });
+                var line = lines[i];
+                if (string.IsNullOrWhiteSpace(line)) continue;
 
-            if (seedData == null)
-                return await CreateDefaultSeedData();
+                var parts = line.Split(';');
+                if (parts.Length < 7) continue;
 
-            return await ConvertToEntities(seedData);
+                // Parse CSV: FirstName;LastName;DateOfBirth;ISBN;Title;PublicationYear;AvailableCopies
+                var firstName = parts[0].Trim();
+                var lastName = parts[1].Trim();
+                var dateOfBirthStr = parts[2].Trim();
+                var isbn = parts[3].Trim();
+                var title = parts[4].Trim();
+                var publicationYearStr = parts[5].Trim();
+                var availableCopiesStr = parts[6].Trim();
+
+                if (!DateTime.TryParse(dateOfBirthStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOfBirth))
+                    continue;
+                if (!int.TryParse(publicationYearStr, out var publicationYear))
+                    continue;
+                if (!int.TryParse(availableCopiesStr, out var availableCopies))
+                    continue;
+
+                // Author holen oder erstellen (und SOFORT speichern!)
+                var authorKey = $"{firstName}|{lastName}";
+                if (!authors.TryGetValue(authorKey, out var author))
+                {
+                    author = await Author.CreateAsync(firstName, lastName, dateOfBirth, authorChecker, cancellationToken);
+                    authors[authorKey] = author;
+                    await uow.Authors.AddAsync(author, cancellationToken);
+                    await uow.SaveChangesAsync(cancellationToken); // ✅ SOFORT speichern - Author bekommt ID!
+                }
+
+                // Book mit gespeichertem Author erstellen
+                var book = await Book.CreateAsync(isbn, title, author, publicationYear, availableCopies, bookChecker, cancellationToken);
+                books.Add(book);
+            }
+
+            return books;
         }
         finally
         {
@@ -84,144 +118,19 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
         }
     }
 
-    /// <summary>
-    /// Erstellt Default-Seed-Daten falls keine JSON-Datei vorhanden ist.
-    /// </summary>
-    private static async Task<SeedData> CreateDefaultSeedData()
-    {
-        var uc = new SeedDataUniquenessChecker();
-        
-        var authors = new List<Author>
-        {
-            await Author.CreateAsync("J.K.", "Rowling", new DateTime(1965, 7, 31), uc),
-            await Author.CreateAsync("George R.R.", "Martin", new DateTime(1948, 9, 20), uc),
-            await Author.CreateAsync("J.R.R.", "Tolkien", new DateTime(1892, 1, 3), uc),
-            await Author.CreateAsync("Agatha", "Christie", new DateTime(1890, 9, 15), uc),
-            await Author.CreateAsync("Stephen", "King", new DateTime(1947, 9, 21), uc)
-        };
-
-        // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
-        // (genau wie im CleanArchitecture_Template)
-
-        // Books erstellen (mit Author-Referenzen)
-        // Die Author-IDs werden von EF Core automatisch gesetzt nach SaveChangesAsync
-        var books = new List<Book>();
-        books.Add(await Book.CreateAsync("9780747532699", "Harry Potter and the Philosopher's Stone", authors[0], 1997, 5, uc));
-        books.Add(await Book.CreateAsync("9780439064873", "Harry Potter and the Chamber of Secrets", authors[0], 1998, 3, uc));
-        books.Add(await Book.CreateAsync("9780553103540", "A Game of Thrones", authors[1], 1996, 4, uc));
-        books.Add(await Book.CreateAsync("9780553108033", "A Clash of Kings", authors[1], 1998, 2, uc));
-        books.Add(await Book.CreateAsync("9780395595114", "The Fellowship of the Ring", authors[2], 1954, 6, uc));
-        books.Add(await Book.CreateAsync("9780395082560", "The Two Towers", authors[2], 1954, 4, uc));
-        books.Add(await Book.CreateAsync("9780062073501", "Murder on the Orient Express", authors[3], 1934, 5, uc));
-        books.Add(await Book.CreateAsync("9780062073488", "And Then There Were None", authors[3], 1939, 3, uc));
-        books.Add(await Book.CreateAsync("9780307743657", "The Shining", authors[4], 1977, 4, uc));
-        books.Add(await Book.CreateAsync("9781501142970", "IT", authors[4], 1986, 2, uc));
-        
-        return new SeedData
-        {
-            Authors = authors,
-            Books = books
-        };
-    }
-
-    /// <summary>
-    /// Konvertiert DTOs in Domain Entities.
-    /// </summary>
-    private static async Task<SeedData> ConvertToEntities(SeedDataDto dto)
-    {
-        var uc = new SeedDataUniquenessChecker();
-        
-        var authorTasks = dto.Authors.Select(a => 
-            Author.CreateAsync(a.FirstName, a.LastName, a.DateOfBirth, uc)
-        );
-        
-        var authors = (await Task.WhenAll(authorTasks)).ToList();
-
-        // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
-        // (genau wie im CleanArchitecture_Template)
-
-        // Books erstellen (mit Author-Referenzen aus JSON)
-        var books = new List<Book>();
-        foreach (var bookDto in dto.Books)
-        {
-            // Finde den entsprechenden Author (über Index, da IDs noch nicht gesetzt sind)
-            if (bookDto.AuthorId > 0 && bookDto.AuthorId <= authors.Count)
-            {
-                var author = authors[bookDto.AuthorId - 1]; // AuthorId in JSON ist 1-basiert
-                var book = await Book.CreateAsync(
-                    bookDto.ISBN,
-                    bookDto.Title,
-                    author,
-                    bookDto.PublicationYear,
-                    bookDto.AvailableCopies,
-                    uc
-                );
-                books.Add(book);
-            }
-        }
-
-        return new SeedData
-        {
-            Authors = authors,
-            Books = books
-        };
-    }
-
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
 
 /// <summary>
 /// NoOp Uniqueness Checker für Seed-Daten.
-/// Bypasses Uniqueness-Validierung da beim Seeding die DB noch leer ist.
-/// Verwendet explizite Interface-Implementierung, da beide Interfaces die gleiche Methodensignatur haben.
+/// Bypasses Uniqueness-Validierung da beim Seeding die DB noch leer/kontrolliert ist.
+/// Verwendet explizite Interface-Implementierung.
 /// </summary>
 internal class SeedDataUniquenessChecker : IAuthorUniquenessChecker, IBookUniquenessChecker
 {
-    // Explizite Interface-Implementierung für IAuthorUniquenessChecker
     Task<bool> IAuthorUniquenessChecker.IsUniqueAsync(int id, string fullName, CancellationToken ct)
-    {
-        // Für Seed-Daten immer true zurückgeben (keine DB-Validierung)
-        return Task.FromResult(true);
-    }
+        => Task.FromResult(true);
 
-    // Explizite Interface-Implementierung für IBookUniquenessChecker
     Task<bool> IBookUniquenessChecker.IsUniqueAsync(int id, string isbn, CancellationToken ct)
-    {
-        // Für Seed-Daten immer true zurückgeben (keine DB-Validierung)
-        return Task.FromResult(true);
-    }
-}
-
-/// <summary>
-/// Interne Struktur für Seed-Daten.
-/// </summary>
-internal class SeedData
-{
-    public List<Author> Authors { get; set; } = new();
-    public List<Book> Books { get; set; } = new();
-}
-
-/// <summary>
-/// DTOs für JSON-Deserialisierung.
-/// </summary>
-internal class SeedDataDto
-{
-    public List<AuthorDto> Authors { get; set; } = new();
-    public List<BookDto> Books { get; set; } = new();
-}
-
-internal class AuthorDto
-{
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public DateTime DateOfBirth { get; set; }
-}
-
-internal class BookDto
-{
-    public string ISBN { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public int AuthorId { get; set; }
-    public int PublicationYear { get; set; }
-    public int AvailableCopies { get; set; }
+        => Task.FromResult(true);
 }

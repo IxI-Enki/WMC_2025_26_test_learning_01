@@ -6,8 +6,8 @@ namespace Infrastructure.Services;
 public sealed class StartupDataSeederOptions
 {
     /// <summary>
-    /// Pfad zur JSON-Datei mit Seed-Daten.
+    /// Pfad zur CSV-Datei mit Seed-Daten.
     /// </summary>
-    public string JsonPath { get; set; } = string.Empty;
+    public string CsvPath { get; set; } = string.Empty;
 }
 

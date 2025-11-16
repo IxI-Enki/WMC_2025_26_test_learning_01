@@ -17,11 +17,9 @@ namespace Api
             var connectionString = builder.Configuration.GetConnectionString("Default") 
                 ?? throw new ArgumentException("Connection string 'Default' not found");
 
-            // DataSeeder Options konfigurieren
-            builder.Services.Configure<StartupDataSeederOptions>(options =>
-            {
-                options.JsonPath = Path.Combine(AppContext.BaseDirectory, "library-seed-data.json");
-            });
+            // DataSeeder Options aus appsettings.json konfigurieren
+            builder.Services.Configure<StartupDataSeederOptions>(
+                builder.Configuration.GetSection("StartupDataSeeder"));
 
             // Conditional Registration: Skip Infrastructure in API-Tests
             if (!skipInfrastructure)

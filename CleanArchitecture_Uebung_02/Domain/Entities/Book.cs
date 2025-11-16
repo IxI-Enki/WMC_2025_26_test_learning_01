@@ -71,7 +71,7 @@ public class Book : BaseEntity
             ISBN = trimmedIsbn,
             Title = trimmedTitle,
             Author = author,
-            AuthorId = author.Id,
+            // AuthorId wird von EF Core automatisch gesetzt durch die Author Navigation Property
             PublicationYear = publicationYear,
             AvailableCopies = availableCopies
         };

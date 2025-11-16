@@ -1,0 +1,12 @@
+FirstName;LastName;DateOfBirth;ISBN;Title;PublicationYear;AvailableCopies
+J.K.;Rowling;1965-07-31;9780747532699;Harry Potter and the Philosopher's Stone;1997;5
+J.K.;Rowling;1965-07-31;9780439064873;Harry Potter and the Chamber of Secrets;1998;3
+George R.R.;Martin;1948-09-20;9780553103540;A Game of Thrones;1996;4
+George R.R.;Martin;1948-09-20;9780553108033;A Clash of Kings;1998;2
+J.R.R.;Tolkien;1892-01-03;9780395595114;The Fellowship of the Ring;1954;6
+J.R.R.;Tolkien;1892-01-03;9780395082560;The Two Towers;1954;4
+Agatha;Christie;1890-09-15;9780062073501;Murder on the Orient Express;1934;5
+Agatha;Christie;1890-09-15;9780062073488;And Then There Were None;1939;3
+Stephen;King;1947-09-21;9780307743657;The Shining;1977;4
+Stephen;King;1947-09-21;9781501142970;IT;1986;2
+
