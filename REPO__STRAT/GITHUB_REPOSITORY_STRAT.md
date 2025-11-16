@@ -21,7 +21,7 @@
                   ┌────────────────────────────────────┼──────────────────────────────┐
                   │                                    │                              │
    ╔══════════════▼═══════════════╗   ╔════════════════▼═════════════════╗   ╔════════▼════════╗
-   ║         main / master        ║   ║           ai-workspace           ║   ║       dev       ║
+   ║         master        ║   ║           ai-workspace           ║   ║       dev       ║
    ║         (Production)         ║   ║            (AI Agent)            ║   ║  (Development)  ║
    ╚══════════════╤═══════════════╝   ╚════════════════╤═════════════════╝   ╚════════╤════════╝
                   │                                    │                              │
@@ -46,7 +46,7 @@
 
 ## Branch-Details
 
-### **1. `main` (oder `master`) - Production Branch**
+### **1. `master` - Production Branch**
 
 ```ascii
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -321,7 +321,7 @@
 │     ├─ create-exercise.ps1              # Übung generieren       │
 │     ├─ validate-solution.ps1            # Lösung validieren      │
 │     ├─ generate-hints.ps1               # Hilfen generieren      │
-│     └─ prepare-main-branch.ps1          # Main vorbereiten       │
+│     └─ prepare-master-branch.ps1          # Master vorbereiten       │
 │                                                                  │
 │  # REPOSITORY_STRATEGY.md               - Diese Datei!           │
 │  # BRANCH_MANAGEMENT.md                 - Branch-Verwaltung      │
@@ -365,7 +365,7 @@
          ▼
     [4] Übung vorbereiten
          │
-         ├─▶ main (prepared exercise)
+         ├─▶ master (prepared exercise)
          │    ├─▶ NotImplementedExceptions hinzufügen
          │    ├─▶ README erstellen
          │    └─▶ Tests vorbereiten
@@ -377,7 +377,7 @@
 │                BRANCH PROTECTION RULES                 │
 ├────────────────────────────────────────────────────────┤
 │                                                        │
-│   main:                                                │
+│   master:                                                │
 │     ├─ Require pull request reviews                    │
 │     ├─ Require status checks (Build + Tests)           │
 │     ├─ No direct pushes                                │
@@ -470,14 +470,14 @@ git add -A
 git commit -m "docs: Create progressive hint system for all exercises"
 
 # 5 MAIN BRANCH VORBEREITEN
-git checkout main
+git checkout master
 # ... NotImplementedException hinzufügen
 # ... README für Studenten anpassen
 git add -A
 git commit -m "feat: Prepare exercises for students (Level 1 & 2)"
 
 # 6 REMOTE PUSHEN
-git push origin main
+git push origin master
 git push origin dev
 git push origin solution/uebung-02
 git push origin ai-workspace
@@ -486,7 +486,7 @@ git push origin support/hints
 
 ---
 
-### Repository Root Structure (main branch)
+### Repository Root Structure (master branch)
 
 ```ascii
 wmc-clean-arch/
@@ -533,7 +533,7 @@ wmc-clean-arch/
 
 ---
 
-### Quality Checklist für main Branch
+### Quality Checklist für master Branch
 
 ```ascii
 ┌────────────────────────────────────────────────────────────┐
@@ -560,7 +560,7 @@ wmc-clean-arch/
 
 1. - **DEV Branch erstellen** - EXAKT von aktuellem Stand
 2. - **Solution Branch** - Übung 02 komplettieren
-3. !! **Main vorbereiten** - NotImplementedException hinzufügen
+3. !! **Master vorbereiten** - NotImplementedException hinzufügen
 4. !! **Hints erstellen** - Progressive Hilfe-System
 5. !! **AI Workspace** - Templates und Prompts
 6. !! **Tests erweitern** - Integration Tests

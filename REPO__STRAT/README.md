@@ -25,7 +25,7 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 
 **Inhalt:**
 - 🌳 **Branch-Strategie** mit vollständiger Visualisierung
-- 📁 **Repository-Struktur** für main, dev, solution/*, support/hints, ai-workspace
+- 📁 **Repository-Struktur** für master, dev, solution/*, support/hints, ai-workspace
 - 🎓 **Exercise Levels** (1: Guided → 4: Exam)
 - 🚀 **Setup-Commands** für initiale Branch-Erstellung
 - ✅ **Quality Checklists** für jeden Branch
@@ -177,7 +177,7 @@ git push -u origin solution/uebung-02
 ### 3. **MAIN BRANCH VORBEREITEN** (Level 2)
 
 ```powershell
-git checkout main
+git checkout master
 
 # Übung 02 von solution übernehmen:
 git checkout solution/uebung-02 -- CleanArchitecture_Uebung_02/
@@ -194,7 +194,7 @@ git checkout solution/uebung-02 -- CleanArchitecture_Uebung_02/
 
 git add -A
 git commit -m "feat: Prepare Uebung 02 for students (Level 2)"
-git push origin main
+git push origin master
 ```
 
 ### 4. **AI-WORKSPACE BRANCH** (für dich)
@@ -280,7 +280,7 @@ public override async Task<Book?> GetByIdAsync(int id, CancellationToken ct = de
 
 | Branch | Zweck | Status | Für wen? |
 |--------|-------|--------|----------|
-| **main** | Student Entry Point | ⚠️ TODO | Studenten |
+| **master** | Student Entry Point | ⚠️ TODO | Studenten |
 | **dev** | Development | ✅ Bereit | Du |
 | **solution/uebung-01** | Vollständige Lösung 01 | ⚠️ TODO | Dozent/Student |
 | **solution/uebung-02** | Vollständige Lösung 02 | ✅ Bereit | Dozent/Student |
@@ -297,7 +297,7 @@ public override async Task<Book?> GetByIdAsync(int id, CancellationToken ct = de
 - [ ] `ai-workspace` Branch (orphan) mit Referenzen
 - [ ] `support/hints` Branch (orphan) mit Hilfe-System
 
-### Phase 2: main Branch vorbereiten
+### Phase 2: master Branch vorbereiten
 - [ ] Übung 01: Level 1 Style (Guided Implementation)
 - [ ] Übung 02: Level 2 Style (Structural Guidance)
 - [ ] Übung 03: Konzipieren (Level 3?)
@@ -382,4 +382,3 @@ Bei Fragen zur Strategie:
 **Nächster Schritt:** Dev Branch erstellen und weiterarbeiten!  
 **Version:** 1.0  
 **Erstellt:** 2025-11-16
-

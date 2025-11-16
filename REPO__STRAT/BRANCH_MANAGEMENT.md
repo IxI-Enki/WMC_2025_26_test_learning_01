@@ -1,24 +1,35 @@
-# 🔀 Branch Management Guide
+#  Branch Management Guide
 
-## 📋 Schnellreferenz
+##  Schnellreferenz
 
 ```ascii
 ┌────────────────────────────────────────────────────────────────┐
-│                    BRANCH QUICK REFERENCE                      │
+│                     BRANCH QUICK REFERENCE                     │
 ├────────────────────────────────────────────────────────────────┤
-│  Branch              │ Zweck            │ Schutz │ Push       │
-├─────────────────────┼──────────────────┼────────┼─────────────┤
-│  main                │ Student Entry    │ 🔒 Ja  │ PR only    │
-│  dev                 │ Development      │ 🔓 Nein│ Direct OK  │
-│  solution/uebung-XX  │ Full Solutions   │ 🔐 Ja  │ PR review  │
-│  support/hints       │ Help System      │ 🔐 Ja  │ PR review  │
-│  ai-workspace        │ AI References    │ 🔓 Nein│ Direct OK  │
-└─────────────────────┴──────────────────┴────────┴─────────────┘
+│  Branch               │ Zweck            │ Schutz │ Push       │
+├───────────────────────┼──────────────────┼────────┼────────────┤
+│  master                │ Student Entry    │  Ja   │ PR only    │
+│  dev                 │ Development      │  Nein │ Direct OK  │
+│  solution/uebung-XX  │ Full Solutions   │  Ja   │ PR review  │
+│  support/hints       │ Help System      │  Ja   │ PR review  │
+│  ai-workspace        │ AI References    │  Nein │ Direct OK  │
+└──────────────────────┴──────────────────┴────────┴────────────┘
 ```
+
+<!--
+    
+
+              
+
+               
+               
+              
+     
+-->
 
 ---
 
-## 🚀 Initiales Setup (Erste Ausführung)
+## Initiales Setup (Erste Ausführung)
 
 ### Schritt 1: Dev Branch von aktuellem Stand erstellen
 
@@ -32,8 +43,8 @@ git commit -m "chore: Prepare for branch restructure - current working state"
 git checkout -b dev
 git push -u origin dev
 
-# Zurück zu main für weitere Vorbereitung
-git checkout main
+# Zurück zu master für weitere Vorbereitung
+git checkout master
 ```
 
 ### Schritt 2: Solution Branch für Übung 02 erstellen
@@ -103,7 +114,7 @@ git push -u origin support/hints
 ### Schritt 5: Main Branch für Studenten vorbereiten
 
 ```powershell
-git checkout main
+git checkout master
 
 # Übung 01: NotImplementedException hinzufügen
 # Übung 02: Mehr Code entfernen, struktureller machen
@@ -113,12 +124,12 @@ git checkout main
 
 git add -A
 git commit -m "feat: Prepare exercises for students with guided implementations"
-git push origin main
+git push origin master
 ```
 
 ---
 
-## 📝 Standard-Workflows
+## Standard-Workflows
 
 ### Workflow 1: Neue Übung entwickeln
 
@@ -142,9 +153,9 @@ git push origin main
     │
     └─▶ git commit -m "solution: Complete Device Management implementation"
 
-[Branch: main - Übung vorbereiten]
+[Branch: master - Übung vorbereiten]
     │
-    ├─▶ git checkout main
+    ├─▶ git checkout master
     ├─▶ Von solution/uebung-03 Struktur übernehmen
     ├─▶ NotImplementedException hinzufügen
     ├─▶ Student-README erstellen
@@ -178,7 +189,7 @@ git checkout solution/uebung-01
 git merge dev --strategy-option theirs  # Nur wenn sinnvoll
 # Oder manuell anpassen
 
-git checkout main
+git checkout master
 # Student-Version entsprechend anpassen
 ```
 
@@ -195,14 +206,14 @@ git add -A
 git commit -m "fix: Correct BookRepository eager loading"
 git push origin solution/uebung-02
 
-# Auch main prüfen ob Fix nötig
-git checkout main
+# Auch master prüfen ob Fix nötig
+git checkout master
 # Eventuell NotImplementedException-Bereich betroffen?
 ```
 
 ---
 
-## 🔍 Branch-Status überprüfen
+## Branch-Status überprüfen
 
 ```powershell
 # Alle Branches anzeigen
@@ -215,32 +226,32 @@ git log --oneline --graph --all --decorate -20
 git status
 
 # Commits zwischen Branches vergleichen
-git log main..dev --oneline
-git log solution/uebung-02..main --oneline
+git log master..dev --oneline
+git log solution/uebung-02..master --oneline
 
 # Dateien zwischen Branches vergleichen
-git diff main:CleanArchitecture_Uebung_02/Domain/Entities/Book.cs solution/uebung-02:CleanArchitecture_Uebung_02/Domain/Entities/Book.cs
+git diff master:CleanArchitecture_Uebung_02/Domain/Entities/Book.cs solution/uebung-02:CleanArchitecture_Uebung_02/Domain/Entities/Book.cs
 ```
 
 ---
 
-## 🛡️ Branch Protection Rules (GitHub)
+## Branch Protection Rules (GitHub)
 
-### main Branch
+### master Branch
 
 ```yaml
 Protection Rules:
-  - Require pull request reviews: ✅
+  - Require pull request reviews: 
     - Required approvals: 1
-    - Dismiss stale reviews: ✅
+    - Dismiss stale reviews: 
   
-  - Require status checks: ✅
+  - Require status checks: 
     - dotnet build
     - dotnet test (kann fehlschlagen bei NotImplementedException)
   
-  - Require branches to be up to date: ✅
+  - Require branches to be up to date: 
   
-  - Restrict who can push: ✅
+  - Restrict who can push: 
     - Only: Repository Admin
   
   - Allow force pushes: ❌
@@ -251,12 +262,12 @@ Protection Rules:
 
 ```yaml
 Protection Rules:
-  - Require pull request reviews: ✅
+  - Require pull request reviews: 
     - Required approvals: 1
   
-  - Require status checks: ✅
-    - dotnet build: MUST PASS ✅
-    - dotnet test: MUST PASS ✅
+  - Require status checks: 
+    - dotnet build: MUST PASS 
+    - dotnet test: MUST PASS 
   
   - Allow force pushes: ❌
   - Allow deletions: ❌
@@ -274,15 +285,15 @@ Protection Rules:
 
 ---
 
-## 📊 Branch-Synchronisation
+##  Branch-Synchronisation
 
-### Main ← Solution (Übung vorbereiten)
+###  Main ← Solution (Übung vorbereiten)
 
 ```powershell
 # Solution hat fertige Implementierung
 # Main braucht Student-Version
 
-git checkout main
+git checkout master
 git checkout solution/uebung-02 -- CleanArchitecture_Uebung_02/
 
 # JETZT: NotImplementedException hinzufügen
@@ -292,7 +303,7 @@ git add -A
 git commit -m "feat: Prepare Uebung 02 from solution (Level 2 difficulty)"
 ```
 
-### Dev ← Solution (Features zurückführen)
+###  Dev ← Solution (Features zurückführen)
 
 ```powershell
 # Gute Features aus Solution zurück zu dev
@@ -304,7 +315,7 @@ git cherry-pick <commit-hash-from-solution>
 git checkout solution/uebung-03 -- path/to/useful/file.cs
 ```
 
-### Hints ← Solution (Hilfen extrahieren)
+###  Hints ← Solution (Hilfen extrahieren)
 
 ```powershell
 # Aus Solution Hints generieren
@@ -321,25 +332,25 @@ git show solution/uebung-02:CleanArchitecture_Uebung_02/Domain/Entities/Book.cs 
 
 ---
 
-## 🔄 Regelmäßige Wartung
+## Regelmäßige Wartung
 
 ### Wöchentlich
 
 ```powershell
-# 1. Dev Branch Status
+# 1.  Dev Branch Status
 git checkout dev
 git log --since="1 week ago" --oneline
 git status
 
-# 2. Solution Branches prüfen
+# 2.  Solution Branches prüfen
 for branch in solution/uebung-01 solution/uebung-02; do
     git checkout $branch
     dotnet build
     dotnet test
 done
 
-# 3. Main Branch testen
-git checkout main
+# 3.  Main Branch testen
+git checkout master
 cd CleanArchitecture_Uebung_01 && dotnet build
 cd ../CleanArchitecture_Uebung_02 && dotnet build
 ```
@@ -364,21 +375,21 @@ git push origin v2025-ws
 
 ---
 
-## 🚨 Notfall-Szenarien
+## Notfall-Szenarien
 
-### Versehentlich auf main gepusht
+### Versehentlich auf master gepusht
 
 ```powershell
 # SOFORT:
-git checkout main
-git reset --hard origin/main
+git checkout master
+git reset --hard origin/master
 
 # Fix auf dev machen
 git checkout dev
 # ... Änderungen
 git commit -m "fix: ..."
 
-# Dann sauber via PR zu main
+# Dann sauber via PR zu master
 ```
 
 ### Dev Branch kaputt
@@ -399,26 +410,26 @@ git branch -D dev
 git branch -m dev-new dev
 ```
 
-### Solution und main out of sync
+### Solution und master out of sync
 
 ```powershell
 # 1. Welche Version ist richtig?
-git diff solution/uebung-02 main -- CleanArchitecture_Uebung_02/
+git diff solution/uebung-02 master -- CleanArchitecture_Uebung_02/
 
-# 2. Solution ist führend → main aktualisieren
-git checkout main
+# 2. Solution ist führend → master aktualisieren
+git checkout master
 git checkout solution/uebung-02 -- CleanArchitecture_Uebung_02/
 # NotImplementedException hinzufügen
-git commit -m "sync: Update main from solution/uebung-02"
+git commit -m "sync: Update master from solution/uebung-02"
 ```
 
 ---
 
-## ✅ Pre-Push Checklist
+##  Pre-Push Checklist
 
-### Vor Push zu `main`
+### Vor Push zu `master`
 
-```
+```checklist
 □ dotnet build erfolgreich in ALLEN Übungen
 □ Tests kompilieren (dürfen fehlschlagen bei NotImpl)
 □ README aktualisiert und vollständig
@@ -430,9 +441,9 @@ git commit -m "sync: Update main from solution/uebung-02"
 
 ### Vor Push zu `solution/*`
 
-```
+```checklist
 □ dotnet build erfolgreich
-□ ALLE Tests grün ✅
+□ ALLE Tests grün 
 □ Kein NotImplementedException
 □ README mit Lösungshinweisen
 □ Code gut dokumentiert
@@ -442,7 +453,7 @@ git commit -m "sync: Update main from solution/uebung-02"
 
 ### Vor Push zu `dev`
 
-```
+```checklist
 □ Build erfolgreich (reicht)
 □ Keine Breaking Changes ohne Grund
 □ Commit Messages aussagekräftig
@@ -450,7 +461,7 @@ git commit -m "sync: Update main from solution/uebung-02"
 
 ---
 
-## 📚 Weitere Ressourcen
+##  Weitere Ressourcen
 
 - [GITHUB_REPOSITORY_STRAT.md](./GITHUB_REPOSITORY_STRAT.md) - Vollständige Strategie
 - [EXERCISE_PROGRESSION.md](./EXERCISE_PROGRESSION.md) - Schwierigkeitsgrade
@@ -460,4 +471,3 @@ git commit -m "sync: Update main from solution/uebung-02"
 
 **Version:** 1.0  
 **Letzte Aktualisierung:** 2025-11-16
-
