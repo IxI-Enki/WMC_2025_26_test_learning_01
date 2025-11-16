@@ -8,7 +8,7 @@
 ├────────────────────────────────────────────────────────────────┤
 │  Branch               │ Zweck            │ Schutz │ Push       │
 ├───────────────────────┼──────────────────┼────────┼────────────┤
-│  master                │ Student Entry    │  Ja   │ PR only    │
+│  master              │ Student Entry    │  Ja   │ PR only    │
 │  dev                 │ Development      │  Nein │ Direct OK  │
 │  solution/uebung-XX  │ Full Solutions   │  Ja   │ PR review  │
 │  support/hints       │ Help System      │  Ja   │ PR review  │

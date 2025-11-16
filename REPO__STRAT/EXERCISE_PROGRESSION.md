@@ -9,43 +9,43 @@ Dieses Dokument definiert die präzise Progression von einfachen zu komplexen Ü
 ## 🏗️ Aufbau-Prinzipien
 
 ```ascii
-┌──────────────────────────────────────────────────────────────┐
-│              SCAFFOLDING PRINCIPLE                           │
-│         (Gerüst-Prinzip für Lern-Progression)               │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  LEVEL 1: Maximum Guidance (Guided Implementation)          │
-│  ┌────────────────────────────────────────┐                │
-│  │ ✅ Vollständige Struktur               │                │
-│  │ ✅ 1-2 komplette Beispiele             │                │
-│  │ ⚠️  TODO: Methoden-Implementierungen   │                │
-│  └────────────────────────────────────────┘                │
-│            ↓ Gerüst wird reduziert                          │
-│                                                              │
-│  LEVEL 2: Structural Guidance                               │
-│  ┌────────────────────────────────────────┐                │
-│  │ ✅ Ordnerstruktur komplett             │                │
-│  │ ⚠️  Klassen: Nur Gerüste               │                │
-│  │ ⚠️  TODO: Komplette Implementierungen  │                │
-│  └────────────────────────────────────────┘                │
-│            ↓ Nur noch Konzept vorgegeben                    │
-│                                                              │
-│  LEVEL 3: Conceptual Guidance                               │
-│  ┌────────────────────────────────────────┐                │
-│  │ ✅ README mit Anforderungen            │                │
-│  │ ✅ Tests als Spezifikation             │                │
-│  │ ⚠️  TODO: Alles andere                 │                │
-│  └────────────────────────────────────────┘                │
-│            ↓ Prüfungssituation                              │
-│                                                              │
-│  LEVEL 4: Real-World Scenario (Exam)                        │
-│  ┌────────────────────────────────────────┐                │
-│  │ ✅ Nur Anforderungsdokument            │                │
-│  │ ⚠️  TODO: Komplette Implementierung    │                │
-│  │ ⏱️  Zeitlimit: 3-4 Stunden             │                │
-│  └────────────────────────────────────────┘                │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│              SCAFFOLDING PRINCIPLE                     │
+│         (Gerüst-Prinzip für Lern-Progression)          │
+├────────────────────────────────────────────────────────┤
+│                                                        │
+│  LEVEL 1: Maximum Guidance (Guided Implementation)     │
+│  ┌────────────────────────────────────────┐            │
+│  │  Vollständige Struktur               │            │
+│  │ ✅ 1-2 komplette Beispiele             │            │
+│  │ ⚠️  TODO: Methoden-Implementierungen   │            │
+│  └────────────────────────────────────────┘            │
+│            ↓ Gerüst wird reduziert                     │
+│                                                        │
+│  LEVEL 2: Structural Guidance                          │
+│  ┌────────────────────────────────────────┐            │
+│  │ ✅ Ordnerstruktur komplett             │            │
+│  │ ⚠️  Klassen: Nur Gerüste               │            │
+│  │ ⚠️  TODO: Komplette Implementierungen  │            │
+│  └────────────────────────────────────────┘            │
+│            ↓ Nur noch Konzept vorgegeben               │
+│                                                        │
+│  LEVEL 3: Conceptual Guidance                          │
+│  ┌────────────────────────────────────────┐            │
+│  │ ✅ README mit Anforderungen            │            │
+│  │ ✅ Tests als Spezifikation             │            │
+│  │ ⚠️  TODO: Alles andere                 │            │
+│  └────────────────────────────────────────┘            │
+│            ↓ Prüfungssituation                         │
+│                                                        │
+│  LEVEL 4: Real-World Scenario (Exam)                   │
+│  ┌────────────────────────────────────────┐            │
+│  │ ✅ Nur Anforderungsdokument            │            │
+│  │ ⚠️  TODO: Komplette Implementierung    │            │
+│  │ ⏱️  Zeitlimit: 3-4 Stunden             │            │
+│  └────────────────────────────────────────┘            │
+│                                                        │
+└────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -145,15 +145,15 @@ CleanArchitecture_Uebung_01/
 
 ### ⚙️ Was Student implementiert
 
-| Bereich | Was TODO | Beispiel vorhanden | Tests vorhanden |
-|---------|----------|-------------------|-----------------|
-| Domain Validations | ✅ 3 EventSpecifications-Methoden | ✅ VenueSpecifications | ✅ Domain.Tests |
-| Entity Factory | ✅ Event.CreateAsync() | ✅ Venue.CreateAsync() | ✅ Domain.Tests |
-| Commands | ✅ CreateEvent, DeleteEvent | ✅ Venue-Commands | ⚠️  Zu erstellen |
-| Queries | ✅ GetAllEvents, GetEventById | ✅ Venue-Queries | ⚠️  Zu erstellen |
-| Controller | ✅ 5 Actions in EventsController | ✅ VenuesController | ✅ Api.Tests |
-| UniquenessChecker | ✅ EventUniquenessChecker | ✅ VenueUniquenessChecker | - |
-| DI Registration | ✅ In DependencyInjection.cs | ✅ Beispiel vorhanden | - |
+| Bereich            | Was TODO                         | Beispiel vorhanden       | Tests vorhanden |
+| ------------------ | -------------------------------- | ------------------------ | --------------- |
+| Domain Validations | ✅ 3 EventSpecifications-Methoden | ✅ VenueSpecifications    | ✅ Domain.Tests  |
+| Entity Factory     | ✅ Event.CreateAsync()            | ✅ Venue.CreateAsync()    | ✅ Domain.Tests  |
+| Commands           | ✅ CreateEvent, DeleteEvent       | ✅ Venue-Commands         | ⚠️  Zu erstellen |
+| Queries            | ✅ GetAllEvents, GetEventById     | ✅ Venue-Queries          | ⚠️  Zu erstellen |
+| Controller         | ✅ 5 Actions in EventsController  | ✅ VenuesController       | ✅ Api.Tests     |
+| UniquenessChecker  | ✅ EventUniquenessChecker         | ✅ VenueUniquenessChecker | -               |
+| DI Registration    | ✅ In DependencyInjection.cs      | ✅ Beispiel vorhanden     | -               |
 
 ### 📝 README-Struktur für Level 1
 
@@ -330,19 +330,19 @@ CleanArchitecture_Uebung_02/
 
 ### ⚙️ Was Student implementiert
 
-| Bereich | Was TODO | Hinweis | Schwierigkeit |
-|---------|----------|---------|---------------|
-| Entities | ✅ Properties + Factory-Methoden | Nur Gerüst vorhanden | ⭐⭐ |
-| Validations | ✅ Alle Specifications | Komplett leer | ⭐⭐ |
-| DTOs | ✅ GetAuthorDto, GetBookDto, GetLoanDto | Müssen erstellt werden | ⭐ |
-| Commands | ✅ Create, Update, Delete für alle 3 | Ordner-Struktur vorgegeben | ⭐⭐⭐ |
-| Queries | ✅ GetAll, GetById für alle 3 | Ordner-Struktur vorgegeben | ⭐⭐ |
-| Handlers | ✅ Alle Command/Query Handler | Müssen erstellt werden | ⭐⭐⭐ |
-| Validators | ✅ Alle FluentValidation Validators | Müssen erstellt werden | ⭐⭐ |
-| Repository | ✅ BookRepository.GetByIdAsync mit .Include() | Navigation Property laden | ⭐⭐⭐ |
-| UniquenessChecker | ✅ Alle 3 Checker | Interface vorgegeben | ⭐⭐ |
-| Controller | ✅ Alle CRUD-Actions | Nur Gerüst vorhanden | ⭐⭐ |
-| DI Registration | ✅ Alle Services registrieren | - | ⭐ |
+| Bereich           | Was TODO                                     | Hinweis                    | Schwierigkeit |
+| ----------------- | -------------------------------------------- | -------------------------- | ------------- |
+| Entities          | ✅ Properties + Factory-Methoden              | Nur Gerüst vorhanden       | ⭐⭐            |
+| Validations       | ✅ Alle Specifications                        | Komplett leer              | ⭐⭐            |
+| DTOs              | ✅ GetAuthorDto, GetBookDto, GetLoanDto       | Müssen erstellt werden     | ⭐             |
+| Commands          | ✅ Create, Update, Delete für alle 3          | Ordner-Struktur vorgegeben | ⭐⭐⭐           |
+| Queries           | ✅ GetAll, GetById für alle 3                 | Ordner-Struktur vorgegeben | ⭐⭐            |
+| Handlers          | ✅ Alle Command/Query Handler                 | Müssen erstellt werden     | ⭐⭐⭐           |
+| Validators        | ✅ Alle FluentValidation Validators           | Müssen erstellt werden     | ⭐⭐            |
+| Repository        | ✅ BookRepository.GetByIdAsync mit .Include() | Navigation Property laden  | ⭐⭐⭐           |
+| UniquenessChecker | ✅ Alle 3 Checker                             | Interface vorgegeben       | ⭐⭐            |
+| Controller        | ✅ Alle CRUD-Actions                          | Nur Gerüst vorhanden       | ⭐⭐            |
+| DI Registration   | ✅ Alle Services registrieren                 | -                          | ⭐             |
 
 ### 📝 README-Struktur für Level 2
 
@@ -594,23 +594,24 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 
 ## 📊 Progression-Matrix
 
-| Aspect | Level 1 | Level 2 | Level 3 | Level 4 |
-|--------|---------|---------|---------|---------|
-| **Entities** | ✅ Beispiel | ⚠️ Gerüst | ⚠️ Selbst | ⚠️ Selbst |
-| **Validations** | ⚠️ Teilweise | ⚠️ Leer | ⚠️ Selbst | ⚠️ Selbst |
-| **Commands** | ⚠️ TODO | ⚠️ Struktur | ⚠️ Selbst | ⚠️ Selbst |
-| **Handlers** | ⚠️ TODO | ⚠️ Selbst | ⚠️ Selbst | ⚠️ Selbst |
-| **Repositories** | ✅ Fertig | ⚠️ Custom | ⚠️ Komplett | ⚠️ Komplett |
-| **Controller** | ⚠️ TODO | ⚠️ Gerüst | ⚠️ Selbst | ⚠️ Selbst |
-| **Tests** | ✅ Vorhanden | ✅ Vorhanden | ✅ Spezifikation | ✅ Bewertung |
-| **README** | ✅ Sehr detailliert | ✅ Mittel | ✅ Minimal | ✅ Nur Anforderungen |
-| **Zeitaufwand** | ~4-6h | ~6-8h | ~10-12h | ~3-4h (Prüfung) |
+| Aspect           | Level 1            | Level 2     | Level 3         | Level 4             |
+| ---------------- | ------------------ | ----------- | --------------- | ------------------- |
+| **Entities**     | ✅ Beispiel         | ⚠️ Gerüst    | ⚠️ Selbst        | ⚠️ Selbst            |
+| **Validations**  | ⚠️ Teilweise        | ⚠️ Leer      | ⚠️ Selbst        | ⚠️ Selbst            |
+| **Commands**     | ⚠️ TODO             | ⚠️ Struktur  | ⚠️ Selbst        | ⚠️ Selbst            |
+| **Handlers**     | ⚠️ TODO             | ⚠️ Selbst    | ⚠️ Selbst        | ⚠️ Selbst            |
+| **Repositories** | ✅ Fertig           | ⚠️ Custom    | ⚠️ Komplett      | ⚠️ Komplett          |
+| **Controller**   | ⚠️ TODO             | ⚠️ Gerüst    | ⚠️ Selbst        | ⚠️ Selbst            |
+| **Tests**        | ✅ Vorhanden        | ✅ Vorhanden | ✅ Spezifikation | ✅ Bewertung         |
+| **README**       | ✅ Sehr detailliert | ✅ Mittel    | ✅ Minimal       | ✅ Nur Anforderungen |
+| **Zeitaufwand**  | ~4-6h              | ~6-8h       | ~10-12h         | ~3-4h (Prüfung)     |
 
 ---
 
 ## 🎯 Themen-Zuordnung
 
 ### Level 1: Event Management
+
 - ✅ Domain Validations (Basics)
 - ✅ CQRS Pattern
 - ✅ Factory-Methoden
@@ -619,6 +620,7 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 - ✅ FluentValidation
 
 ### Level 2: Library Management
+
 - ✅ Navigation Properties
 - ✅ EF Core .Include()
 - ✅ CSV-Seeding
@@ -627,6 +629,7 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 - ✅ Mapster Configuration
 
 ### Level 3: Device Management
+
 - ✅ Overlap-Validation
 - ✅ Complex Queries (with-counts)
 - ✅ Enum Types
@@ -635,6 +638,7 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 - ✅ Email Validation
 
 ### Level 4: Exam
+
 - ✅ Time Pressure
 - ✅ Everything from Scratch
 - ✅ Real-World Scenario
@@ -645,7 +649,8 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 ## ✅ Quality Gates pro Level
 
 ### Level 1
-```
+
+```checklist
 □ dotnet build erfolg reich
 □ Domain Tests grün
 □ API Tests grün (für Venues)
@@ -654,7 +659,8 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 ```
 
 ### Level 2
-```
+
+```checklist
 □ dotnet build erfolgreich
 □ Alle Domain Tests grün
 □ CSV-Seeding funktioniert
@@ -663,7 +669,8 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 ```
 
 ### Level 3
-```
+
+```checklist
 □ dotnet build erfolgreich
 □ Solution-Struktur korrekt
 □ Alle Tests grün
@@ -672,7 +679,8 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 ```
 
 ### Level 4
-```
+
+```checklist
 □ Zeitlimit eingehalten
 □ Build erfolgreich
 □ Mind. 80% Tests grün
@@ -683,4 +691,3 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 
 **Version:** 1.0  
 **Status:** ✅ Bereit für Implementierung
-

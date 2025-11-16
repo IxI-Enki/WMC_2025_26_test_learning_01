@@ -9,7 +9,8 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ## 📄 Dokumente
 
 ### 1. [GITHUB_REPOSITORY_STRAT.md](./GITHUB_REPOSITORY_STRAT.md)
-**Die Hauptstrategie - START HIER!**
+
+> **Die Hauptstrategie - START HIER!**
 
 ```ascii
 ┌─────────────────────────────────────────────────┐
@@ -24,6 +25,7 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ```
 
 **Inhalt:**
+
 - 🌳 **Branch-Strategie** mit vollständiger Visualisierung
 - 📁 **Repository-Struktur** für master, dev, solution/*, support/hints, ai-workspace
 - 🎓 **Exercise Levels** (1: Guided → 4: Exam)
@@ -33,7 +35,8 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ---
 
 ### 2. [BRANCH_MANAGEMENT.md](./BRANCH_MANAGEMENT.md)
-**Praktische Anleitung für Branch-Verwaltung**
+
+> **Praktische Anleitung für Branch-Verwaltung**
 
 ```ascii
 ┌─────────────────────────────────────────────────┐
@@ -47,6 +50,7 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ```
 
 **Inhalt:**
+
 - 🔧 **Initiales Setup** - Wie erstelle ich alle Branches?
 - 🔄 **Workflows** - Neue Übung, Lösung, Hints erstellen
 - 🛡️ **Branch Protection** - GitHub Settings
@@ -57,7 +61,8 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ---
 
 ### 3. [MITSCHRIFTEN_VALIDIERUNG.md](./MITSCHRIFTEN_VALIDIERUNG.md)
-**Validierung der Kollegen-Notizen gegen Template**
+
+> **Validierung der Kollegen-Notizen gegen Template**
 
 ```ascii
 ┌─────────────────────────────────────────────────┐
@@ -71,6 +76,7 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 ```
 
 **Inhalt:**
+
 - ✅ **Bestätigt**: Validierungs-Ebenen, CQRS, Result Pattern, Repository Pattern
 - ⚠️ **Zu klären**: ModelCreating, DataSeeder, Update ID-Check
 - ❌ **WICHTIGE KORREKTUR**: "Validation gehört IN die Factory-Methode, nicht nachträglich!"
@@ -78,6 +84,7 @@ Dieses Verzeichnis enthält die **vollständige Strategie** für den Aufbau und 
 - 🎯 **Empfehlungen** für Übungs-Entwicklung
 
 **Wichtigste Erkenntnis:**
+
 ```csharp
 // ❌ FALSCH (laut Mitschrift):
 // "ALS ERSTES ENTITIES ANLEGEN (OHNE VALIDATION AM ANFANG!)"
@@ -94,7 +101,8 @@ public static async Task<Book> CreateAsync(...)
 ---
 
 ### 4. [EXERCISE_PROGRESSION.md](./EXERCISE_PROGRESSION.md)
-**Detaillierte Schwierigkeitsgrad-Definition**
+
+> **Detaillierte Schwierigkeitsgrad-Definition**
 
 ```ascii
 ┌─────────────────────────────────────────────────┐
@@ -109,6 +117,7 @@ public static async Task<Book> CreateAsync(...)
 ```
 
 **Inhalt:**
+
 - 🎓 **Level 1**: Guided Implementation (Event Management)
   - Alle Klassen vorhanden, 1-2 Beispiele komplett
   - Student implementiert nur TODO-Methoden
@@ -130,12 +139,13 @@ public static async Task<Book> CreateAsync(...)
   - Keine Hilfe
 
 **Progression-Matrix:**
-| Aspect | L1 | L2 | L3 | L4 |
-|--------|----|----|----|----|
-| Entities | ✅ | ⚠️ | ⚠️ | ⚠️ |
-| Commands | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| Repos | ✅ | ⚠️ | ⚠️ | ⚠️ |
-| README | ✅✅✅ | ✅✅ | ✅ | ⚠️ |
+
+| Aspect   | L1  | L2  | L3  | L4  |
+| -------- | --- | --- | --- | --- |
+| Entities | ✅   | ⚠️   | ⚠️   | ⚠️   |
+| Commands | ⚠️   | ⚠️   | ⚠️   | ⚠️   |
+| Repos    | ✅   | ⚠️   | ⚠️   | ⚠️   |
+| README   | ✅✅✅ | ✅✅  | ✅   | ⚠️   |
 
 ---
 
@@ -153,6 +163,7 @@ git push -u origin dev
 ```
 
 **Warum wichtig?**
+
 - ✅ Übung 02 ist vollständig implementiert
 - ✅ CSV-Seeding funktioniert
 - ✅ Books mit Author-Navigation korrekt
@@ -248,77 +259,88 @@ git push -u origin support/hints
 
 ### hints/uebung-02/02-navigation-properties/hint-1-grundlagen.md
 
-```markdown
-# Hint 1: Navigation Properties Grundlagen
-
-## Problem
-BookRepository gibt Books zurück, aber `Author` ist immer `null`?
-
-## Erklärung
-Entity Framework lädt standardmäßig KEINE Navigation Properties!
-
-## Lösung
-Verwende `.Include()` in deinen Repository-Methoden:
-
-```csharp
-public override async Task<Book?> GetByIdAsync(int id, CancellationToken ct = default)
-{
-    return await Set
-        .Include(b => b.Author)  // ← Wichtig!
-        .FirstOrDefaultAsync(b => b.Id == id, ct);
-}
-```
-
-## Weitere Schritte
-- Hint 2: Mapster Configuration
-- Hint 3: Vollständiger Code
-```
+- `hint-1-grundlagen.md`:
+  >
+  >```markdown
+  >  # Hint 1: Navigation Properties Grundlagen
+  >  
+  >  ## Problem
+  >  BookRepository gibt Books zurück, aber `Author` ist immer `null`?
+  >  
+  >  ## Erklärung
+  >  Entity Framework lädt standardmäßig KEINE Navigation Properties!
+  >  
+  >  ## Lösung
+  >  Verwende `.Include()` in deinen Repository-Methoden:
+  >  >
+  >  >  ```csharp
+  >  >  public override async Task<Book?> GetByIdAsync(int id, CancellationToken ct = default)
+  >  >  {
+  >  >      return await Set
+  >  >          .Include(b => b.Author)  // ← Wichtig!
+  >  >          .FirstOrDefaultAsync(b => b.Id == id, ct);
+  >  >  }
+  >  >  ```
+  >  
+  >  ## Weitere Schritte
+  >  
+  >  - Hint 2: Mapster Configuration
+  >  - Hint 3: Vollständiger Code
+  >  
+  >```
+  >
 
 ---
 
 ## 🎯 Übersicht: Was ist wo?
 
-| Branch | Zweck | Status | Für wen? |
-|--------|-------|--------|----------|
-| **master** | Student Entry Point | ⚠️ TODO | Studenten |
-| **dev** | Development | ✅ Bereit | Du |
-| **solution/uebung-01** | Vollständige Lösung 01 | ⚠️ TODO | Dozent/Student |
+| Branch                 | Zweck                  | Status   | Für wen?       |
+| ---------------------- | ---------------------- | -------- | -------------- |
+| **master**             | Student Entry Point    | ⚠️ TODO   | Studenten      |
+| **dev**                | Development            | ✅ Bereit | Du             |
+| **solution/uebung-01** | Vollständige Lösung 01 | ⚠️ TODO   | Dozent/Student |
 | **solution/uebung-02** | Vollständige Lösung 02 | ✅ Bereit | Dozent/Student |
-| **support/hints** | Hilfe-System | ⚠️ TODO | Studenten |
-| **ai-workspace** | AI References | ⚠️ TODO | Du + AI |
+| **support/hints**      | Hilfe-System           | ⚠️ TODO   | Studenten      |
+| **ai-workspace**       | AI References          | ⚠️ TODO   | Du + AI        |
 
 ---
 
 ## ✅ Checklist für Repository-Aufbau
 
 ### Phase 1: Branches erstellen
+
 - [ ] `dev` Branch von aktuellem Stand
 - [ ] `solution/uebung-02` Branch mit vollständiger Lösung
 - [ ] `ai-workspace` Branch (orphan) mit Referenzen
 - [ ] `support/hints` Branch (orphan) mit Hilfe-System
 
 ### Phase 2: master Branch vorbereiten
+
 - [ ] Übung 01: Level 1 Style (Guided Implementation)
 - [ ] Übung 02: Level 2 Style (Structural Guidance)
 - [ ] Übung 03: Konzipieren (Level 3?)
 
 ### Phase 3: Lösungen erstellen
+
 - [ ] `solution/uebung-01` komplettieren
 - [ ] `solution/uebung-02` dokumentieren
 - [ ] Tests für beide Übungen
 
 ### Phase 4: Hints erstellen
+
 - [ ] Übung 01: 3 Hint-Level pro Aufgabe
 - [ ] Übung 02: 3 Hint-Level pro Aufgabe
 - [ ] Common Issues Dokumentation
 
 ### Phase 5: AI-Workspace
+
 - [ ] Prompts für Übungs-Generierung
 - [ ] Templates für Code-Scaffolding
 - [ ] Checklists für Quality Gates
 - [ ] Workflows dokumentieren
 
 ### Phase 6: GitHub Setup
+
 - [ ] Branch Protection Rules aktivieren
 - [ ] README.md im Root
 - [ ] CONTRIBUTING.md
@@ -329,6 +351,7 @@ public override async Task<Book?> GetByIdAsync(int id, CancellationToken ct = de
 ## 🔥 WICHTIGSTE ERKENNTNISSE
 
 ### 1. **Validation gehört IN Factory-Methoden!**
+
 ```csharp
 // ✅ RICHTIG:
 public static async Task<Entity> CreateAsync(...)
@@ -340,6 +363,7 @@ public static async Task<Entity> CreateAsync(...)
 ```
 
 ### 2. **Navigation Properties + .Include()**
+
 ```csharp
 // ✅ In Repository:
 return await Set
@@ -348,14 +372,17 @@ return await Set
 ```
 
 ### 3. **3 Validierungs-Ebenen**
+
 - **Domain**: Grundregeln (immer)
 - **FluentValidation**: UseCase-spezifisch
 - **External**: Via Services (Uniqueness)
 
 ### 4. **Scaffolding-Prinzip**
+
 Level 1 → 2 → 3 → 4: Gerüst wird schrittweise reduziert
 
 ### 5. **Template ist OBERSTE AUTORITÄT**
+
 Bei Widersprüchen: Template > Mitschriften
 
 ---
@@ -372,6 +399,7 @@ Bei Widersprüchen: Template > Mitschriften
 ## 🤝 Kontakt & Support
 
 Bei Fragen zur Strategie:
+
 1. Lese zuerst [GITHUB_REPOSITORY_STRAT.md](./GITHUB_REPOSITORY_STRAT.md)
 2. Prüfe [BRANCH_MANAGEMENT.md](./BRANCH_MANAGEMENT.md) für Workflows
 3. Konsultiere [EXERCISE_PROGRESSION.md](./EXERCISE_PROGRESSION.md) für Level-Details

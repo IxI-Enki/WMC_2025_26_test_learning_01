@@ -34,6 +34,7 @@ Diese Datei validiert die Mitschriften der Kollegen gegen die tatsächliche Impl
 ```
 
 **Bestätigung aus Template:**
+
 - `Domain/Entities/Sensor.cs` → Domain Validations
 - `Application/Features/.../CommandValidator.cs` → FluentValidation
 - `Infrastructure/Services/SensorUniquenessChecker.cs` → External
@@ -57,6 +58,7 @@ Database
 ```
 
 **Code-Bestätigung:**
+
 ```csharp
 // Application/Pipeline/ValidationBehavior.cs
 public class ValidationBehavior<TRequest, TResponse> 
@@ -88,6 +90,7 @@ API/Middleware/ExceptionMiddleware
 ```
 
 **Template-Code:**
+
 - Domain-Exceptions in `Domain/Exceptions/`
 - Application-Exceptions in `Application/Common/Exceptions/`
 
@@ -105,6 +108,7 @@ Result<T>.ValidationError()  → 400 Bad Request
 ```
 
 **Template-Implementierung:**
+
 - `Application/Common/Results/Result.cs`
 - `Api/Extensions/ResultExtensions.cs`
 
@@ -122,7 +126,8 @@ Result<T>.ValidationError()  → 400 Bad Request
 ```
 
 **Feature-Ordnerstruktur im Template:**
-```
+
+```files
 Application/Features/Sensors/
 ├─ Commands/
 │  ├─ CreateSensor/
@@ -148,6 +153,7 @@ Application/Features/Sensors/
 ```
 
 **Template-Implementierung:**
+
 - `Application/Contracts/Repositories/IGenericRepository.cs`
 - `Infrastructure/Persistence/Repositories/GenericRepository.cs`
 
@@ -166,6 +172,7 @@ Application/Features/Sensors/
 ```
 
 **UniquenessChecker Registration:**
+
 ```csharp
 // Application/DependencyInjection.cs
 services.AddScoped<ISensorUniquenessChecker, SensorUniquenessChecker>();
@@ -193,10 +200,12 @@ services.AddScoped<ISensorUniquenessChecker, SensorUniquenessChecker>();
 **Aussage:** "Warning gibt es 10% Abzug"
 
 **Interpretation:**
+
 - Vermutlich: Compiler-Warnings → Qualitätsabzug
 - **ODER:** System-Level Validations → 10% Abzug
 
 **Validierung:**
+
 ```csharp
 // ❌ FALSCH (System-Level Validation):
 [Range(1, 100)]  // Attribute-Validation
@@ -211,10 +220,12 @@ SensorSpecifications.CheckValue(value);  // In Factory-Methode
 **Aussage:** "Domain: Entities, ModelCreating wird vorhanden"
 
 **Interpretation:**
+
 - `AppDbContext.OnModelCreating()` wird beim Test vorgegeben
 - Studenten müssen NICHT EF-Konfiguration schreiben
 
 **Template zeigt:**
+
 ```csharp
 // Infrastructure/Persistence/AppDbContext.cs
 protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -238,6 +249,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 **Aussage:** "DataSeeder wird vorgegeben sein -> entitäten auch"
 
 **Template-Realität:**
+
 - `StartupDataSeeder.cs` IST vorgegeben
 - CSV-Daten SIND vorgegeben
 - **ABER:** CSV-Format kann variieren je nach Übung
@@ -249,6 +261,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 **Aussage:** "Logische Validierungen ... IBAN kommt nicht!"
 
 **Mögliche Validierungen:**
+
 ```csharp
 ✅ ISBN-Nummer (Buch)
 ✅ Kreditkartennummer (Luhn-Algorithmus)
@@ -265,6 +278,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 **Aussage:** "single macht sinn um zusätzlich die unique fall abzudecken"
 
 **Template-Praxis:**
+
 ```csharp
 // ✅ Für eindeutige Identifier (ID):
 var sensor = await Set.FindAsync(id);
@@ -288,6 +302,7 @@ var sensor = await Set.FirstOrDefaultAsync(s => s.Value > 100);
 **Aussage:** "ALS ERSTES ENTITIES ANLEGEN (OHNE VALIDATION AM ANFANG!)"
 
 **Template-Realität:**
+
 ```csharp
 // Domain/Entities/Sensor.cs
 public static async Task<Sensor> CreateAsync(...)
@@ -300,10 +315,12 @@ public static async Task<Sensor> CreateAsync(...)
 ```
 
 **❌ Widerspruch!**
+
 - Template: Validation ist TEIL der Factory-Methode
 - Mitschrift: Erst Entities, dann Validation
 
 **Mögliche Erklärung:**
+
 - Für Test: Erst Property-Struktur, dann Validation-Logik?
 - **ODER:** Missverständnis in Mitschrift
 
@@ -314,6 +331,7 @@ public static async Task<Sensor> CreateAsync(...)
 **Aussage:** "Bei Update: int id und command.id prüfen ob diese gleich sind -> wenn nein im controller error."
 
 **Template-Praxis:**
+
 ```csharp
 // ✅ Template-Variante 1 (Nur Command.Id):
 public record UpdateSensorCommand(
@@ -333,6 +351,7 @@ public async Task<IActionResult> Update(int id, UpdateSensorCommand command)
 ```
 
 **✅ Korrekt, ABER:**
+
 - Template hat diese Prüfung im Controller
 - **Alternative:** Nur Command.Id verwenden, Route-ID ignorieren
 
@@ -342,23 +361,23 @@ public async Task<IActionResult> Update(int id, UpdateSensorCommand command)
 
 ## 📊 **Validierungs-Matrix**
 
-| Thema | Mitschriften | Template | Status | Notiz |
-|-------|--------------|----------|--------|-------|
-| 3 Validierungs-Ebenen | ✅ Korrekt | ✅ Vorhanden | ✅ OK | Domain, Application, External |
-| Request-Pipeline | ✅ Korrekt | ✅ Vorhanden | ✅ OK | ValidationBehavior vor Handler |
-| Result Pattern | ✅ Korrekt | ✅ Vorhanden | ✅ OK | 204, 404, 409, etc. |
-| CQRS | ✅ Korrekt | ✅ Vorhanden | ✅ OK | Commands/Queries/Handlers |
-| Repository Pattern | ✅ Korrekt | ✅ Vorhanden | ✅ OK | Generic + Specific |
-| UnitOfWork | ✅ Korrekt | ✅ Vorhanden | ✅ OK | SaveChangesAsync |
-| Navigation Properties | ✅ Korrekt | ✅ Vorhanden | ✅ OK | ! vs. ? |
-| Exception Handling | ✅ Korrekt | ✅ Vorhanden | ✅ OK | Middleware |
-| DataSeeder | ✅ Teilweise | ✅ CSV-basiert | ⚠️ Klären | Immer vorgegeben? |
-| ModelCreating | ✅ Teilweise | ✅ Vorhanden | ⚠️ Klären | Vorgegeben oder nicht? |
-| Validation-Reihenfolge | ❌ Widerspruch | ✅ Sofort | ⚠️ KORRIGIEREN | Validation gehört zu Factory! |
-| Update ID-Check | ✅ Erwähnt | ⚠️ Optional | ⚠️ Klären | Im Controller oder nicht? |
-| SingleOrDefault | ✅ Korrekt | ✅ Best Practice | ✅ OK | Für Unique-Constraints |
-| IBAN | ✅ "Kommt nicht" | - | ℹ️ Info | Zu komplex |
-| Logische Validierungen | ✅ Erwähnt | ⚠️ Teilweise | ⚠️ ERGÄNZEN | ISBN, Luhn, etc. |
+| Thema                  | Mitschriften    | Template        | Status        | Notiz                          |
+| ---------------------- | --------------- | --------------- | ------------- | ------------------------------ |
+| 3 Validierungs-Ebenen  | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | Domain, Application, External  |
+| Request-Pipeline       | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | ValidationBehavior vor Handler |
+| Result Pattern         | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | 204, 404, 409, etc.            |
+| CQRS                   | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | Commands/Queries/Handlers      |
+| Repository Pattern     | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | Generic + Specific             |
+| UnitOfWork             | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | SaveChangesAsync               |
+| Navigation Properties  | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | ! vs. ?                        |
+| Exception Handling     | ✅ Korrekt       | ✅ Vorhanden     | ✅ OK          | Middleware                     |
+| DataSeeder             | ✅ Teilweise     | ✅ CSV-basiert   | ⚠️ Klären      | Immer vorgegeben?              |
+| ModelCreating          | ✅ Teilweise     | ✅ Vorhanden     | ⚠️ Klären      | Vorgegeben oder nicht?         |
+| Validation-Reihenfolge | ❌ Widerspruch   | ✅ Sofort        | ⚠️ KORRIGIEREN | Validation gehört zu Factory!  |
+| Update ID-Check        | ✅ Erwähnt       | ⚠️ Optional      | ⚠️ Klären      | Im Controller oder nicht?      |
+| SingleOrDefault        | ✅ Korrekt       | ✅ Best Practice | ✅ OK          | Für Unique-Constraints         |
+| IBAN                   | ✅ "Kommt nicht" | -               | ℹ️ Info        | Zu komplex                     |
+| Logische Validierungen | ✅ Erwähnt       | ⚠️ Teilweise     | ⚠️ ERGÄNZEN    | ISBN, Luhn, etc.               |
 
 ---
 
@@ -396,12 +415,14 @@ public Book(string isbn, string title, ...)
 ### 2. **DataSeeder und ModelCreating immer vorgeben**
 
 **Für alle Übungs-Level:**
+
 - ✅ `StartupDataSeeder.cs` komplett
 - ✅ CSV-Dateien vorbereitet
 - ✅ `OnModelCreating()` fertig
 - ✅ Migrations vorhanden
 
 **Student muss NUR:**
+
 - Domain Validations schreiben
 - Commands/Queries erstellen
 - Controller-Methoden implementieren
@@ -415,6 +436,7 @@ public Book(string isbn, string title, ...)
 ### 4. **Update-Methode ID-Check**
 
 **Standard-Pattern für alle Übungen:**
+
 ```csharp
 [HttpPut("{id}")]
 public async Task<IActionResult> Update(
@@ -433,6 +455,7 @@ public async Task<IActionResult> Update(
 ### 5. **SingleOrDefault Best Practice**
 
 **In Repository-Methoden dokumentieren:**
+
 ```csharp
 // Für eindeutige Business-Keys (Unique Constraint):
 public async Task<Book?> GetByISBNAsync(string isbn, CancellationToken ct = default)
@@ -453,7 +476,7 @@ public async Task<Book?> GetFirstByTitleAsync(string title, CancellationToken ct
 
 ## ✅ **Action Items**
 
-### Für Repository-Aufbau:
+### Für Repository-Aufbau
 
 - [ ] Alle Übungen mit Factory-Methoden + Validations
 - [ ] DataSeeder + CSV immer vorgeben (Level 1-3)
@@ -463,7 +486,7 @@ public async Task<Book?> GetFirstByTitleAsync(string title, CancellationToken ct
 - [ ] SingleOrDefault vs FirstOrDefault dokumentieren
 - [ ] Mitschriften-Widersprüche in README klären
 
-### Für AI-Workspace:
+### Für AI-Workspace
 
 - [ ] Validation-Templates erstellen
 - [ ] Factory-Methode-Templates
@@ -490,4 +513,3 @@ Die Mitschriften sind **größtenteils korrekt**, haben aber einige **Unklarheit
 **Version:** 1.0  
 **Validiert gegen:** CleanArchitecture_Template  
 **Status:** ✅ Bereit für Übungs-Entwicklung
-

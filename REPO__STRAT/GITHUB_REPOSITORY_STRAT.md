@@ -21,8 +21,8 @@
                   ┌────────────────────────────────────┼──────────────────────────────┐
                   │                                    │                              │
    ╔══════════════▼═══════════════╗   ╔════════════════▼═════════════════╗   ╔════════▼════════╗
-   ║         master        ║   ║           ai-workspace           ║   ║       dev       ║
-   ║         (Production)         ║   ║            (AI Agent)            ║   ║  (Development)  ║
+   ║           master             ║   ║           ai-workspace           ║   ║       dev       ║
+   ║        (Production)          ║   ║            (AI Agent)            ║   ║  (Development)  ║
    ╚══════════════╤═══════════════╝   ╚════════════════╤═════════════════╝   ╚════════╤════════╝
                   │                                    │                              │
            ┌──────┴───────┐                   ┌────────┴───────┐                      ▼
@@ -321,7 +321,7 @@
 │     ├─ create-exercise.ps1              # Übung generieren       │
 │     ├─ validate-solution.ps1            # Lösung validieren      │
 │     ├─ generate-hints.ps1               # Hilfen generieren      │
-│     └─ prepare-master-branch.ps1          # Master vorbereiten       │
+│     └─ prepare-master-branch.ps1        # Master vorbereiten     │
 │                                                                  │
 │  # REPOSITORY_STRATEGY.md               - Diese Datei!           │
 │  # BRANCH_MANAGEMENT.md                 - Branch-Verwaltung      │
@@ -377,7 +377,7 @@
 │                BRANCH PROTECTION RULES                 │
 ├────────────────────────────────────────────────────────┤
 │                                                        │
-│   master:                                                │
+│   master:                                              │
 │     ├─ Require pull request reviews                    │
 │     ├─ Require status checks (Build + Tests)           │
 │     ├─ No direct pushes                                │
@@ -496,7 +496,7 @@ wmc-clean-arch/
 ├─ 📄 .gitignore
 ├─ 📄 .editorconfig
 │
-├─ 📁 CleanArchitecture_Template/       ← ✅ VOLLSTÄNDIG (Referenz)
+├─ 📁 CleanArchitecture_Template/       ←   VOLLSTÄNDIG (Referenz)
 │  ├─ Api/
 │  ├─ Application/
 │  ├─ Domain/
