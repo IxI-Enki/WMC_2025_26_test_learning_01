@@ -17,7 +17,7 @@
                 ┌─────────────┼─────────────┐
                 │             │             │
          ╔══════▼══════╗ ╔════▼═════╗ ╔════▼════════╗
-         ║    main     ║ ║   dev    ║ ║  solution/  ║
+         ║   master    ║ ║   dev    ║ ║  solution/  ║
          ║  (Student)  ║ ║ (Active) ║ ║  uebung-02  ║
          ║  ✅ DONE    ║ ║  ✅ DONE ║ ║  ✅ DONE    ║
          ╚═════════════╝ ╚══════════╝ ╚═════════════╝
@@ -27,7 +27,7 @@
 
 | Branch | Status | Zeilen | Zweck |
 |--------|--------|--------|-------|
-| `main` | ✅ **FERTIG** | 300 | Student Entry Point - Übungen + Template |
+| `master` | ✅ **FERTIG** | 300 | Student Entry Point - Übungen + Template |
 | `dev` | ✅ **AKTIV** | - | Development - Weiterarbeit HIER |
 | `solution/uebung-01` | ✅ **FERTIG** | 433 | Venue komplett (Event/Ticket teilweise) + SOLUTION_NOTES.md |
 | `solution/uebung-02` | ✅ **FERTIG** | 597 | Library Management komplett + SOLUTION_NOTES.md |
@@ -350,9 +350,9 @@ CleanArchitecture_Uebung_02/
 # Orientierung: CleanArchitecture_Template/Application/Features/Sensors/Commands/UpdateSensor/
 ```
 
-### **Option 2: Main Branch vorbereiten** (Strategisch)
+### **Option 2: Master Branch vorbereiten** (Strategisch)
 ```powershell
-git checkout main
+git checkout master
 # Übung 01 und 02 für Studenten vorbereiten (Level 1 & 2 Style)
 # NotImplementedException hinzufügen
 # README für Studenten schreiben
@@ -368,8 +368,8 @@ git checkout main
 ---
 
 **Aktueller Status:** ✅ Bereit für Weiterentwicklung auf `dev` Branch  
-**Empfehlung:** UpdateBook Command implementieren ODER main Branch für Studenten vorbereiten  
-**Nächster Meilenstein:** Übung 02 100% komplett, dann main vorbereiten
+**Empfehlung:** UpdateBook Command implementieren  
+**Nächster Meilenstein:** Übung 02 100% komplett
 
 ---
 
@@ -451,7 +451,7 @@ GESAMT:                  ~12.089 Zeilen Dokumentation!
 
 **Branches auf GitHub:**
 ```
-✅ main                   (Student Entry Point)
+✅ master                 (Student Entry Point)
 ✅ dev                    (Development)
 ✅ solution/uebung-01     (Event Management - teilweise)
 ✅ solution/uebung-02     (Library Management - komplett)
@@ -461,8 +461,8 @@ GESAMT:                  ~12.089 Zeilen Dokumentation!
 
 ---
 
-**Version:** 3.0  
+**Version:** 3.1  
 **Letzte Aktualisierung:** 2025-11-16  
 **Branch:** dev  
-**Status:** 🎉 KOMPLETT! Alle Branches inkl. main für Studenten erstellt!
+**Status:** 🎉 KOMPLETT! Alle Branches inkl. master für Studenten erstellt!
 
