@@ -105,19 +105,17 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
 
         // Books erstellen (mit Author-Referenzen)
         // Die Author-IDs werden von EF Core automatisch gesetzt nach SaveChangesAsync
-        var books = new List<Book>
-        {
-            await Book.CreateAsync("9780747532699", "Harry Potter and the Philosopher's Stone", authors[0], 1997, 5, uc),
-            await Book.CreateAsync("9780439064873", "Harry Potter and the Chamber of Secrets", authors[0], 1998, 3, uc),
-            await Book.CreateAsync("9780553103540", "A Game of Thrones", authors[1], 1996, 4, uc),
-            await Book.CreateAsync("9780553108033", "A Clash of Kings", authors[1], 1998, 2, uc),
-            await Book.CreateAsync("9780395595114", "The Fellowship of the Ring", authors[2], 1954, 6, uc),
-            await Book.CreateAsync("9780395082560", "The Two Towers", authors[2], 1954, 4, uc),
-            await Book.CreateAsync("9780062073501", "Murder on the Orient Express", authors[3], 1934, 5, uc),
-            await Book.CreateAsync("9780062073488", "And Then There Were None", authors[3], 1939, 3, uc),
-            await Book.CreateAsync("9780307743657", "The Shining", authors[4], 1977, 4, uc),
-            await Book.CreateAsync("9781501142970", "IT", authors[4], 1986, 2, uc)
-        };
+        var books = new List<Book>();
+        books.Add(await Book.CreateAsync("9780747532699", "Harry Potter and the Philosopher's Stone", authors[0], 1997, 5, uc));
+        books.Add(await Book.CreateAsync("9780439064873", "Harry Potter and the Chamber of Secrets", authors[0], 1998, 3, uc));
+        books.Add(await Book.CreateAsync("9780553103540", "A Game of Thrones", authors[1], 1996, 4, uc));
+        books.Add(await Book.CreateAsync("9780553108033", "A Clash of Kings", authors[1], 1998, 2, uc));
+        books.Add(await Book.CreateAsync("9780395595114", "The Fellowship of the Ring", authors[2], 1954, 6, uc));
+        books.Add(await Book.CreateAsync("9780395082560", "The Two Towers", authors[2], 1954, 4, uc));
+        books.Add(await Book.CreateAsync("9780062073501", "Murder on the Orient Express", authors[3], 1934, 5, uc));
+        books.Add(await Book.CreateAsync("9780062073488", "And Then There Were None", authors[3], 1939, 3, uc));
+        books.Add(await Book.CreateAsync("9780307743657", "The Shining", authors[4], 1977, 4, uc));
+        books.Add(await Book.CreateAsync("9781501142970", "IT", authors[4], 1986, 2, uc));
         
         return new SeedData
         {
