@@ -12,14 +12,14 @@ public class AuthorRepository( AppDbContext ctx )
       IAuthorRepository
 {
     /// <summary>
-    /// Alle Autoren mit ihren Büchern.
+    /// Alle Autoren mit ihren Büchern (Eager Loading).
     /// </summary>
     public async Task<IReadOnlyCollection<Author>> GetAuthorsWithBooksAsync( CancellationToken ct = default )
     {
-
-
-
-        throw new NotImplementedException( "AuthorRepository.GetAuthorsWithBooksAsync muss noch implementiert werden!" );
+        return await Set
+            .AsNoTracking()
+            .Include(a => a.Books)
+            .ToListAsync(ct);
     }
 
     /// <summary>
