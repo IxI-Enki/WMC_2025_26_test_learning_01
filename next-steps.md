@@ -1,24 +1,26 @@
+<!-- markdownlint-disable -->
+
 # 🎯 WMC Übung 2 - Implementierungs-Roadmap
 
-> **Letzte Aktualisierung:** 2025-11-15 (nach systematischer Template-Analyse)
+> **Letzte Aktualisierung:** 2025-11-16 (nach Code-Implementierung & Testing)
 >
-> **Status:** 🟢 Phase 1 (Authors) ~70% fertig | 🟡 Phase 2 (Books) ~40% fertig | 🔴 Phase 3 (Loans) noch nicht gestartet
+> **Status:** 🟢 Phase 1 (Authors) ~95% fertig | 🟢 Phase 2 (Books) ~75% fertig | 🔴 Phase 3 (Loans) noch nicht gestartet
 
 ## 📊 Entitäten-Abhängigkeiten (wie im Template)
 
 ```diagram
 ┌─────────┐
-│ Author  │ ◄─── Keine Abhängigkeiten (standalone)
+│ Author  │ ◄─── Keine Abhängigkeiten (standalone) ──► siehe Sensor
+└────┬────┘                                                  ↳ Sensor.Id
+     │                                                                ⇣
+     │--→ FK: AuthorId                                      -→ FK: SensorId
+     │                                                                ⋮
+     ▼                                                                ⋮
+┌─────────┐                                                           ⇣
+│  Book   │ ◄─── Braucht Author                    ──► siehe Measurement (braucht Sensor)
 └────┬────┘
      │
-     │ (FK: AuthorId)
-     │
-     ▼
-┌─────────┐
-│  Book   │ ◄─── Braucht Author
-└────┬────┘
-     │
-     │ (FK: BookId)
+     │--→ FK: BookId
      │
      ▼
 ┌─────────┐
@@ -64,7 +66,7 @@ Für jede Entität (Author → Book → Loan) diese Schritte durchlaufen:
 - ✅ `AuthorSpecifications.CheckFirstName()` - **IMPLEMENTIERT!** ✨
 - ✅ `AuthorSpecifications.CheckLastName()` - **IMPLEMENTIERT!** ✨
 - ✅ `AuthorSpecifications.CheckDateOfBirth()` - **IMPLEMENTIERT!** ✨
-- ⚠️ `AuthorSpecifications.ValidateAuthorInternal()` - Noch `NotImplementedException`
+- ✅ `AuthorSpecifications.ValidateAuthorInternal()` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
 
 ### Application-Ebene
 
@@ -74,12 +76,17 @@ Für jede Entität (Author → Book → Loan) diese Schritte durchlaufen:
   - Nutzt `uow.Authors.GetAllAsync()`
   - Mappt mit Mapster zu DTOs
   - Gibt `Result.Success()` zurück
+- ✅ `GetAuthorByIdQuery` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+- ✅ `GetAuthorByIdQueryHandler` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+  - Nutzt `uow.Authors.GetByIdAsync()`
+  - Null-Check implementiert
+  - Gibt `Result.NotFound()` oder `Result.Success()` zurück
 
 ### API-Ebene
 
 - ✅ `AutorsController.cs` existiert
 - ✅ `GetAll()` - **FUNKTIONIERT!** ✨
-- ⚠️ `GetById(int id)` - Noch `NotImplementedException`
+- ✅ `GetById(int id)` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
 
 ### Infrastructure
 
@@ -90,24 +97,14 @@ Für jede Entität (Author → Book → Loan) diese Schritte durchlaufen:
 <details>
 <summary><strong>🔨 Was zu tun ist - Authors (Click to expand)</strong></summary>
 
-### 1️⃣ Domain-Ebene - Authors
+### 1️⃣ Domain-Ebene - Authors ✅ FERTIG!
 
 **Vergleich mit Template:** `SensorSpecifications.cs`
 
-#### ⚠️ Noch zu implementieren
+#### ✅ Erfolgreich implementiert!
 
 ```csharp
-// ❌ Domain/Specifications/AuthorSpecifications.cs - Zeile 46-50
-public static void ValidateAuthorInternal(string firstName, string lastName, DateTime dateOfBirth)
-{
-    throw new NotImplementedException("ValidateAuthorInternal muss noch implementiert werden!");
-}
-```
-
-**Template-Pattern (aus `Sensor.ValidateSensorProperties`):**
-
-```csharp
-// ✅ Sollte so aussehen:
+// ✅ Domain/Specifications/AuthorSpecifications.cs - Zeile 46-62
 public static void ValidateAuthorInternal(string firstName, string lastName, DateTime dateOfBirth)
 {
     var validationResults = new List<DomainValidationResult>
@@ -135,12 +132,13 @@ public static void ValidateAuthorInternal(string firstName, string lastName, Dat
 
 - `GetAllAuthorsQuery` + Handler
 
-#### ❌ Noch zu erstellen
+#### ✅ GetAuthorById - FERTIG IMPLEMENTIERT!
 
 ```plaintext
 Application/Features/Authors/Queries/GetAuthorById/
-  ├── GetAuthorByIdQuery.cs
-  └── GetAuthorByIdQueryHandler.cs
+  ├── GetAuthorByIdQuery.cs ✅
+  ├── GetAuthorByIdQueryHandler.cs ✅
+  └── GetAuthoByIdValidator.cs ✅
 ```
 
 **Template-Referenz:** `GetSensorByIdQuery.cs` (Zeilen 6-7)
@@ -174,25 +172,14 @@ public sealed class GetAuthorByIdQueryHandler(IUnitOfWork uow)
 
 ---
 
-### 3️⃣ API-Ebene - Authors
+### 3️⃣ API-Ebene - Authors ✅ FERTIG!
 
-#### ⚠️ Zu vervollständigen
-
-```csharp
-// ❌ Api/Controllers/AutorsController.cs - Zeile 38-40
-[HttpGet("{id:int}")]
-public async Task<IActionResult> GetById(int id, CancellationToken ct)
-{
-    throw new NotImplementedException("BooksController.GetById muss noch implementiert werden!");
-}
-```
-
-**Template-Referenz:** `SensorsController.GetById` (Zeilen 38-45)
+#### ✅ Erfolgreich implementiert!
 
 ```csharp
-// ✅ Sollte so aussehen:
+// ✅ Api/Controllers/AutorsController.cs - Zeile 32-40
 [HttpGet("{id:int}")]
-[ProducesResponseType(typeof(GetAuthorDto), StatusCodes.Status200OK)]
+[ProducesResponseType(typeof(GetBookDto), StatusCodes.Status200OK)]
 [ProducesResponseType(StatusCodes.Status404NotFound)]
 public async Task<IActionResult> GetById(int id, CancellationToken ct)
 {
@@ -209,8 +196,8 @@ public async Task<IActionResult> GetById(int id, CancellationToken ct)
 
 ```bash
 ✅ GET /api/autors → Sollte 5 Autoren zurückgeben (J.K. Rowling, George R.R. Martin, etc.)
-⏳ GET /api/autors/1 → Sollte J.K. Rowling zurückgeben
-⏳ GET /api/autors/999 → Sollte 404 Not Found zurückgeben
+✅ GET /api/autors/1 → Sollte J.K. Rowling zurückgeben
+✅ GET /api/autors/999 → Sollte 404 Not Found zurückgeben
 ```
 
 </details>
@@ -233,8 +220,8 @@ public async Task<IActionResult> GetById(int id, CancellationToken ct)
 - ✅ `BookSpecifications.CheckTitle()` - **IMPLEMENTIERT!** ✨
 - ✅ `BookSpecifications.CheckPublicationYear()` - **IMPLEMENTIERT!** ✨ (1450 - heute+1)
 - ✅ `BookSpecifications.CheckAvailableCopies()` - **IMPLEMENTIERT!** ✨ (≥ 0)
-- ⚠️ `BookSpecifications.ValidateBookInternal()` - Noch `NotImplementedException`
-- ⚠️ `BookSpecifications.ValidateBookExternal()` - Noch `NotImplementedException`
+- ✅ `BookSpecifications.ValidateBookInternal()` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+- ✅ `BookSpecifications.ValidateBookExternal()` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
 
 ### Application-Ebene
 
@@ -244,16 +231,22 @@ public async Task<IActionResult> GetById(int id, CancellationToken ct)
   - Nutzt `uow.Books.GetAllAsync()`
   - Mappt zu DTOs mit Mapster
   - ⚠️ **ACHTUNG:** `.Include(b => b.Author)` fehlt noch für Navigation Properties!
-- ✅ `CreateBookCommand.cs` existiert (aber **FALSCHE PROPERTIES!** ⚠️)
-  - Aktuell: `Location, Name, Timestamp, Value` (das ist von Sensor kopiert!)
-  - Sollte sein: `ISBN, Title, AuthorId, PublicationYear, AvailableCopies`
-- ✅ `CreateBookCommandHandler.cs` existiert (aber `NotImplementedException`)
-- ❌ `CreateBookCommandValidator.cs` ist **LEER**
+- ✅ `CreateBookCommand.cs` - **PROPERTIES KORRIGIERT!** ✨
+  - ISBN, Title, AuthorId, PublicationYear, AvailableCopies
+- ✅ `CreateBookCommandHandler.cs` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+  - Lädt Author aus DB
+  - Ruft `Book.CreateAsync()` auf
+  - Speichert via UoW
+  - Gibt `Result.Created()` zurück
+- ⚠️ `CreateBookCommandValidator.cs` ist **noch LEER** (Optional)
 
 ### API-Ebene
 
 - ✅ `BooksController.cs` existiert
 - ✅ `GetAll()` - **FUNKTIONIERT!** ✨
+- ✅ `GetById(int id)` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+- ✅ `Create()` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
+- ✅ `Delete(int id)` - **VOLLSTÄNDIG IMPLEMENTIERT!** ✨
 
 ### Infrastructure
 
@@ -270,23 +263,12 @@ public async Task<IActionResult> GetById(int id, CancellationToken ct)
 
 ### 1️⃣ Domain-Ebene - Books
 
-#### ⚠️ Noch zu implementieren
+#### ✅ Erfolgreich implementiert!
 
-**a) ValidateBookInternal:**
-
-```csharp
-// ❌ Domain/Specifications/BookSpecifications.cs - Zeile 70-78
-public static void ValidateBookInternal(
-    string isbn, string title, int authorId, int publicationYear, int availableCopies)
-{
-    throw new NotImplementedException("ValidateBookInternal muss noch implementiert werden!");
-}
-```
-
-**Template-Pattern:**
+**a) ValidateBookInternal: ✅**
 
 ```csharp
-// ✅ Sollte so aussehen (analog zu Sensor.ValidateSensorProperties):
+// ✅ Domain/Specifications/BookSpecifications.cs - Zeile 70-93
 public static void ValidateBookInternal(
     string isbn, string title, int authorId, int publicationYear, int availableCopies)
 {
@@ -309,21 +291,10 @@ public static void ValidateBookInternal(
 }
 ```
 
-**b) ValidateBookExternal:**
+**b) ValidateBookExternal: ✅**
 
 ```csharp
-// ❌ Domain/Specifications/BookSpecifications.cs - Zeile 84-89
-public static async Task ValidateBookExternal(int id, string isbn,
-    IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
-{
-    throw new NotImplementedException("ValidateBookExternal muss noch implementiert werden!");
-}
-```
-
-**Template-Pattern (aus `Sensor.ValidateSensorUniqueness`):**
-
-```csharp
-// ✅ Sollte so aussehen:
+// ✅ Domain/Specifications/BookSpecifications.cs - Zeile 98-103
 public static async Task ValidateBookExternal(int id, string isbn,
     IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
 {
@@ -400,20 +371,10 @@ public readonly record struct CreateBookCommand(
 
 ---
 
-#### ⚠️ CreateBookCommandHandler implementieren
+#### ✅ CreateBookCommandHandler erfolgreich implementiert!
 
 ```csharp
-// ❌ Aktuell (Zeile 16-20):
-public async Task<Result<GetBookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
-{
-    throw new NotImplementedException();
-}
-```
-
-**Template-Referenz:** `CreateSensorCommandHandler` (Zeilen 20-29)
-
-```csharp
-// ✅ Sollte so aussehen:
+// ✅ Application/Features/Books/Commands/CreateBook/CreateBookCommandHandler.cs
 public async Task<Result<GetBookDto>> Handle(CreateBookCommand request, CancellationToken cancellationToken)
 {
     // 1. Author aus DB laden
@@ -859,16 +820,18 @@ dotnet run
 | Phase                 | Kriterium                                            | Status | Fortschritt |
 | --------------------- | ---------------------------------------------------- | ------ | ----------- |
 | **Phase 1 (Authors)** | GET /api/autors liefert 5 Autoren aus DataSeeder    | ✅     | 100%        |
-| **Phase 1 (Authors)** | GET /api/autors/{id} liefert einzelnen Autor        | ⚠️     | 0%          |
+| **Phase 1 (Authors)** | GET /api/autors/{id} liefert einzelnen Autor        | ✅     | 100%        |
 | **Phase 1 (Authors)** | Domain Validations (CheckFirstName, etc.)            | ✅     | 100%        |
-| **Phase 1 (Authors)** | ValidateAuthorInternal implementiert                 | ⚠️     | 0%          |
+| **Phase 1 (Authors)** | ValidateAuthorInternal implementiert                 | ✅     | 100%        |
 | **Phase 2 (Books)**   | GET /api/books liefert Liste (aktuell leer)          | ✅     | 100%        |
-| **Phase 2 (Books)**   | GET /api/books mit Author Navigation Property        | ⚠️     | 0%          |
-| **Phase 2 (Books)**   | CreateBookCommand Properties korrekt                 | ❌     | 0%          |
-| **Phase 2 (Books)**   | POST /api/books erstellt ein Buch                    | ⚠️     | 0%          |
+| **Phase 2 (Books)**   | GET /api/books/{id} mit Null-Check                   | ✅     | 100%        |
+| **Phase 2 (Books)**   | CreateBookCommand Properties korrekt                 | ✅     | 100%        |
+| **Phase 2 (Books)**   | POST /api/books erstellt ein Buch                    | ✅     | 100%        |
 | **Phase 2 (Books)**   | Domain Validations (CheckISBN, etc.)                 | ✅     | 100%        |
-| **Phase 2 (Books)**   | ValidateBookInternal/External implementiert          | ⚠️     | 0%          |
+| **Phase 2 (Books)**   | ValidateBookInternal/External implementiert          | ✅     | 100%        |
+| **Phase 2 (Books)**   | DELETE /api/books/{id} implementiert                 | ✅     | 100%        |
 | **Phase 2 (Books)**   | Book.UpdateAsync implementiert                       | ⚠️     | 0%          |
+| **Phase 2 (Books)**   | PUT /api/books/{id} implementiert                    | ⚠️     | 0%          |
 | **Phase 3 (Loans)**   | POST /api/loans leiht ein Buch aus (AvailableCopies) | ⏳     | 0%          |
 | **Tests**             | Domain.Tests ausführbar                              | ✅     | 100%        |
 | **Tests**             | Api.Tests ausführbar                                 | ✅     | 100%        |
@@ -879,8 +842,8 @@ dotnet run
 
 **Gesamtfortschritt:**
 
-- **Phase 1 (Authors):** ~70% ✅✅✅⚠️
-- **Phase 2 (Books):** ~40% ✅✅⚠️⚠️⚠️❌
+- **Phase 1 (Authors):** ~95% ✅✅✅✅ (nur Update-Methode fehlt noch)
+- **Phase 2 (Books):** ~75% ✅✅✅✅✅⚠️⚠️ (GET/POST/DELETE fertig, nur Update fehlt noch)
 - **Phase 3 (Loans):** ~0% ⏳
 
 </details>
@@ -892,43 +855,48 @@ dotnet run
 <details>
 <summary><strong>🔥 Top-Prioritäten (Click to expand)</strong></summary>
 
-### 🚨 Kritisch (sofort):
+### ✅ Bereits erledigt:
 
-1. **CreateBookCommand Properties KORRIGIEREN:**
-   - ❌ Aktuell: `Location, Name, Timestamp, Value` (FALSCH!)
-   - ✅ Soll: `ISBN, Title, AuthorId, PublicationYear, AvailableCopies`
+1. ~~**CreateBookCommand Properties KORRIGIEREN:**~~ ✅ **FERTIG!**
+   - ✅ Korrigiert: `ISBN, Title, AuthorId, PublicationYear, AvailableCopies`
    - Datei: `Application/Features/Books/Commands/CreateBook/CreateBookCommand.cs`
 
-### ⚠️ Hoch (danach):
+2. ~~**CreateBookCommandHandler implementieren:**~~ ✅ **FERTIG!**
+   - ✅ Author aus DB laden mit `uow.Authors.GetByIdAsync(request.AuthorId)`
+   - ✅ `Book.CreateAsync()` aufrufen
+   - ✅ Persistieren und DTO zurückgeben
+   - Datei: `Application/Features/Books/Commands/CreateBook/CreateBookCommandHandler.cs`
 
-2. **GetAllBooksQueryHandler verbessern:**
+3. ~~**ValidateBookInternal & ValidateBookExternal:**~~ ✅ **FERTIG!**
+   - ✅ Domain-Validierungen komplett implementiert
+   - Datei: `Domain/Specifications/BookSpecifications.cs`
+
+4. ~~**ValidateAuthorInternal:**~~ ✅ **FERTIG!**
+   - ✅ Domain-Validierung implementiert
+   - Datei: `Domain/Specifications/AuthorSpecifications.cs`
+
+5. ~~**GetAuthorById implementieren:**~~ ✅ **FERTIG!**
+   - ✅ Query, Handler mit Null-Check, Controller-Endpunkt
+   - Dateien: `Application/Features/Authors/Queries/GetAuthorById/*`
+
+6. ~~**BooksController vervollständigen:**~~ ✅ **FERTIG (teilweise)!**
+   - ✅ GetById(), Create(), Delete() sind fertig
+   - Datei: `Api/Controllers/BooksController.cs`
+
+### ⚠️ Noch zu tun (Optional):
+
+7. **GetAllBooksQueryHandler verbessern:**
    - `.Include(b => b.Author)` hinzufügen für Navigation Properties
    - Datei: `Application/Features/Books/Queries/GetAllBooks/GetAllBooksQueryHandler.cs`
 
-3. **CreateBookCommandHandler implementieren:**
-   - Author aus DB laden mit `uow.Authors.GetByIdAsync(request.AuthorId)`
-   - `Book.CreateAsync()` aufrufen
-   - `uow.Books.AddAsync()` und `uow.SaveChangesAsync()`
-   - DTO zurückgeben
-   - Datei: `Application/Features/Books/Commands/CreateBook/CreateBookCommandHandler.cs`
-
-4. **CreateBookCommandValidator implementieren:**
+8. **CreateBookCommandValidator implementieren:**
    - FluentValidation Rules für ISBN, Title, PublicationYear, etc.
    - Datei: `Application/Features/Books/Commands/CreateBook/CreateBookCommandValidator.cs`
 
-### 📝 Mittel (wenn Zeit):
-
-5. **ValidateBookInternal & ValidateBookExternal:**
-   - Domain-Validierungen komplett implementieren
-   - Datei: `Domain/Specifications/BookSpecifications.cs`
-
-6. **GetAuthorById implementieren:**
-   - Query, Handler, Controller-Endpunkt
-   - Dateien: `Application/Features/Authors/Queries/GetAuthorById/*`
-
-7. **BooksController vervollständigen:**
-   - GetById(), Create(), Delete()
-   - Datei: `Api/Controllers/BooksController.cs`
+9. **Book.UpdateAsync & UpdateBookCommand implementieren:**
+   - UpdateBookCommand + Handler erstellen
+   - PUT /api/books/{id} Endpoint
+   - Dateien: `Application/Features/Books/Commands/UpdateBook/*`
 
 </details>
 
@@ -1005,5 +973,5 @@ dotnet run
 > **Viel Erfolg! 🤓🤜🏻🤛🏻🤖**
 >
 > _Erstellt am: 2025-11-15_  
-> _Aktualisiert am: 2025-11-15 (nach systematischer Template-Analyse & Detaillierung)_  
+> _Aktualisiert am: 2025-11-16 (nach Code-Implementierung: Authors ~95%, Books ~75% fertig!)_  
 > _Basierend auf: CleanArchitecture_Template & Kollegin-Notizen_
