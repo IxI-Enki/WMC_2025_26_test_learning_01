@@ -1,106 +1,52 @@
 namespace Application.Common.Models;
 
-/// <summary>
-/// Repräsentiert das Ergebnis einer Operation mit Wert und Status.
-/// </summary>
-public class Result<T>
-{
-    public T? Value { get; init; }
-    public bool IsSuccess { get; init; }
-    public string? ErrorMessage { get; init; }
-    public ResultStatus Status { get; init; }
-
-    public static Result<T> Success(T value) => new()
-    {
-        Value = value,
-        IsSuccess = true,
-        Status = ResultStatus.Ok
-    };
-
-    public static Result<T> Created(T value) => new()
-    {
-        Value = value,
-        IsSuccess = true,
-        Status = ResultStatus.Created
-    };
-
-    public static Result<T> NotFound(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.NotFound
-    };
-
-    public static Result<T> ValidationError(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.ValidationError
-    };
-
-    public static Result<T> Conflict(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.Conflict
-    };
-
-    public static Result<T> Error(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.Error
-    };
-}
-
 public class Result
 {
-    public bool IsSuccess { get; init; }
-    public string? ErrorMessage { get; init; }
-    public ResultStatus Status { get; init; }
+    public bool IsSuccess { get; }
+    public bool IsFailure => !IsSuccess;
+    public string? Message { get; init; }
+    public ResultType Type { get; init; }
 
-    public static Result Success() => new()
+    protected Result( bool isSuccess, string? message, ResultType type )
     {
-        IsSuccess = true,
-        Status = ResultStatus.Ok
-    };
+        IsSuccess = isSuccess;
+        Message = message;
+        Type = type;
+    }
 
-    public static Result NotFound(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.NotFound
-    };
-
-    public static Result ValidationError(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.ValidationError
-    };
-
-    public static Result Conflict(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.Conflict
-    };
-
-    public static Result Error(string message) => new()
-    {
-        IsSuccess = false,
-        ErrorMessage = message,
-        Status = ResultStatus.Error
-    };
+    public static Result Success( string? message = null ) => new( true, message, ResultType.Success );
+    public static Result NoContent( string? message = null ) => new( true, message, ResultType.NoContent );
+    public static Result NotFound( string? message = null ) => new( false, message, ResultType.NotFound );
+    public static Result ValidationError( string? message = null ) => new( false, message, ResultType.ValidationError );
+    public static Result Conflict( string? message = null ) => new( false, message, ResultType.Conflict );
+    public static Result Error( string? message = null ) => new( false, message, ResultType.Error );
 }
 
-public enum ResultStatus
+public enum ResultType
 {
-    Ok,
+    Success,
     Created,
+    NoContent,
     NotFound,
     ValidationError,
     Conflict,
     Error
 }
 
+public class Result<T> : Result
+{
+    public T? Value { get; }
+    protected Result( bool isSuccess, T? value, string? message, ResultType type )
+        : base( isSuccess, message, type )
+    {
+        Value = value;
+    }
+
+    public static Result<T> Success( T value, string? message = null ) => new( true, value, message, ResultType.Success );
+    public static Result<T> Created( T value, string? message = null ) => new( true, value, message, ResultType.Created );
+    public new static Result<T> NoContent( string? message = null ) => new( true, default, message, ResultType.NoContent );
+    public new static Result<T> NotFound( string? message = null ) => new( false, default, message, ResultType.NotFound );
+    public new static Result<T> ValidationError( string? message = null ) => new( false, default, message, ResultType.ValidationError );
+    public new static Result<T> Conflict( string? message = null ) => new( false, default, message, ResultType.Conflict );
+    public new static Result<T> Error( string? message = null ) => new( false, default, message, ResultType.Error );
+}

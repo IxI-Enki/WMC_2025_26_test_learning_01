@@ -38,7 +38,7 @@ public class Loan : BaseEntity
     private Loan() { } // Für EF Core
 
     /// <summary>
-    /// TODO: Implementiere die Create-Methode für Loan.
+    /// TODO: Implementiere die CreateAsync-Methode für Loan.
     /// 
     /// Diese Methode soll:
     /// 1. ArgumentNullException.ThrowIfNull(book) aufrufen
@@ -52,7 +52,7 @@ public class Loan : BaseEntity
 
 
 
-        throw new NotImplementedException("Loan.Create muss noch implementiert werden!");
+        throw new NotImplementedException("Loan.CreateAsync muss noch implementiert werden!");
     }
 
     /// <summary>

@@ -23,25 +23,26 @@ public class BooksController( IMediator mediator ) : ControllerBase
     [ProducesResponseType( typeof( IEnumerable<GetBookDto> ), StatusCodes.Status200OK )]
     public async Task<IActionResult> GetAll( CancellationToken ct )
     {
-        //throw new NotImplementedException("BooksController.GetAll muss noch implementiert werden!");
         var result = await mediator.Send(new GetAllBooksQuery(), ct);
 
         return result.ToActionResult( this );
     }
 
     /// <summary>
-    /// TODO: Implementiere GET /api/books/{id} - GetById
+    /// GET /api/books/{id} - GetById
     /// </summary>
     [HttpGet( "{id:int}" )]
     [ProducesResponseType( typeof( GetBookDto ), StatusCodes.Status200OK )]
     [ProducesResponseType( StatusCodes.Status404NotFound )]
     public async Task<IActionResult> GetById( int id, CancellationToken ct )
     {
-        throw new NotImplementedException( "BooksController.GetById muss noch implementiert werden!" );
+        var result = await mediator.Send(new GetBookByIdQuery(id), ct);
+
+        return result.ToActionResult( this );
     }
 
     /// <summary>
-    /// TODO: Implementiere POST /api/books - Create
+    /// TODO: Implementiere POST /api/books - CreateAsync
     /// </summary>
     [HttpPost]
     [ProducesResponseType( typeof( GetBookDto ), StatusCodes.Status201Created )]
@@ -49,9 +50,9 @@ public class BooksController( IMediator mediator ) : ControllerBase
     [ProducesResponseType( StatusCodes.Status409Conflict )]
     public async Task<IActionResult> Create( [FromBody] CreateBookCommand command, CancellationToken ct )
     {
-        
-
-        throw new NotImplementedException( "BooksController.Create muss noch implementiert werden!" );
+        var result = await mediator.Send(command, ct);
+        return result.ToActionResult(this, createdAtAction: nameof(GetById), 
+            routeValues: new { id = result?.Value?.Id });
     }
 
     /// <summary>
@@ -62,7 +63,7 @@ public class BooksController( IMediator mediator ) : ControllerBase
     [ProducesResponseType( StatusCodes.Status404NotFound )]
     public async Task<IActionResult> Delete( int id, CancellationToken ct )
     {
-        throw new NotImplementedException( "BooksController.Delete muss noch implementiert werden!" );
+        var result = await mediator.Send( new DeleteBookCommand( id ) , ct );
+        return result.ToActionResult( this );
     }
 }
-

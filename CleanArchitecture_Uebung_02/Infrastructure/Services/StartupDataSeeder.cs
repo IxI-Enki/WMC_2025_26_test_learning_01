@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Domain.Contracts;
 using Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -64,7 +65,7 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
             if (!File.Exists(_jsonPath))
             {
                 // Falls keine JSON-Datei vorhanden, Default-Daten verwenden
-                return CreateDefaultSeedData();
+                return await CreateDefaultSeedData();
             }
 
             var jsonContent = await File.ReadAllTextAsync(_jsonPath, cancellationToken);
@@ -74,9 +75,9 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
             });
 
             if (seedData == null)
-                return CreateDefaultSeedData();
+                return await CreateDefaultSeedData();
 
-            return ConvertToEntities(seedData);
+            return await ConvertToEntities(seedData);
         }
         finally
         {
@@ -87,15 +88,17 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
     /// <summary>
     /// Erstellt Default-Seed-Daten falls keine JSON-Datei vorhanden ist.
     /// </summary>
-    private static SeedData CreateDefaultSeedData()
+    private static async Task<SeedData> CreateDefaultSeedData()
     {
+        var uc = new SeedDataUniquenessChecker();
+        
         var authors = new List<Author>
         {
-            Author.Create("J.K.", "Rowling", new DateTime(1965, 7, 31)),
-            Author.Create("George R.R.", "Martin", new DateTime(1948, 9, 20)),
-            Author.Create("J.R.R.", "Tolkien", new DateTime(1892, 1, 3)),
-            Author.Create("Agatha", "Christie", new DateTime(1890, 9, 15)),
-            Author.Create("Stephen", "King", new DateTime(1947, 9, 21))
+            await Author.CreateAsync("J.K.", "Rowling", new DateTime(1965, 7, 31), uc),
+            await Author.CreateAsync("George R.R.", "Martin", new DateTime(1948, 9, 20), uc),
+            await Author.CreateAsync("J.R.R.", "Tolkien", new DateTime(1892, 1, 3), uc),
+            await Author.CreateAsync("Agatha", "Christie", new DateTime(1890, 9, 15), uc),
+            await Author.CreateAsync("Stephen", "King", new DateTime(1947, 9, 21), uc)
         };
 
         // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
@@ -115,11 +118,15 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
     /// <summary>
     /// Konvertiert DTOs in Domain Entities.
     /// </summary>
-    private static SeedData ConvertToEntities(SeedDataDto dto)
+    private static async Task<SeedData> ConvertToEntities(SeedDataDto dto)
     {
-        var authors = dto.Authors.Select(a => 
-            Author.Create(a.FirstName, a.LastName, a.DateOfBirth)
-        ).ToList();
+        var uc = new SeedDataUniquenessChecker();
+        
+        var authorTasks = dto.Authors.Select(a => 
+            Author.CreateAsync(a.FirstName, a.LastName, a.DateOfBirth, uc)
+        );
+        
+        var authors = (await Task.WhenAll(authorTasks)).ToList();
 
         // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
         // (genau wie im CleanArchitecture_Template)
@@ -132,6 +139,19 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
+
+/// <summary>
+/// NoOp Uniqueness Checker für Seed-Daten.
+/// Bypasses Uniqueness-Validierung da beim Seeding die DB noch leer ist.
+/// </summary>
+internal class SeedDataUniquenessChecker : IAuthorUniquenessChecker
+{
+    public Task<bool> IsUniqueAsync(int id, string fullName, CancellationToken ct = default)
+    {
+        // Für Seed-Daten immer true zurückgeben (keine DB-Validierung)
+        return Task.FromResult(true);
+    }
 }
 
 /// <summary>
@@ -167,4 +187,3 @@ internal class BookDto
     public int PublicationYear { get; set; }
     public int AvailableCopies { get; set; }
 }
-

@@ -11,20 +11,27 @@ namespace Domain.Tests;
 /// </summary>
 public class BookTests
 {
-    private class FakeUniquenessChecker( bool unique ) : IBookUniquenessChecker
+    private class FakeBookUniquenessChecker( bool unique ) : IBookUniquenessChecker
     {
         public Task<bool> IsUniqueAsync( int id, string isbn, CancellationToken ct = default )
             => Task.FromResult( unique );
     }
 
+    private class FakeAuthorUniquenessChecker : IAuthorUniquenessChecker
+    {
+        public Task<bool> IsUniqueAsync( int id, string fullName, CancellationToken ct = default )
+            => Task.FromResult( true );
+    }
+
     [Fact]
     public async Task CreateAsync_Succeeds_WithValidData( )
     {
-        // Dieser Test wird funktionieren, sobald du Author.Create und Book.CreateAsync implementiert hast
-        var author = Author.Create("J.K.", "Rowling", new DateTime(1965, 7, 31));
-        var checker = new FakeUniquenessChecker(true);
+        // Dieser Test wird funktionieren, sobald du Author.CreateAsync und Book.CreateAsync implementiert hast
+        var authorChecker = new FakeAuthorUniquenessChecker();
+        var author = await Author.CreateAsync("J.K.", "Rowling", new DateTime(1965, 7, 31), authorChecker);
+        var bookChecker = new FakeBookUniquenessChecker(true);
 
-        var book = await Book.CreateAsync("9780747532699", "Harry Potter", author, 1997, 5, checker);
+        var book = await Book.CreateAsync("9780747532699", "Harry Potter", author, 1997, 5, bookChecker);
 
         Assert.Equal( "9780747532699", book.ISBN );
         Assert.Equal( "Harry Potter", book.Title );
@@ -39,11 +46,12 @@ public class BookTests
     public async Task CreateAsync_InvalidISBN_Throws( string isbn, string title, string expectedMessage )
     {
         // Dieser Test wird funktionieren, sobald du die Domain-Validierungen implementiert hast
-        var author = Author.Create("Test", "Author", DateTime.Now.AddYears(-30));
-        var checker = new FakeUniquenessChecker(true);
+        var authorChecker = new FakeAuthorUniquenessChecker();
+        var author = await Author.CreateAsync("Test", "Author", DateTime.Now.AddYears(-30), authorChecker);
+        var bookChecker = new FakeBookUniquenessChecker(true);
 
         var ex = await Assert.ThrowsAsync<DomainValidationException>(
-            () => Book.CreateAsync(isbn, title, author, 2020, 1, checker));
+            () => Book.CreateAsync(isbn, title, author, 2020, 1, bookChecker));
 
         Assert.Contains( expectedMessage, ex.Message );
     }
@@ -52,11 +60,12 @@ public class BookTests
     public async Task CreateAsync_DuplicateISBN_Throws( )
     {
         // Dieser Test wird funktionieren, sobald du die Domain-Validierungen implementiert hast
-        var author = Author.Create("Test", "Author", DateTime.Now.AddYears(-30));
-        var checker = new FakeUniquenessChecker(false);
+        var authorChecker = new FakeAuthorUniquenessChecker();
+        var author = await Author.CreateAsync("Test", "Author", DateTime.Now.AddYears(-30), authorChecker);
+        var bookChecker = new FakeBookUniquenessChecker(false);
 
         var ex = await Assert.ThrowsAsync<DomainValidationException>(
-            () => Book.CreateAsync("9780747532699", "Title", author, 2020, 1, checker));
+            () => Book.CreateAsync("9780747532699", "Title", author, 2020, 1, bookChecker));
 
         Assert.Equal( "Ein Buch mit dieser ISBN existiert bereits.", ex.Message );
     }

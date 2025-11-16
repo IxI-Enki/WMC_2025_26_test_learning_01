@@ -4,12 +4,14 @@ using Domain.Contracts;
 namespace Application.Services;
 
 /// <summary>
-/// TODO: Implementiere den BookUniquenessChecker.
+/// BookUniquenessChecker.
 /// </summary>
-public class BookUniquenessChecker(IUnitOfWork uow) : IBookUniquenessChecker
+public class BookUniquenessChecker( IUnitOfWork uow ) : IBookUniquenessChecker
 {
-    public async Task<bool> IsUniqueAsync(int id, string isbn, CancellationToken ct = default)
+    public async Task<bool> IsUniqueAsync( int id, string isbn, CancellationToken ct = default )
     {
-        throw new NotImplementedException("BookUniquenessChecker muss noch implementiert werden!");
+        var existing = await uow.Books.GetByISBNAsync(isbn, ct);
+
+        return existing is null || existing.Id == id;
     }
 }

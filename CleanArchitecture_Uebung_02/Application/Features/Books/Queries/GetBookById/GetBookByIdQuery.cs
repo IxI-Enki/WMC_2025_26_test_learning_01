@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Models;
+using Application.Dtos;
+using MediatR;
 
-namespace Application.Features.Books.Queries.GetBookById
-{
-    internal class GetBookByIdQuery
-    {
-    }
-}
+namespace Application.Features.Books.Queries.GetBookById;
+
+public readonly record struct GetBookByIdQuery( int Id ) : IRequest<Result<GetBookDto>>;
+

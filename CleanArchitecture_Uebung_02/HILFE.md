@@ -151,7 +151,7 @@ Diese Übung deckt ab:
 1. **📐 Domain Model - Entities & Properties**
    - Book, Author, Loan mit allen Properties
    - Factory-Methoden Signaturen
-   
+
 2. **📦 DTOs - Was zu erstellen ist**
    - GetBookDto (mit AuthorName!)
    - GetAuthorDto
@@ -173,11 +173,13 @@ Diese Übung deckt ab:
 ### Wie verwende ich Mapster?
 
 **Einfaches Mapping:**
+
 ```csharp
 var dto = entity.Adapt<GetBookDto>();
 ```
 
 **Mit manuellen Anpassungen (wenn Mapster nicht alles automatisch mappt):**
+
 ```csharp
 // GetBookDto hat AuthorName, aber Book hat Author.FullName
 var dto = book.Adapt<GetBookDto>() with 
@@ -187,6 +189,7 @@ var dto = book.Adapt<GetBookDto>() with
 ```
 
 **Collection mapping:**
+
 ```csharp
 var dtos = books.Adapt<IReadOnlyCollection<GetBookDto>>();
 ```
@@ -327,8 +330,10 @@ public sealed class CreateBookCommandHandler(
 ```
 
 **💡 Tipp für GetBookDto:**
+
 - `book.Adapt<GetBookDto>()` funktioniert **NICHT** für `AuthorName`, weil das Property heißt `Author.FullName`!
 - Du musst das DTO **manuell** erstellen oder `with` verwenden:
+
   ```csharp
   var dto = book.Adapt<GetBookDto>() with { AuthorName = book.Author.FullName };
   ```
@@ -338,11 +343,13 @@ public sealed class CreateBookCommandHandler(
 ### Wie erstelle ich einen QueryHandler mit Include?
 
 **Query:**
+
 ```csharp
 public readonly record struct GetAllBooksQuery : IRequest<Result<IReadOnlyCollection<GetBookDto>>>;
 ```
 
 **Handler:**
+
 ```csharp
 public sealed class GetAllBooksQueryHandler(IUnitOfWork uow) 
     : IRequestHandler<GetAllBooksQuery, Result<IReadOnlyCollection<GetBookDto>>>
@@ -377,13 +384,17 @@ public sealed class GetAllBooksQueryHandler(IUnitOfWork uow)
 }
 ```
 
-**💡 WICHTIG:** 
+**💡 WICHTIG:**
+
 - `GetAllAsync` aus `GenericRepository` lädt **KEINE** Navigation Properties!
 - Du musst eine **spezielle Methode** in `IBookRepository` erstellen:
+
   ```csharp
   Task<IReadOnlyCollection<Book>> GetAllBooksWithAuthorAsync(CancellationToken ct = default);
   ```
+
 - In der Implementierung verwendest du `.Include(b => b.Author)`:
+
   ```csharp
   public async Task<IReadOnlyCollection<Book>> GetAllBooksWithAuthorAsync(CancellationToken ct = default)
   {
@@ -568,5 +579,5 @@ Wenn etwas nicht funktioniert:
 ---
 
 > **Viel Erfolg beim Üben! 🚀**
-
-**Erstellt für WMC Test-Vorbereitung 2025** 🎓
+>
+> **Erstellt für WMC Test-Vorbereitung 2025** 🎓

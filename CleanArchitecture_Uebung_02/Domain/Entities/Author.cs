@@ -1,6 +1,8 @@
 using Domain.Common;
+using Domain.Contracts;
 using Domain.Exceptions;
 using Domain.Specifications;
+using System.Xml.Linq;
 
 namespace Domain.Entities;
 
@@ -32,17 +34,52 @@ public class Author : BaseEntity
 
     private Author( ) { } // Für EF Core
 
-    public static Author Create(
+    public static async Task<Author> CreateAsync(
         string firstName,
         string lastName,
-        DateTime dateOfBirth )
+        DateTime dateOfBirth,
+        IAuthorUniquenessChecker uc,
+        CancellationToken ct = default )
     {
-        //throw new NotImplementedException( "Author.Create muss noch implementiert werden!" );
         ArgumentNullException.ThrowIfNull( firstName, nameof( firstName ) );
+        ArgumentNullException.ThrowIfNull( lastName, nameof( lastName ) );
 
         ValidAuthorProperties( firstName, lastName, dateOfBirth );
+        await ValidateAuthorUniqueness( 0, firstName, lastName, uc, ct );
 
         return new Author { FirstName = firstName, LastName = lastName, DateOfBirth = dateOfBirth };
+    }
+
+
+    public async Task UpdateAsync(
+        string firstName,
+        string lastName,
+        DateTime dateOfBirth,
+        IAuthorUniquenessChecker uc,
+        CancellationToken ct = default )
+    {
+        var trimmedFirstName = (firstName  ?? string.Empty).Trim();
+        var trimmedLastName = ( lastName  ?? string.Empty).Trim();
+
+        if(FirstName == trimmedFirstName &&       //
+           LastName == trimmedLastName &&          //
+           DateOfBirth == dateOfBirth) return;    // Keine Änderung
+
+        ValidAuthorProperties(
+            trimmedFirstName,                         //
+            trimmedLastName,                          //
+            dateOfBirth );                             // Validieren der Eigenschaften
+
+        await ValidateAuthorUniqueness( 
+            Id,                                           //
+            trimmedFirstName,                         //
+            trimmedLastName,                          //
+            uc,                                          //
+            ct );                                        // Überprüfen der Einzigartigkeit
+
+        FirstName = trimmedFirstName;              //
+        LastName = trimmedLastName;                 //
+        DateOfBirth = dateOfBirth;                  // Aktualisieren
     }
 
     private static void ValidAuthorProperties( string firstName, string lastName, DateTime dateOfBirth )
@@ -55,7 +92,6 @@ public class Author : BaseEntity
             AuthorSpecifications.CheckLastName(lastName),
 
             AuthorSpecifications.CheckDateOfBirth(dateOfBirth),
-
         };
         foreach(var result in validationResults)
         {
@@ -69,5 +105,20 @@ public class Author : BaseEntity
     public string FullName => $"{FirstName} {LastName}";
 
     public override string ToString( ) => FullName;
+
+    public static async Task ValidateAuthorUniqueness(
+        int id,
+        string firstName,
+        string lastName,
+        IAuthorUniquenessChecker uc,
+        CancellationToken ct = default )
+    {
+        string fullName = $"{firstName} {lastName}";
+
+        if(!await uc.IsUniqueAsync( id, fullName, ct ))
+            throw new DomainValidationException(
+                  "Uniqueness",
+                  "Ein Author mit der gleichem Namen existiert bereits." );
+    }
 }
 

@@ -45,8 +45,19 @@ public static class AuthorSpecifications
 
     public static void ValidateAuthorInternal( string firstName, string lastName, DateTime dateOfBirth )
     {
-
-        throw new NotImplementedException( "ValidateAuthorInternal muss noch implementiert werden!" );
+        var validationResults = new List<DomainValidationResult>
+        {
+            CheckFirstName(firstName),
+            CheckLastName(lastName),
+            CheckDateOfBirth(dateOfBirth)
+        };
+        
+        foreach (var result in validationResults)
+        {
+            if (!result.IsValid)
+            {
+                throw new DomainValidationException(result.Property, result.ErrorMessage!);
+            }
+        }
     }
 }
-

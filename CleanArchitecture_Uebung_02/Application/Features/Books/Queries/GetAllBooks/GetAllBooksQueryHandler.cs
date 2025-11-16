@@ -13,13 +13,11 @@ namespace Application.Features.Books.Queries.GetAllBooks
         public async Task<Result<IReadOnlyCollection<GetBookDto>>>
             Handle( GetAllBooksQuery request, CancellationToken cancellationToken )
         {
-            //throw new NotImplementedException( );
             var entities = await uow.Books.GetAllAsync(ct: cancellationToken );
 
             var dtos = entities.Adapt<IReadOnlyCollection<GetBookDto>>( );
 
             return Result<IReadOnlyCollection<GetBookDto>>.Success( dtos );
-
         }
     }
 }

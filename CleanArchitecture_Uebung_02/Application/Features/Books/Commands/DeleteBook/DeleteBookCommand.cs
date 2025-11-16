@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Models;
+using MediatR;
 
-namespace Application.Features.Books.Commands.DeleteBook
-{
-    internal class DeleteBookCommand
-    {
-    }
-}
+namespace Application.Features.Books.Commands.DeleteBook;
+
+public readonly record struct DeleteBookCommand( int Id ) : IRequest<Result<bool>>;
+

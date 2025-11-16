@@ -20,7 +20,9 @@ public sealed class DeleteSensorCommandHandler(IUnitOfWork uow) : IRequestHandle
         }
         // Sensor entfernen und Änderungen speichern
         uow.Sensors.Remove(entity);
+
         await uow.SaveChangesAsync(cancellationToken);
+
         return Result<bool>.NoContent();
     }
 }

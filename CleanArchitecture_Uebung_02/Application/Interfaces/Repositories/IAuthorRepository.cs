@@ -8,5 +8,6 @@ namespace Application.Interfaces.Repositories;
 public interface IAuthorRepository : IGenericRepository<Author>
 {
     Task<IReadOnlyCollection<Author>> GetAuthorsWithBooksAsync(CancellationToken ct = default);
+    Task<Author?> GetByFullName( string fullName, CancellationToken ct );
 }
 

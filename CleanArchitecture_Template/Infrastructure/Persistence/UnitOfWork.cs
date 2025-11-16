@@ -7,43 +7,44 @@ namespace Infrastructure.Persistence;
 /// <summary>
 /// Unit of Work aggregiert Repositories und speichert Änderungen transaktional.
 /// </summary>
-public class UnitOfWork(AppDbContext dbContext, 
-        ISensorRepository sensors, IMeasurementRepository measurements) : IUnitOfWork, IDisposable
+public class UnitOfWork(
+      AppDbContext dbContext ,
+      ISensorRepository sensors ,
+      IMeasurementRepository measurements )
+            : IUnitOfWork, IDisposable
 {
-    private readonly AppDbContext _dbContext = dbContext;
-    private bool _disposed;
+      private readonly AppDbContext _dbContext = dbContext;
 
-    /// <summary>
-    /// Zugriff auf Sensor-Repository.
-    /// </summary>
-    public ISensorRepository Sensors { get; } = sensors;
+      private bool _disposed;
 
-    /// <summary>
-    /// Zugriff auf Measurement-Repository.
-    /// </summary>
-    public IMeasurementRepository Measurements { get; } = measurements;
+      /// <summary>
+      /// Zugriff auf Sensor-Repository.
+      /// </summary>
+      public ISensorRepository Sensors => sensors;
 
-    /// <summary>
-    /// Persistiert alle Änderungen in die DB. Gibt die Anzahl der betroffenen Zeilen zurück.
-    /// </summary>
-    public Task<int> SaveChangesAsync(CancellationToken ct = default) => _dbContext.SaveChangesAsync(ct);
+      /// <summary>
+      /// Zugriff auf Measurement-Repository.
+      /// </summary>
+      public IMeasurementRepository Measurements => measurements;
 
-    /// <summary>
-    /// Gibt verwaltete Ressourcen frei. Der DbContext gehört zum Scope dieser UoW und wird hier entsorgt.
-    /// </summary>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
+      /// <summary>
+      /// Persistiert alle Änderungen in die DB. Gibt die Anzahl der betroffenen Zeilen zurück.
+      /// </summary>
+      public Task<int> SaveChangesAsync( CancellationToken ct = default ) => _dbContext.SaveChangesAsync( ct );
 
-    protected virtual void Dispose(bool disposing)
-    {
-        if (_disposed) return;
-        if (disposing)
-        {
-            _dbContext.Dispose();
-        }
-        _disposed = true;
-    }
+      /// <summary>
+      /// Gibt verwaltete Ressourcen frei. Der DbContext gehört zum Scope dieser UoW und wird hier entsorgt.
+      /// </summary>
+      public void Dispose( )
+      {
+            Dispose( true );
+            GC.SuppressFinalize( this );
+      }
+
+      protected virtual void Dispose( bool disposing )
+      {
+            if(_disposed) return;
+            if(disposing) _dbContext.Dispose( );
+            _disposed = true;
+      }
 }

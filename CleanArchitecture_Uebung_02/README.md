@@ -4,11 +4,14 @@
 
 **Domäne:** Bibliotheksverwaltung mit drei Entitäten:
 
-- 📚 **Book** (Buch) - *ALLES mit NotImplementedException!*
-- ✍️ **Author** (Autor) - *ALLES mit NotImplementedException!*
-- 📖 **Loan** (Ausleihe) - *ALLES mit NotImplementedException!*
+- 📚 **Book** (Buch) - *~75% implementiert! (GET, POST, DELETE fertig; UPDATE fehlt noch)*
+- ✍️ **Author** (Autor) - *~95% implementiert! (GET All, GET ById fertig; UPDATE fehlt noch)*
+- 📖 **Loan** (Ausleihe) - *Noch nicht implementiert (0%)*
 
-**Wichtig:** Diese Übung entspricht dem Professor-Stil! Fast ALLES ist mit `NotImplementedException` versehen und muss implementiert werden!
+**Aktueller Stand (2025-11-16):**
+- ✅ **Phase 1 (Authors):** GET All, GET ById, Domain-Validierungen **FERTIG!**
+- ✅ **Phase 2 (Books):** GET All, GET ById, POST, DELETE, Domain-Validierungen **FERTIG!**
+- ⏳ **Phase 3 (Loans):** Noch nicht begonnen
 
 ---
 
@@ -27,21 +30,24 @@
 | `AvailableCopies` | `int`               | Anzahl verfügbarer Exemplare          |
 | `Loans`           | `ICollection<Loan>` | Navigation Property zu Ausleihen      |
 
-**Factory-Methoden (zu implementieren):**
+**Factory-Methoden:**
 
 ```csharp
+// ✅ FERTIG IMPLEMENTIERT!
 static Task<Book> CreateAsync(string isbn, string title, Author author, 
     int publicationYear, int availableCopies, IBookUniquenessChecker uniquenessChecker, 
     CancellationToken ct = default)
 
+// ⚠️ NOCH ZU IMPLEMENTIEREN:
 Task UpdateAsync(string isbn, string title, int authorId, int publicationYear, 
     int availableCopies, IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default)
 ```
 
 **Fertige Methoden:**
 
-- `DecreaseCopies()` - Reduziert AvailableCopies um 1 (beim Ausleihen)
-- `IncreaseCopies()` - Erhöht AvailableCopies um 1 (beim Zurückgeben)
+- ✅ `CreateAsync()` - Erstellt ein neues Buch mit Validierungen
+- ✅ `DecreaseCopies()` - Reduziert AvailableCopies um 1 (beim Ausleihen)
+- ✅ `IncreaseCopies()` - Erhöht AvailableCopies um 1 (beim Zurückgeben)
 
 ---
 
@@ -59,9 +65,10 @@ Task UpdateAsync(string isbn, string title, int authorId, int publicationYear,
 
 - `FullName` → `$"{FirstName} {LastName}"` (bereits implementiert)
 
-**Factory-Methode (zu implementieren):**
+**Factory-Methode:**
 
 ```csharp
+// ✅ FERTIG IMPLEMENTIERT!
 static Author Create(string firstName, string lastName, DateTime dateOfBirth)
 ```
 
@@ -157,11 +164,12 @@ public sealed record GetLoanDto(
 
 ## 📝 Commands & Queries - Signaturen
 
-### CreateBookCommand
+### CreateBookCommand ✅ FERTIG!
 
 📁 `Application/Features/Books/Commands/CreateBook/CreateBookCommand.cs`
 
 ```csharp
+// ✅ FERTIG IMPLEMENTIERT!
 using Application.Common.Results;
 using Application.Dtos;
 using MediatR;
@@ -344,82 +352,90 @@ public interface ILoanRepository : IGenericRepository<Loan>
 
 ---
 
-## 🎯 Was du beim Test implementieren musst (laut Kollegin)
+## 🎯 Implementierungs-Status
 
-### ✏️ 1. Domain-Validierungen
+### ✅ 1. Domain-Validierungen (FERTIG!)
 
-**Aufgabe:** Validations auf Domain-Ebene implementieren
+**Status:** ✅ **Für Authors & Books vollständig implementiert!**
 
 📁 **Dateien:**
 
-- `Domain/Specifications/BookSpecifications.cs`
-- `Domain/Specifications/AuthorSpecifications.cs`
-- `Domain/Specifications/LoanSpecifications.cs`
-
-**Was zu tun ist:**
-
-- Alle `Check...` Methoden implementieren (CheckISBN, CheckTitle, CheckAuthorId, usw.)
-- `ValidateXXXInternal` Methoden implementieren
-- `ValidateXXXExternal` Methoden implementieren (für Uniqueness)
+- ✅ `Domain/Specifications/BookSpecifications.cs` - **FERTIG!**
+  - ✅ Alle `Check...` Methoden (CheckISBN, CheckTitle, CheckAuthorId, etc.)
+  - ✅ `ValidateBookInternal` implementiert
+  - ✅ `ValidateBookExternal` implementiert
+- ✅ `Domain/Specifications/AuthorSpecifications.cs` - **FERTIG!**
+  - ✅ Alle `Check...` Methoden (CheckFirstName, CheckLastName, CheckDateOfBirth)
+  - ✅ `ValidateAuthorInternal` implementiert
+- ⏳ `Domain/Specifications/LoanSpecifications.cs` - **Noch nicht gestartet**
 
 **💡 Tipp:** Schaue dir `CleanArchitecture_Template/Domain/Specifications/SensorSpecifications.cs` an!
 
 ---
 
-### ✏️ 2. Domain Entities (Create/Update Methoden)
+### ✅ 2. Domain Entities (Create/Update Methoden)
 
-**Aufgabe:** Factory-Methoden in Entitäten implementieren
+**Status:** ✅ **Authors & Books Create-Methoden fertig!**
 
 📁 **Dateien:**
 
-- `Domain/Entities/Book.cs` - `CreateAsync`, `UpdateAsync`
-- `Domain/Entities/Author.cs` - `Create`
-- `Domain/Entities/Loan.cs` - `Create`
+- ✅ `Domain/Entities/Book.cs` - `CreateAsync` **FERTIG!**, `UpdateAsync` ⚠️ noch offen
+- ✅ `Domain/Entities/Author.cs` - `Create` **FERTIG!**
+- ⏳ `Domain/Entities/Loan.cs` - `Create` noch nicht implementiert
 
-**Was zu tun ist:**
+**Was implementiert ist:**
 
-- ArgumentNullException prüfen
-- Trimmen von Strings
-- Validierungen aufrufen
-- Objekt erstellen und zurückgeben
+- ✅ ArgumentNullException prüfen
+- ✅ Trimmen von Strings
+- ✅ Validierungen aufrufen
+- ✅ Objekt erstellen und zurückgeben
 
 ---
 
-### ✏️ 3. DTOs erstellen
+### ✅ 3. DTOs erstellen (FERTIG für Authors & Books!)
 
-**Aufgabe:** Data Transfer Objects für API-Responses erstellen
+**Status:** ✅ **GetAuthorDto & GetBookDto fertig implementiert!**
 
-📁 **Datei:** `Application/Dtos/` (aktuell nur .gitkeep vorhanden)
+📁 **Datei:** `Application/Dtos/`
 
-**Was zu erstellen ist:**
+**Was bereits existiert:**
 
-- `GetBookDto.cs` - DTO für Book-Responses (siehe Abschnitt "📦 DTOs" oben für vollständige Definition!)
-- `GetAuthorDto.cs` - DTO für Author-Responses (siehe Abschnitt "📦 DTOs" oben!)
-- `GetLoanDto.cs` - DTO für Loan-Responses (siehe Abschnitt "📦 DTOs" oben!)
+- ✅ `GetBookDto.cs` - **FERTIG IMPLEMENTIERT!**
+- ✅ `GetAuthorDto.cs` - **FERTIG IMPLEMENTIERT!**
+- ⏳ `GetLoanDto.cs` - Noch zu erstellen (siehe Abschnitt "📦 DTOs" oben für Definition!)
 
 **💡 Tipp:** DTOs sind einfache Records ohne Logik! Die vollständigen Definitionen findest du im Abschnitt "📦 DTOs" oben.
 
 ---
 
-### ✏️ 4. Commands & Queries mit Handlers und Validators
+### ✅ 4. Commands & Queries mit Handlers und Validators
 
-**Aufgabe:** Alle Commands/Queries mit Handler und Validator selbst erstellen
+**Status:** ✅ **Authors & Books Queries/Commands größtenteils fertig!**
 
-📁 **Book-Features (nur Ordner mit .gitkeep vorhanden):**
+📁 **Author-Features:**
 
-- `Application/Features/Books/Commands/CreateBook/`
-  - CreateBookCommand.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
-  - CreateBookCommandHandler.cs ❌
-  - CreateBookCommandValidator.cs ❌
-- `Application/Features/Books/Commands/DeleteBook/`
-  - DeleteBookCommand.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
-  - DeleteBookCommandHandler.cs ❌
-- `Application/Features/Books/Queries/GetAllBooks/`
-  - GetAllBooksQuery.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
-  - GetAllBooksQueryHandler.cs ❌
-- `Application/Features/Books/Queries/GetBookById/`
-  - GetBookByIdQuery.cs ❌ (siehe Abschnitt "📝 Commands & Queries - Signaturen" oben!)
-  - GetBookByIdQueryHandler.cs ❌
+- ✅ `Application/Features/Authors/Queries/GetAllAuthors/` - **FERTIG!**
+  - ✅ GetAllAuthorsQuery.cs
+  - ✅ GetAllAuthorsQueryHandler.cs
+- ✅ `Application/Features/Authors/Queries/GetAuthorById/` - **FERTIG!**
+  - ✅ GetAuthorByIdQuery.cs
+  - ✅ GetAuthorByIdQueryHandler.cs (mit Null-Check!)
+
+📁 **Book-Features:**
+
+- ✅ `Application/Features/Books/Commands/CreateBook/` - **FERTIG!**
+  - ✅ CreateBookCommand.cs (mit korrekten Properties!)
+  - ✅ CreateBookCommandHandler.cs (vollständig implementiert!)
+  - ⚠️ CreateBookCommandValidator.cs (noch leer, optional)
+- ✅ `Application/Features/Books/Commands/DeleteBook/` - **FERTIG!**
+  - ✅ DeleteBookCommand.cs
+  - ✅ DeleteBookCommandHandler.cs
+- ✅ `Application/Features/Books/Queries/GetAllBooks/` - **FERTIG!**
+  - ✅ GetAllBooksQuery.cs
+  - ✅ GetAllBooksQueryHandler.cs
+- ✅ `Application/Features/Books/Queries/GetBookById/` - **FERTIG!**
+  - ✅ GetBookByIdQuery.cs
+  - ✅ GetBookByIdQueryHandler.cs (mit Null-Check!)
 
 📁 **Loan-Features (nur Ordner vorhanden):**
 
@@ -435,16 +451,16 @@ public interface ILoanRepository : IGenericRepository<Loan>
 
 ---
 
-### ✏️ 5. Dependency Injection
+### ✅ 5. Dependency Injection (FERTIG!)
 
-**Aufgabe:** Services bei DI registrieren
+**Status:** ✅ **IBookUniquenessChecker ist registriert!**
 
 📁 **Datei:** `Application/DependencyInjection.cs`
 
-**Was zu tun ist:**
+**Was bereits implementiert ist:**
 
 ```csharp
-// Diese Zeile ist auskommentiert - du musst sie aktivieren:
+// ✅ FERTIG - IBookUniquenessChecker ist registriert!
 services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 ```
 
@@ -465,24 +481,33 @@ services.AddScoped<IBookUniquenessChecker, BookUniquenessChecker>();
 
 ---
 
-### ✏️ 7. Controller implementieren
+### ✅ 7. Controller implementieren
 
-**Aufgabe:** Controller-Endpoints implementieren
+**Status:** ✅ **Authors & Books Controller größtenteils fertig!**
 
 📁 **Dateien:**
 
-- `Api/Controllers/BooksController.cs` - alle Methoden ❌
-- `Api/Controllers/LoansController.cs` - komplett leer
+- ✅ `Api/Controllers/AutorsController.cs` - **FERTIG!**
+  - ✅ GetAll() - FERTIG
+  - ✅ GetById(int id) - FERTIG
+- ✅ `Api/Controllers/BooksController.cs` - **~80% FERTIG!**
+  - ✅ GetAll() - FERTIG
+  - ✅ GetById(int id) - FERTIG
+  - ✅ Create() - FERTIG
+  - ✅ Delete(int id) - FERTIG
+  - ⚠️ Update(int id) - Noch nicht implementiert
+- ⏳ `Api/Controllers/LoansController.cs` - Noch nicht gestartet
 
-**Was zu tun ist:**
+**Implementiert mit:**
 
-- MediatR verwenden: `await mediator.Send(...)`
-- Result in ActionResult umwandeln: `.ToActionResult(this)`
-- ProducesResponseType Attribute sind schon da
+- ✅ MediatR: `await mediator.Send(...)`
+- ✅ Result in ActionResult: `.ToActionResult(this)`
+- ✅ ProducesResponseType Attribute
 
 **Beispiel:**
 
 ```csharp
+// ✅ FERTIG IMPLEMENTIERT!
 [HttpGet]
 public async Task<IActionResult> GetAll(CancellationToken ct)
 {

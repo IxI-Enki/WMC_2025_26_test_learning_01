@@ -65,7 +65,7 @@ public static class BookSpecifications
     }
 
     /// <summary>
-    /// TODO: Implementiere ValidateBookInternal.
+    /// Validiert alle internen Book-Properties.
     /// </summary>
     public static void ValidateBookInternal(
         string isbn,
@@ -74,18 +74,31 @@ public static class BookSpecifications
         int publicationYear,
         int availableCopies )
     {
-        throw new NotImplementedException( "ValidateBookInternal muss noch implementiert werden!" );
-        return;
+        var validationResults = new List<DomainValidationResult>
+        {
+            CheckISBN(isbn),
+            CheckTitle(title),
+            CheckAuthorId(authorId),
+            CheckPublicationYear(publicationYear),
+            CheckAvailableCopies(availableCopies)
+        };
+        
+        foreach (var result in validationResults)
+        {
+            if (!result.IsValid)
+            {
+                throw new DomainValidationException(result.Property, result.ErrorMessage!);
+            }
+        }
     }
 
     /// <summary>
-    /// TODO: Implementiere ValidateBookExternal.
+    /// Validiert externe Book-Eigenschaften (Uniqueness).
     /// </summary>
     public static async Task ValidateBookExternal( int id, string isbn,
         IBookUniquenessChecker uniquenessChecker, CancellationToken ct = default )
     {
-        throw new NotImplementedException( "ValidateBookExternal muss noch implementiert werden!" );
-        return;
-
+        if (!await uniquenessChecker.IsUniqueAsync(id, isbn, ct))
+            throw new DomainValidationException("ISBN", "Ein Buch mit dieser ISBN existiert bereits.");
     }
 }

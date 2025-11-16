@@ -29,4 +29,9 @@ public class BookRepository(AppDbContext ctx) : GenericRepository<Book>(ctx), IB
     {
         throw new NotImplementedException( );
     }
+
+    public Task<Book?> GetByBookIdAsync( int bookId, CancellationToken ct = default )
+    {
+        throw new NotImplementedException( );
+    }
 }
