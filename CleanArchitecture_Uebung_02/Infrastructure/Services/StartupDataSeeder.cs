@@ -45,12 +45,11 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
 
         var seedData = await ReadSeedDataFromJson(cancellationToken);
         
-        // Authors hinzufügen
+        // Authors UND Books hinzufügen (EF Core tracked die Relationships automatisch)
         dbContext.Authors.AddRange(seedData.Authors);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        // Books hinzufügen (nachdem Authors gespeichert wurden wegen FK)
         dbContext.Books.AddRange(seedData.Books);
+        
+        // EINE SaveChanges-Operation für beide - EF Core setzt die FKs automatisch!
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
