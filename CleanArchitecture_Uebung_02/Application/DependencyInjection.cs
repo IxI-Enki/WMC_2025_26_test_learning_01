@@ -18,6 +18,7 @@ public static class DependencyInjection
     {
         // Mapster Mappings konfigurieren
         BookMappingConfig.ConfigureBookMappings();
+        LoanMappingConfig.ConfigureLoanMappings();
 
         // CQRS + MediatR + FluentValidation
         services.AddMediatR(cfg =>
