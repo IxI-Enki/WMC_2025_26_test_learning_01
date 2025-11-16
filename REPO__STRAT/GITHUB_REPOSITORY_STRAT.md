@@ -54,7 +54,7 @@
 │                   (Student's Entry Point)                           │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
-│  📁 CleanArchitecture_Template/                  ← ✅ KOMPLETT    │
+│  📁 CleanArchitecture_Template/                  ← ✅ KOMPLETT     │
 │     └─ Vollständige Referenz-Implementierung                       │
 │                                                                     │
 │  📁 CleanArchitecture_Uebung_01/                 ← 🎓 LEVEL 1     │
