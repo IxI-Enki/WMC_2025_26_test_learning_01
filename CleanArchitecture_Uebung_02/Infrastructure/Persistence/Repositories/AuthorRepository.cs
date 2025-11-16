@@ -23,7 +23,7 @@ public class AuthorRepository( AppDbContext ctx )
     }
 
     /// <summary>
-    /// Findet einen Author anhand des vollständigen Namens.
+    /// Findet einen Author anhand des vollständigen Namens (FirstName + LastName).
     /// </summary>
     public async Task<Author?> GetByFullName( string fullName, CancellationToken ct )
     {
@@ -31,11 +31,9 @@ public class AuthorRepository( AppDbContext ctx )
             .FirstOrDefaultAsync( a => (a.FirstName + " " + a.LastName) == fullName, ct );
     }
 
-    public async Task<Author?> GetByIdAsync( int id, CancellationToken ct )
-    {
-        return await Set
-            .FirstOrDefaultAsync( a => a.Id == id, ct );
-    }
+    /// <summary>
+    /// Findet einen Author über die ISBN eines seiner Bücher (mit Books Navigation Property).
+    /// </summary>
     public async Task<Author?> GetByISBNAsync( string isbn, CancellationToken ct )
     {
         var set
