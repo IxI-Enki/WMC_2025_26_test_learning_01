@@ -1,12 +1,13 @@
-# 📈 Exercise Progression Strategy
+<!-- markdownlint-disable -->
+# Exercise Progression Strategy
 
-## 🎯 Übersicht der Schwierigkeitsgrade
+## Übersicht der Schwierigkeitsgrade
 
 Dieses Dokument definiert die präzise Progression von einfachen zu komplexen Übungen im WMC Clean Architecture Repository.
 
 ---
 
-## 🏗️ Aufbau-Prinzipien
+## Aufbau-Prinzipien
 
 ```ascii
 ┌────────────────────────────────────────────────────────┐
@@ -15,34 +16,34 @@ Dieses Dokument definiert die präzise Progression von einfachen zu komplexen Ü
 ├────────────────────────────────────────────────────────┤
 │                                                        │
 │  LEVEL 1: Maximum Guidance (Guided Implementation)     │
-│  ┌────────────────────────────────────────┐            │
-│  │  Vollständige Struktur               │            │
-│  │ ✅ 1-2 komplette Beispiele             │            │
-│  │ ⚠️  TODO: Methoden-Implementierungen   │            │
-│  └────────────────────────────────────────┘            │
+│  ┌───────────────────────────────────────┐             │
+│  │  Vollständige Struktur                │             │
+│  │    1-2 komplette Beispiele           │             │
+│  │    TODO: Methoden-Implementierungen  │             │
+│  └───────────────────────────────────────┘             │
 │            ↓ Gerüst wird reduziert                     │
 │                                                        │
 │  LEVEL 2: Structural Guidance                          │
 │  ┌────────────────────────────────────────┐            │
-│  │ ✅ Ordnerstruktur komplett             │            │
-│  │ ⚠️  Klassen: Nur Gerüste               │            │
-│  │ ⚠️  TODO: Komplette Implementierungen  │            │
+│  │    Ordnerstruktur komplett            │            │
+│  │    Klassen: Nur Gerüste               │            │
+│  │    TODO: Komplette Implementierungen  │            │
 │  └────────────────────────────────────────┘            │
 │            ↓ Nur noch Konzept vorgegeben               │
 │                                                        │
 │  LEVEL 3: Conceptual Guidance                          │
 │  ┌────────────────────────────────────────┐            │
-│  │ ✅ README mit Anforderungen            │            │
-│  │ ✅ Tests als Spezifikation             │            │
-│  │ ⚠️  TODO: Alles andere                 │            │
+│  │    README mit Anforderungen           │            │
+│  │    Tests als Spezifikation            │            │
+│  │    TODO: Alles andere                 │            │
 │  └────────────────────────────────────────┘            │
 │            ↓ Prüfungssituation                         │
 │                                                        │
 │  LEVEL 4: Real-World Scenario (Exam)                   │
 │  ┌────────────────────────────────────────┐            │
-│  │ ✅ Nur Anforderungsdokument            │            │
-│  │ ⚠️  TODO: Komplette Implementierung    │            │
-│  │ ⏱️  Zeitlimit: 3-4 Stunden             │            │
+│  │    Nur Anforderungsdokument           │            │
+│  │    TODO: Komplette Implementierung    │            │
+│  │    Zeitlimit: 3-4 Stunden             │            │
 │  └────────────────────────────────────────┘            │
 │                                                        │
 └────────────────────────────────────────────────────────┘
@@ -50,92 +51,103 @@ Dieses Dokument definiert die präzise Progression von einfachen zu komplexen Ü
 
 ---
 
-## 🎓 Level 1: Guided Implementation
+##   Level 1: Guided Implementation
 
-### 📊 Ziel
+###  Ziel
 
 **Student lernt:** Die MUSTER und STRUKTUREN von Clean Architecture
 
 **Fokus:** Domain Validations, CQRS-Commands, Controller-Actions
 
-### 📁 Beispiel: Event Management System
+<!--
+
+             
+    
+             
+             
+            
+    
+
+-->
+
+###   Beispiel: Event Management System
 
 ```ascii
 CleanArchitecture_Uebung_01/
 │
-├─ 📂 Domain/
+├─   Domain/
 │  ├─ Entities/
-│  │  ├─ Venue.cs                    ✅ KOMPLETT (als Beispiel)
-│  │  ├─ Event.cs                    ⚠️  Factory-Methode TODO
-│  │  └─ Ticket.cs                   ⚠️  Factory-Methode TODO
+│  │  ├─ Venue.cs                        KOMPLETT (als Beispiel)
+│  │  ├─ Event.cs                        Factory-Methode TODO
+│  │  └─ Ticket.cs                       Factory-Methode TODO
 │  │
 │  ├─ ValidationSpecifications/
-│  │  ├─ VenueSpecifications.cs      ✅ KOMPLETT (als Beispiel)
-│  │  ├─ EventSpecifications.cs      ⚠️  3 Check-Methoden TODO
-│  │  └─ TicketSpecifications.cs     ⚠️  2 Check-Methoden TODO
+│  │  ├─ VenueSpecifications.cs          KOMPLETT (als Beispiel)
+│  │  ├─ EventSpecifications.cs          3 Check-Methoden TODO
+│  │  └─ TicketSpecifications.cs         2 Check-Methoden TODO
 │  │
 │  └─ Contracts/
-│     ├─ IVenueUniquenessChecker.cs  ✅ VORHANDEN
-│     ├─ IEventUniquenessChecker.cs  ⚠️  TODO: Interface erstellen
-│     └─ ITicketUniquenessChecker.cs ⚠️  TODO: Interface erstellen
+│     ├─ IVenueUniquenessChecker.cs      VORHANDEN
+│     ├─ IEventUniquenessChecker.cs      TODO: Interface erstellen
+│     └─ ITicketUniquenessChecker.cs     TODO: Interface erstellen
 │
-├─ 📂 Application/
+├─   Application/
 │  ├─ Features/
-│  │  ├─ Venues/                     ✅ KOMPLETT (als Beispiel)
+│  │  ├─ Venues/                         KOMPLETT (als Beispiel)
 │  │  │  ├─ Commands/
 │  │  │  │  ├─ CreateVenue/
-│  │  │  │  │  ├─ CreateVenueCommand.cs        ✅
-│  │  │  │  │  ├─ CreateVenueCommandHandler.cs ✅
-│  │  │  │  │  └─ CreateVenueCommandValidator.cs ✅
-│  │  │  │  ├─ UpdateVenue/          ✅ KOMPLETT
-│  │  │  │  └─ DeleteVenue/          ✅ KOMPLETT
+│  │  │  │  │  ├─ CreateVenueCommand.cs            
+│  │  │  │  │  ├─ CreateVenueCommandHandler.cs     
+│  │  │  │  │  └─ CreateVenueCommandValidator.cs   
+│  │  │  │  ├─ UpdateVenue/                          KOMPLETT
+│  │  │  │  └─ DeleteVenue/                          KOMPLETT
 │  │  │  └─ Queries/
-│  │  │     ├─ GetAllVenues/         ✅ KOMPLETT
-│  │  │     └─ GetVenueById/         ✅ KOMPLETT
+│  │  │     ├─ GetAllVenues/                         KOMPLETT
+│  │  │     └─ GetVenueById/                         KOMPLETT
 │  │  │
-│  │  ├─ Events/                     ⚠️  NUR Ordner-Struktur
+│  │  ├─ Events/                                     NUR Ordner-Struktur
 │  │  │  ├─ Commands/
 │  │  │  │  ├─ CreateEvent/
-│  │  │  │  │  ├─ CreateEventCommand.cs        ⚠️  TODO
-│  │  │  │  │  ├─ CreateEventCommandHandler.cs ⚠️  TODO
-│  │  │  │  │  └─ CreateEventCommandValidator.cs ⚠️  TODO
-│  │  │  │  └─ DeleteEvent/          ⚠️  TODO
+│  │  │  │  │  ├─ CreateEventCommand.cs              TODO
+│  │  │  │  │  ├─ CreateEventCommandHandler.cs       TODO
+│  │  │  │  │  └─ CreateEventCommandValidator.cs     TODO
+│  │  │  │  └─ DeleteEvent/            TODO
 │  │  │  └─ Queries/
-│  │  │     ├─ GetAllEvents/         ⚠️  Query TODO, Handler TODO
-│  │  │     └─ GetEventById/         ⚠️  TODO
+│  │  │     ├─ GetAllEvents/           Query TODO, Handler TODO
+│  │  │     └─ GetEventById/           TODO
 │  │  │
-│  │  └─ Tickets/                    ⚠️  NUR Ordner-Struktur
-│  │     ├─ Commands/CreateTicket/   ⚠️  TODO
-│  │     └─ Queries/GetAllTickets/   ⚠️  TODO
+│  │  └─ Tickets/                      NUR Ordner-Struktur
+│  │     ├─ Commands/CreateTicket/     TODO
+│  │     └─ Queries/GetAllTickets/     TODO
 │  │
 │  └─ Services/
-│     ├─ VenueUniquenessChecker.cs   ✅ KOMPLETT
-│     ├─ EventUniquenessChecker.cs   ⚠️  TODO
-│     └─ TicketUniquenessChecker.cs  ⚠️  TODO
+│     ├─ VenueUniquenessChecker.cs     KOMPLETT
+│     ├─ EventUniquenessChecker.cs     TODO
+│     └─ TicketUniquenessChecker.cs    TODO
 │
-├─ 📂 Infrastructure/                 ✅ KOMPLETT VORGEGEBEN
+├─   Infrastructure/                  KOMPLETT VORGEGEBEN
 │  ├─ Persistence/
-│  │  ├─ AppDbContext.cs             ✅ Alle Entities konfiguriert
-│  │  ├─ Repositories/               ✅ Alle Repos vorhanden
-│  │  └─ UnitOfWork.cs               ✅ Fertig
+│  │  ├─ AppDbContext.cs               Alle Entities konfiguriert
+│  │  ├─ Repositories/                 Alle Repos vorhanden
+│  │  └─ UnitOfWork.cs                 Fertig
 │  └─ Services/
-│     └─ StartupDataSeeder.cs        ✅ CSV-Import fertig
+│     └─ StartupDataSeeder.cs          CSV-Import fertig
 │
-├─ 📂 Api/
+├─   Api/
 │  └─ Controllers/
-│     ├─ VenuesController.cs         ✅ KOMPLETT (als Beispiel)
-│     ├─ EventsController.cs         ⚠️  5 Actions TODO
-│     └─ TicketsController.cs        ⚠️  3 Actions TODO
+│     ├─ VenuesController.cs           KOMPLETT (als Beispiel)
+│     ├─ EventsController.cs           5 Actions TODO
+│     └─ TicketsController.cs          3 Actions TODO
 │
-├─ 📂 Domain.Tests/
-│  ├─ VenueTests.cs                  ✅ KOMPLETT
-│  ├─ EventTests.cs                  ✅ Tests vorhanden (rot)
-│  └─ TicketTests.cs                 ✅ Tests vorhanden (rot)
+├─   Domain.Tests/
+│  ├─ VenueTests.cs                    KOMPLETT
+│  ├─ EventTests.cs                    Tests vorhanden (rot)
+│  └─ TicketTests.cs                   Tests vorhanden (rot)
 │
-├─ 📂 Api.Tests/
-│  └─ VenuesEndpointTests.cs         ✅ Integration Tests
+├─   Api.Tests/
+│  └─ VenuesEndpointTests.cs           Integration Tests
 │
-└─ 📄 README.md                       ✅ SEHR AUSFÜHRLICH
+└─   README.md                        SEHR AUSFÜHRLICH
    ├─ Lernziele
    ├─ Architektur-Übersicht
    ├─ Aufgaben mit Beispielen
@@ -143,19 +155,19 @@ CleanArchitecture_Uebung_01/
    └─ Testing & Submission
 ```
 
-### ⚙️ Was Student implementiert
+###  Was Student implementiert
 
-| Bereich            | Was TODO                         | Beispiel vorhanden       | Tests vorhanden |
-| ------------------ | -------------------------------- | ------------------------ | --------------- |
-| Domain Validations | ✅ 3 EventSpecifications-Methoden | ✅ VenueSpecifications    | ✅ Domain.Tests  |
-| Entity Factory     | ✅ Event.CreateAsync()            | ✅ Venue.CreateAsync()    | ✅ Domain.Tests  |
-| Commands           | ✅ CreateEvent, DeleteEvent       | ✅ Venue-Commands         | ⚠️  Zu erstellen |
-| Queries            | ✅ GetAllEvents, GetEventById     | ✅ Venue-Queries          | ⚠️  Zu erstellen |
-| Controller         | ✅ 5 Actions in EventsController  | ✅ VenuesController       | ✅ Api.Tests     |
-| UniquenessChecker  | ✅ EventUniquenessChecker         | ✅ VenueUniquenessChecker | -               |
-| DI Registration    | ✅ In DependencyInjection.cs      | ✅ Beispiel vorhanden     | -               |
+| Bereich            | Was TODO                          | Beispiel vorhanden        | Tests vorhanden |
+| ------------------ | --------------------------------- | ------------------------- | --------------- |
+| Domain Validations |   3 EventSpecifications-Methoden |   VenueSpecifications    |   Domain.Tests |
+| Entity Factory     |   Event.CreateAsync()            |   Venue.CreateAsync()    |   Domain.Tests |
+| Commands           |   CreateEvent, DeleteEvent       |   Venue-Commands         |   Zu erstellen |
+| Queries            |   GetAllEvents, GetEventById     |   Venue-Queries          |   Zu erstellen |
+| Controller         |   5 Actions in EventsController  |   VenuesController       |   Api.Tests    |
+| UniquenessChecker  |   EventUniquenessChecker         |   VenueUniquenessChecker | -               |
+| DI Registration    |   In DependencyInjection.cs      |   Beispiel vorhanden     | -               |
 
-### 📝 README-Struktur für Level 1
+###   README-Struktur für Level 1
 
 ```markdown
 # Event Management System - Clean Architecture Übung
@@ -215,7 +227,7 @@ CleanArchitecture_Uebung_01/
 □ Code kompiliert ohne Warnings
 ```
 
-### ✅ Erfolgskriterien Level 1
+###  Erfolgskriterien Level 1
 
 - [ ] Student kann Domain Validations nach Muster implementieren
 - [ ] Student versteht Factory-Methoden Pattern
@@ -228,29 +240,29 @@ CleanArchitecture_Uebung_01/
 
 ---
 
-## 🎓 Level 2: Structural Guidance
+##   Level 2: Structural Guidance
 
-### 📊 Ziel
+###  Ziel - Level 2
 
 **Student lernt:** Selbstständig Commands/Queries anlegen, Repository-Methoden erweitern
 
 **Fokus:** Navigation Properties, CSV-Seeding, Custom Repository Methods
 
-### 📁 Beispiel: Library Management System
+###   Beispiel: Library Management System
 
 ```ascii
 CleanArchitecture_Uebung_02/
 │
-├─ 📂 Domain/
+├─   Domain/
 │  ├─ Entities/
-│  │  ├─ Author.cs                   ⚠️  NUR Gerüst:
+│  │  ├─ Author.cs                     NUR Gerüst:
 │  │  │                                  public class Author : BaseEntity
 │  │  │                                  {
 │  │  │                                      // Properties TODO
 │  │  │                                      // Factory-Methode TODO
 │  │  │                                  }
 │  │  │
-│  │  ├─ Book.cs                     ⚠️  NUR Gerüst + Navigation Property:
+│  │  ├─ Book.cs                       NUR Gerüst + Navigation Property:
 │  │  │                                  public class Book : BaseEntity
 │  │  │                                  {
 │  │  │                                      // Properties TODO
@@ -258,7 +270,7 @@ CleanArchitecture_Uebung_02/
 │  │  │                                      // Factory-Methode TODO
 │  │  │                                  }
 │  │  │
-│  │  └─ Loan.cs                     ⚠️  NUR Gerüst + Navigation Properties:
+│  │  └─ Loan.cs                       NUR Gerüst + Navigation Properties:
 │  │                                     public class Loan : BaseEntity
 │  │                                     {
 │  │                                         public Book Book { get; set; } = null!;
@@ -266,49 +278,49 @@ CleanArchitecture_Uebung_02/
 │  │                                     }
 │  │
 │  ├─ ValidationSpecifications/
-│  │  ├─ AuthorSpecifications.cs     ⚠️  LEER (nur using-Statements)
-│  │  ├─ BookSpecifications.cs       ⚠️  LEER
-│  │  └─ LoanSpecifications.cs       ⚠️  LEER
+│  │  ├─ AuthorSpecifications.cs       LEER (nur using-Statements)
+│  │  ├─ BookSpecifications.cs         LEER
+│  │  └─ LoanSpecifications.cs         LEER
 │  │
 │  └─ Contracts/
-│     ├─ IAuthorUniquenessChecker.cs ✅ Interface vorgegeben
-│     ├─ IBookUniquenessChecker.cs   ✅ Interface vorgegeben
-│     └─ ILoanUniquenessChecker.cs   ✅ Interface vorgegeben
+│     ├─ IAuthorUniquenessChecker.cs  Interface vorgegeben
+│     ├─ IBookUniquenessChecker.cs    Interface vorgegeben
+│     └─ ILoanUniquenessChecker.cs    Interface vorgegeben
 │
-├─ 📂 Application/
+├─   Application/
 │  ├─ Features/
-│  │  ├─ Authors/                    ⚠️  NUR Ordner-Struktur:
+│  │  ├─ Authors/                      NUR Ordner-Struktur:
 │  │  │  ├─ Commands/
-│  │  │  │  ├─ CreateAuthor/        (Ordner leer)
-│  │  │  │  ├─ UpdateAuthor/        (Ordner leer)
-│  │  │  │  └─ DeleteAuthor/        (Ordner leer)
+│  │  │  │  ├─ CreateAuthor/           (Ordner leer)
+│  │  │  │  ├─ UpdateAuthor/           (Ordner leer)
+│  │  │  │  └─ DeleteAuthor/           (Ordner leer)
 │  │  │  └─ Queries/
-│  │  │     ├─ GetAllAuthors/       (Ordner leer)
-│  │  │     └─ GetAuthorById/       (Ordner leer)
+│  │  │     ├─ GetAllAuthors/          (Ordner leer)
+│  │  │     └─ GetAuthorById/          (Ordner leer)
 │  │  │
-│  │  ├─ Books/                      ⚠️  NUR Ordner-Struktur
-│  │  └─ Loans/                      ⚠️  NUR Ordner-Struktur
+│  │  ├─ Books/                        NUR Ordner-Struktur
+│  │  └─ Loans/                        NUR Ordner-Struktur
 │  │
-│  ├─ Dtos/                          ⚠️  LEER (Student muss DTOs erstellen)
+│  ├─ Dtos/                            LEER (Student muss DTOs erstellen)
 │  │
-│  └─ Services/                      ⚠️  LEER
+│  └─ Services/                        LEER
 │
-├─ 📂 Infrastructure/                 ✅ FAST KOMPLETT
+├─   Infrastructure/                  FAST KOMPLETT
 │  ├─ Persistence/
-│  │  ├─ AppDbContext.cs             ✅ OnModelCreating fertig
+│  │  ├─ AppDbContext.cs               OnModelCreating fertig
 │  │  ├─ Repositories/
-│  │  │  ├─ GenericRepository.cs     ✅ Fertig
-│  │  │  ├─ AuthorRepository.cs      ⚠️  TODO: Custom-Methoden
-│  │  │  ├─ BookRepository.cs        ⚠️  TODO: .Include() für Navigation
-│  │  │  └─ LoanRepository.cs        ⚠️  TODO: Custom-Methoden
-│  │  └─ UnitOfWork.cs               ✅ Fertig
+│  │  │  ├─ GenericRepository.cs       Fertig
+│  │  │  ├─ AuthorRepository.cs        TODO: Custom-Methoden
+│  │  │  ├─ BookRepository.cs          TODO: .Include() für Navigation
+│  │  │  └─ LoanRepository.cs          TODO: Custom-Methoden
+│  │  └─ UnitOfWork.cs                 Fertig
 │  │
 │  └─ Services/
-│     └─ StartupDataSeeder.cs        ✅ CSV-Import fertig
+│     └─ StartupDataSeeder.cs          CSV-Import fertig
 │
-├─ 📂 Api/
+├─   Api/
 │  └─ Controllers/
-│     ├─ AuthorsController.cs        ⚠️  NUR Gerüst:
+│     ├─ AuthorsController.cs          NUR Gerüst:
 │     │                                  [ApiController]
 │     │                                  [Route("api/[controller]")]
 │     │                                  public class AuthorsController(IMediator mediator) : ControllerBase
@@ -316,35 +328,35 @@ CleanArchitecture_Uebung_02/
 │     │                                      // Actions TODO
 │     │                                  }
 │     │
-│     ├─ BooksController.cs          ⚠️  NUR Gerüst
-│     └─ LoansController.cs          ⚠️  NUR Gerüst
+│     ├─ BooksController.cs            NUR Gerüst
+│     └─ LoansController.cs            NUR Gerüst
 │
-├─ 📄 library_seed_data.csv          ✅ CSV-Daten vorgegeben
+├─   library_seed_data.csv            CSV-Daten vorgegeben
 │
-└─ 📄 README.md                       ✅ Aufgabenstellung (weniger detailliert)
+└─   README.md                        Aufgabenstellung (weniger detailliert)
    ├─ Aufgabe beschreiben
    ├─ Hinweis auf Template
    ├─ Keine Schritt-für-Schritt Anleitung!
    └─ Erfolgskriterien
 ```
 
-### ⚙️ Was Student implementiert
+###   Was Student implementiert
 
 | Bereich           | Was TODO                                     | Hinweis                    | Schwierigkeit |
 | ----------------- | -------------------------------------------- | -------------------------- | ------------- |
-| Entities          | ✅ Properties + Factory-Methoden              | Nur Gerüst vorhanden       | ⭐⭐            |
-| Validations       | ✅ Alle Specifications                        | Komplett leer              | ⭐⭐            |
-| DTOs              | ✅ GetAuthorDto, GetBookDto, GetLoanDto       | Müssen erstellt werden     | ⭐             |
-| Commands          | ✅ Create, Update, Delete für alle 3          | Ordner-Struktur vorgegeben | ⭐⭐⭐           |
-| Queries           | ✅ GetAll, GetById für alle 3                 | Ordner-Struktur vorgegeben | ⭐⭐            |
-| Handlers          | ✅ Alle Command/Query Handler                 | Müssen erstellt werden     | ⭐⭐⭐           |
-| Validators        | ✅ Alle FluentValidation Validators           | Müssen erstellt werden     | ⭐⭐            |
-| Repository        | ✅ BookRepository.GetByIdAsync mit .Include() | Navigation Property laden  | ⭐⭐⭐           |
-| UniquenessChecker | ✅ Alle 3 Checker                             | Interface vorgegeben       | ⭐⭐            |
-| Controller        | ✅ Alle CRUD-Actions                          | Nur Gerüst vorhanden       | ⭐⭐            |
-| DI Registration   | ✅ Alle Services registrieren                 | -                          | ⭐             |
+| Entities          |  Properties + Factory-Methoden              | Nur Gerüst vorhanden       |             |
+| Validations       |  Alle Specifications                        | Komplett leer              |             |
+| DTOs              |  GetAuthorDto, GetBookDto, GetLoanDto       | Müssen erstellt werden     |              |
+| Commands          |  Create, Update, Delete für alle 3          | Ordner-Struktur vorgegeben |            |
+| Queries           |  GetAll, GetById für alle 3                 | Ordner-Struktur vorgegeben |             |
+| Handlers          |  Alle Command/Query Handler                 | Müssen erstellt werden     |            |
+| Validators        |  Alle FluentValidation Validators           | Müssen erstellt werden     |             |
+| Repository        |  BookRepository.GetByIdAsync mit .Include() | Navigation Property laden  |            |
+| UniquenessChecker |  Alle 3 Checker                             | Interface vorgegeben       |             |
+| Controller        |  Alle CRUD-Actions                          | Nur Gerüst vorhanden       |             |
+| DI Registration   |  Alle Services registrieren                 | -                          |              |
 
-### 📝 README-Struktur für Level 2
+###   README-Struktur für Level 2
 
 ```markdown
 # Library Management System - Clean Architecture Übung
@@ -396,7 +408,7 @@ Implementiere ein vollständiges Library Management System mit:
 □ Navigation Properties korrekt geladen
 ```
 
-### ✅ Erfolgskriterien Level 2
+###   Erfolgskriterien Level 2
 
 - [ ] Student kann vollständige Entities selbstständig erstellen
 - [ ] Student versteht Navigation Properties + EF Core .Include()
@@ -409,29 +421,29 @@ Implementiere ein vollständiges Library Management System mit:
 
 ---
 
-## 🎓 Level 3: Conceptual Guidance
+##   Level 3: Conceptual Guidance
 
-### 📊 Ziel
+###  Ziel
 
 **Student lernt:** Komplette Anwendung von Grund auf aufbauen
 
 **Fokus:** Architektur-Entscheidungen, Advanced Patterns
 
-### 📁 Beispiel: Device Management System
+###   Beispiel: Device Management System
 
 ```ascii
 CleanArchitecture_Uebung_03/
 │
-├─ 📄 README.md                       ✅ NUR Anforderungsdokument
+├─   README.md                         NUR Anforderungsdokument
 │  ├─ Business-Requirements
 │  ├─ Entities beschrieben
 │  ├─ Validation-Rules
 │  ├─ API-Endpoints definiert
 │  └─ Erfolgskriterien
 │
-├─ 📄 DeviceManagement.sln            ✅ Leere Solution
+├─   DeviceManagement.sln              Leere Solution
 │
-└─ 📂 Tests/                          ✅ Tests als Spezifikation
+└─   Tests/                            Tests als Spezifikation
    ├─ Domain.Tests/
    │  └─ DeviceSpecificationsTests.cs (Tests definieren Verhalten!)
    │
@@ -441,7 +453,7 @@ CleanArchitecture_Uebung_03/
 (Alles andere muss Student erstellen!)
 ```
 
-### 📝 README für Level 3 (devices.md Style)
+###   README für Level 3 (devices.md Style)
 
 ```markdown
 # Device Management System
@@ -523,7 +535,7 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 - GetDevicesWithCounts: Custom Query mit .Include()
 ```
 
-### ⚙️ Was Student implementiert
+###   Was Student implementiert
 
 **ALLES!**
 
@@ -543,7 +555,7 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 - [ ] DI Configuration
 - [ ] Tests
 
-### ✅ Erfolgskriterien Level 3
+###   Erfolgskriterien Level 3
 
 - [ ] Student kann Solution-Struktur selbst aufbauen
 - [ ] Student versteht alle Architektur-Entscheidungen
@@ -556,15 +568,15 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 
 ---
 
-## 🎓 Level 4: Exam Scenario
+##   Level 4: Exam Scenario
 
-### 📊 Ziel
+###  Ziel
 
 **Prüfungssituation:** Realistische Zeitbedingungen, vollständige Eigenleistung
 
 **Zeitlimit:** 3-4 Stunden
 
-### 📄 Beispiel: Real-World Scenario
+###   Beispiel: Real-World Scenario
 
 ```markdown
 # Inventory Management System - WMC Test
@@ -592,61 +604,61 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 
 ---
 
-## 📊 Progression-Matrix
+##   Progression-Matrix
 
-| Aspect           | Level 1            | Level 2     | Level 3         | Level 4             |
-| ---------------- | ------------------ | ----------- | --------------- | ------------------- |
-| **Entities**     | ✅ Beispiel         | ⚠️ Gerüst    | ⚠️ Selbst        | ⚠️ Selbst            |
-| **Validations**  | ⚠️ Teilweise        | ⚠️ Leer      | ⚠️ Selbst        | ⚠️ Selbst            |
-| **Commands**     | ⚠️ TODO             | ⚠️ Struktur  | ⚠️ Selbst        | ⚠️ Selbst            |
-| **Handlers**     | ⚠️ TODO             | ⚠️ Selbst    | ⚠️ Selbst        | ⚠️ Selbst            |
-| **Repositories** | ✅ Fertig           | ⚠️ Custom    | ⚠️ Komplett      | ⚠️ Komplett          |
-| **Controller**   | ⚠️ TODO             | ⚠️ Gerüst    | ⚠️ Selbst        | ⚠️ Selbst            |
-| **Tests**        | ✅ Vorhanden        | ✅ Vorhanden | ✅ Spezifikation | ✅ Bewertung         |
-| **README**       | ✅ Sehr detailliert | ✅ Mittel    | ✅ Minimal       | ✅ Nur Anforderungen |
-| **Zeitaufwand**  | ~4-6h              | ~6-8h       | ~10-12h         | ~3-4h (Prüfung)     |
+| Aspect           | Level 1             | Level 2      | Level 3          | Level 4              |
+| ---------------- | ------------------- | ------------ | ---------------- | -------------------- |
+| **Entities**     |   Beispiel         |   Gerüst    |   Selbst        |   Selbst            |
+| **Validations**  |   Teilweise        |   Leer      |   Selbst        |   Selbst            |
+| **Commands**     |   TODO             |   Struktur  |   Selbst        |   Selbst            |
+| **Handlers**     |   TODO             |   Selbst    |   Selbst        |   Selbst            |
+| **Repositories** |   Fertig           |   Custom    |   Komplett      |   Komplett          |
+| **Controller**   |   TODO             |   Gerüst    |   Selbst        |   Selbst            |
+| **Tests**        |   Vorhanden        |   Vorhanden |   Spezifikation |   Bewertung         |
+| **README**       |   Sehr detailliert |   Mittel    |   Minimal       |   Nur Anforderungen |
+| **Zeitaufwand**  | ~4-6h               | ~6-8h        | ~10-12h          | ~3-4h (Prüfung)      |
 
 ---
 
-## 🎯 Themen-Zuordnung
+##  Themen-Zuordnung
 
 ### Level 1: Event Management
 
-- ✅ Domain Validations (Basics)
-- ✅ CQRS Pattern
-- ✅ Factory-Methoden
-- ✅ REST APIs
-- ✅ Result Pattern
-- ✅ FluentValidation
+-  Domain Validations (Basics)
+-  CQRS Pattern
+-  Factory-Methoden
+-  REST APIs
+-  Result Pattern
+-  FluentValidation
 
 ### Level 2: Library Management
 
-- ✅ Navigation Properties
-- ✅ EF Core .Include()
-- ✅ CSV-Seeding
-- ✅ ISBN-Validation
-- ✅ Custom Repository Methods
-- ✅ Mapster Configuration
+-  Navigation Properties
+-  EF Core .Include()
+-  CSV-Seeding
+-  ISBN-Validation
+-  Custom Repository Methods
+-  Mapster Configuration
 
 ### Level 3: Device Management
 
-- ✅ Overlap-Validation
-- ✅ Complex Queries (with-counts)
-- ✅ Enum Types
-- ✅ CLI-Interaction
-- ✅ Complete Scaffolding
-- ✅ Email Validation
+-  Overlap-Validation
+-  Complex Queries (with-counts)
+-  Enum Types
+-  CLI-Interaction
+-  Complete Scaffolding
+-  Email Validation
 
 ### Level 4: Exam
 
-- ✅ Time Pressure
-- ✅ Everything from Scratch
-- ✅ Real-World Scenario
-- ✅ No Guidance
+-  Time Pressure
+-  Everything from Scratch
+-  Real-World Scenario
+-  No Guidance
 
 ---
 
-## ✅ Quality Gates pro Level
+##  Quality Gates pro Level
 
 ### Level 1
 
@@ -690,4 +702,4 @@ Es ist eine Verwaltung von technischen Endgeräten zu implementieren.
 ---
 
 **Version:** 1.0  
-**Status:** ✅ Bereit für Implementierung
+**Status:**   Bereit für Implementierung
