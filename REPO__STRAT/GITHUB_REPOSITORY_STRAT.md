@@ -57,39 +57,50 @@
 │     CleanArchitecture_Template/                  ← KOMPLETT         │
 │     └─ Vollständige Referenz-Implementierung                        │
 │                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
 │     CleanArchitecture_Uebung_01/                 ← LEVEL 1          │
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 │     ├─ Domain/                                                      │
+│     │  │                                                            │
 │     │  ├─ Entities/                              ← VORHANDEN        │
+│     │  │  │                                                         │
 │     │  │  ├─ Venue.cs            !! Factory-Methode LEER            │
 │     │  │  ├─ Event.cs            !!  throw NotImplementedException  │
 │     │  │  └─ Ticket.cs           !!  throw NotImplementedException  │
+│     │  │                                                            │
 │     │  ├─ ValidationSpecifications/                                 │
+│     │  │  │                                                         │
 │     │  │  ├─ VenueSpecifications.cs              ← KOMPLETT         │
 │     │  │  ├─ EventSpecifications.cs              !!  TODO           │
 │     │  │  └─ TicketSpecifications.cs             !!  TODO           │
+│     │  │                                                            │
 │     │  └─ Contracts/             ← Interfaces VORHANDEN             │
 │     │                                                               │
 │     ├─ Application/                                                 │
+│     │  │                                                            │
 │     │  ├─ Features/                                                 │
+│     │  │  │                                                         │
 │     │  │  ├─ Venues/             ← KOMPLETT (Referenz)              │
 │     │  │  ├─ Events/             !!  Commands TODO                  │
 │     │  │  └─ Tickets/            !!  Commands TODO                  │
+│     │  │                                                            │
 │     │  ├─ DTOs/                  ← VORHANDEN                        │
 │     │  └─ Services/              !!  UniquenessChecker TODO         │
 │     │                                                               │
 │     ├─ Infrastructure/           ← FERTIG (Seeder, Repos)           │
+│     │                                                               │
 │     ├─ Api/                                                         │
 │     │  └─ Controllers/                                              │
+│     │     │                                                         │
 │     │     ├─ VenuesController.cs       KOMPLETT                     │
 │     │     ├─ EventsController.cs       !!  TODO                     │
 │     │     └─ TicketsController.cs      !!  TODO                     │
 │     └─ README.md                  Ausführliche Anleitung            │
 │                                                                     │
 │                                                                     │
-│                                                                     │
-│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
 │     CleanArchitecture_Uebung_02/                          ← LEVEL 2 │
-│                                                                     │
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 │     ├─ Domain/                                                      │
 │     │  │                                                            │
 │     │  ├─ Entities/                   !! NUR Interfaces VORHANDEN   │
@@ -115,8 +126,12 @@
 │     │                                                               │
 │     └─ README.md                         ← Aufgabenstellung         │
 │                                                                     │
+│                                                                     │
+├─────────────────────────────────────────────────────────────────────┤
 │     CleanArchitecture_Uebung_03/         ← LEVEL 3                  │
+├┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┤
 │     └─ NUR README.md + leere Solution                               │
+│                                                                     │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
