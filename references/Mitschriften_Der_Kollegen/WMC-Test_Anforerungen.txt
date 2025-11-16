@@ -1,0 +1,41 @@
+Service 
+
+Domainebene:
+
+Controllers: GetAll anpassen ( 2 Werte), GetByID ist zu machen
+
+methode handle implementieren
+
+Validation
+
+Infrasturcture
+
+Einzelne Methoden
+	-Abfragen (GetBySensorIdPagedAsync)
+--------------------------------------------------------------
+
+AddMesuament 
+GetMesuament
+
+
+QuerryHandler,CommonHandler, 
+
+
+
+
+Domainebene
+
+ToDos:
+
+-Validation
+	- Kreditkartennummer
+	- Sozialversicherungsnummer
+	- ISBN-Nummer
+
+Applicationlayer
+
+	- Commons and Querries
+
+GET DTO: Request -> Id
+query Handler anpassen (Fast immer gleich)
+Actions und Handler machen!
