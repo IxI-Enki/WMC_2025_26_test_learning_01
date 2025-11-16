@@ -1,0 +1,21 @@
+1.) Entitäten und OnModelCreating im context wird vorhanden sein (könnte sein das unique index kommen könnte, je nach lösungsweg)
+2.) Domainebene -> Validation
+3.) Applicationlayer -> Commands / Queries (1 Post, 1 Put, 1 Get, 1 Delete)
+4.) DTO anlegen -> Request definieren(Parameter mitkommt, z.B.: id ; Rückgabe nichts, 1 oder mehrere DTO's) -> Handler(Zugriff auf Datenbank(uow inject), falls neue/schwierigere Abfrage gewünscht ist -> im Repository async Methode anlegen)
+5.) .AsNoTracking() nicht vergessen wenn neue Abfrage im Repository bei ImmutableCollection als Rückgabe
+
+
+Datenimport ist beim Test da!
+
+
+
+Logische Validierungen(Kreditkartennummer, Sozialversicherungsnummer, ISBN, ...)
+IBAN kommt nicht!
+
+
+this parameter in ToActionResult ansehen (extention method)
+
+
+Set.SingleOrDefaultAsync / Set.FirstOrDefaultAsync -> single macht sinn um zusätzlich die unique fall abzudecken (falls validierung mal fehlgeschlagen hat)
+Wenn nichts bei den Validationen dabeisteht -> Domainebene
+Dienste die benötigt werden wie z.B.: "SensorUniquenessChecker" im DependencyInjection registrieren!

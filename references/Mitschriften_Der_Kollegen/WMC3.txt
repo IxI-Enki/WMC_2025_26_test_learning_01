@@ -1,0 +1,56 @@
+TESTSTOFF – CLEAN ARCHITECTURE (Kurzfassung)
+
+1) Validierung & Schichten
+- Domain-Validation (Grundregeln)
+- Application-Validation (UseCase)
+- Keine System-Level-Validation (10% Abzug)
+- Keine doppelte Validierung
+- Command-Ebene macht UseCase-Validation
+- Domain lässt keine ungültigen Objekte zu
+
+2) Request-Pipeline
+- Keine Fehlerbehandlung im Controller
+- FluentValidation in Mediator-Pipeline
+- ValidationBehavior vor CommandHandler
+- ValidationException → Middleware → HTTP-Response
+
+3) Internal / External Validation
+- Internal: innerhalb der Entität
+- External: über Services/DB (z. B. UniquenessChecker)
+
+4) Application Layer
+- Commands, CommandHandler, CommandValidation
+- Queries, QueryHandler
+- DTOs verwenden, keine Entities zurückgeben
+- Dependency Injection
+- GetById, GetAll, Update nur einmal definieren
+
+5) Infrastructure
+- Repositories implementieren
+- DB-Zugriff nur über Infrastructure
+- AppDbContext + EntitySets
+- UniquenessChecker (z. B. Name/Serial)
+
+6) API Layer
+- ResultExtensions (z. B. Delete → 204)
+- Exception-Middleware verwendet
+- API Actions klar definiert
+- Feature-Ordnerstruktur pro Entität (Commands/Queries/Validatoren)
+
+7) Domain Layer
+- Entities dürfen nicht ungültig sein
+- Nullable bewusst verwenden
+- Navigation Properties korrekt (! / ?)
+
+8) WMC-Spezifisch
+- ModelCreating definiert DB-Struktur
+- DTO statt Entitäten nach außen
+- UniquenessChecker selbst implementieren
+- Import: Properties vorhanden, UseCase-Regeln teils ausgenommen
+
+9) Typische Testaufgaben
+- AddMeasurement / AddUsage
+- Validierung (Overlap, Zukunft, Regeln)
+- Commands/Handlers/Validators korrekt anlegen
+- Repositories verwenden
+- Update mit allen Properties
