@@ -104,9 +104,21 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
         // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
         // (genau wie im CleanArchitecture_Template)
 
-        var books = new List<Book>();
-        // Da Book.CreateAsync async ist und Domain-Validierungen hat, erstellen wir Books direkt über Reflection
-        // Im echten Seeder würde man hier die Factory-Methode verwenden
+        // Books erstellen (mit Author-Referenzen)
+        // Die Author-IDs werden von EF Core automatisch gesetzt nach SaveChangesAsync
+        var books = new List<Book>
+        {
+            await Book.CreateAsync("9780747532699", "Harry Potter and the Philosopher's Stone", authors[0], 1997, 5, uc),
+            await Book.CreateAsync("9780439064873", "Harry Potter and the Chamber of Secrets", authors[0], 1998, 3, uc),
+            await Book.CreateAsync("9780553103540", "A Game of Thrones", authors[1], 1996, 4, uc),
+            await Book.CreateAsync("9780553108033", "A Clash of Kings", authors[1], 1998, 2, uc),
+            await Book.CreateAsync("9780395595114", "The Fellowship of the Ring", authors[2], 1954, 6, uc),
+            await Book.CreateAsync("9780395082560", "The Two Towers", authors[2], 1954, 4, uc),
+            await Book.CreateAsync("9780062073501", "Murder on the Orient Express", authors[3], 1934, 5, uc),
+            await Book.CreateAsync("9780062073488", "And Then There Were None", authors[3], 1939, 3, uc),
+            await Book.CreateAsync("9780307743657", "The Shining", authors[4], 1977, 4, uc),
+            await Book.CreateAsync("9781501142970", "IT", authors[4], 1986, 2, uc)
+        };
         
         return new SeedData
         {
@@ -131,10 +143,30 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
         // KEINE manuelle ID-Zuweisung - EF Core generiert IDs automatisch!
         // (genau wie im CleanArchitecture_Template)
 
+        // Books erstellen (mit Author-Referenzen aus JSON)
+        var books = new List<Book>();
+        foreach (var bookDto in dto.Books)
+        {
+            // Finde den entsprechenden Author (über Index, da IDs noch nicht gesetzt sind)
+            if (bookDto.AuthorId > 0 && bookDto.AuthorId <= authors.Count)
+            {
+                var author = authors[bookDto.AuthorId - 1]; // AuthorId in JSON ist 1-basiert
+                var book = await Book.CreateAsync(
+                    bookDto.ISBN,
+                    bookDto.Title,
+                    author,
+                    bookDto.PublicationYear,
+                    bookDto.AvailableCopies,
+                    uc
+                );
+                books.Add(book);
+            }
+        }
+
         return new SeedData
         {
             Authors = authors,
-            Books = new List<Book>()
+            Books = books
         };
     }
 
@@ -144,10 +176,19 @@ public class StartupDataSeeder(IOptions<StartupDataSeederOptions> options, IServ
 /// <summary>
 /// NoOp Uniqueness Checker für Seed-Daten.
 /// Bypasses Uniqueness-Validierung da beim Seeding die DB noch leer ist.
+/// Verwendet explizite Interface-Implementierung, da beide Interfaces die gleiche Methodensignatur haben.
 /// </summary>
-internal class SeedDataUniquenessChecker : IAuthorUniquenessChecker
+internal class SeedDataUniquenessChecker : IAuthorUniquenessChecker, IBookUniquenessChecker
 {
-    public Task<bool> IsUniqueAsync(int id, string fullName, CancellationToken ct = default)
+    // Explizite Interface-Implementierung für IAuthorUniquenessChecker
+    Task<bool> IAuthorUniquenessChecker.IsUniqueAsync(int id, string fullName, CancellationToken ct)
+    {
+        // Für Seed-Daten immer true zurückgeben (keine DB-Validierung)
+        return Task.FromResult(true);
+    }
+
+    // Explizite Interface-Implementierung für IBookUniquenessChecker
+    Task<bool> IBookUniquenessChecker.IsUniqueAsync(int id, string isbn, CancellationToken ct)
     {
         // Für Seed-Daten immer true zurückgeben (keine DB-Validierung)
         return Task.FromResult(true);
