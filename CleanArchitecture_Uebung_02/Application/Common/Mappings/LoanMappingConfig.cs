@@ -17,4 +17,3 @@ public static class LoanMappingConfig
             .Map(dest => dest.IsOverdue, src => src.IsOverdue());
     }
 }
-
