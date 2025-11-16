@@ -38,4 +38,3 @@ Bei der API müssen die entsprechenden Controller hinzugefügt werden.
 Ich acker mich so durch, dass ich zuerst die Domain und Infrastruktur aufbaue, bevor ich mich an die API mache. Ich finde, wenn man UniquenessChecker und Validation etc. später erst macht, hat man ja überhaupt keinen Überblick, wo dann nachträglich nochmal was ergänzt werden muss.
 
 🤓🤜🏻🤛🏻🤖
-
