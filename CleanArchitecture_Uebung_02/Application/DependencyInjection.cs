@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Pipeline;
 using Domain.Contracts;
 using Application.Interfaces;
+using Application.Common.Mappings;
 
 namespace Application;
 
@@ -15,6 +16,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        // Mapster Mappings konfigurieren
+        BookMappingConfig.ConfigureBookMappings();
+
         // CQRS + MediatR + FluentValidation
         services.AddMediatR(cfg =>
         {
@@ -29,4 +33,3 @@ public static class DependencyInjection
         return services;
     }
 }
-
