@@ -1,9 +1,7 @@
 using Api.Tests.Utilities;
 using Application.Dtos;
-using Application.Features.Authors.Commands.CreateAuthor;
 using Application.Features.Books.Commands.CreateBook;
 using Application.Features.Loans.Commands.CreateLoan;
-using Application.Features.Loans.Commands.ReturnLoan;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;
@@ -23,15 +21,17 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
         _client = factory.CreateClient();
     }
 
-    private async Task<GetAuthorDto> CreateTestAuthor()
+    private async Task<int> GetFirstAuthorId()
     {
-        var authorCommand = new CreateAuthorCommand("Test", "Author", new DateTime(1970, 1, 1));
-        var response = await _client.PostAsJsonAsync("/api/autors", authorCommand);
-        return (await response.Content.ReadFromJsonAsync<GetAuthorDto>())!;
+        // Get first author from seeded data
+        var response = await _client.GetAsync("/api/autors");
+        var authors = await response.Content.ReadFromJsonAsync<List<GetAuthorDto>>();
+        return authors?.FirstOrDefault()?.Id ?? 1;
     }
 
-    private async Task<GetBookDto> CreateTestBook(int authorId, string isbn = "9780747532699")
+    private async Task<GetBookDto> CreateTestBook(string isbn = "9780747532699")
     {
+        var authorId = await GetFirstAuthorId();
         var bookCommand = new CreateBookCommand(isbn, "Test Book", authorId, 2020, 5);
         var response = await _client.PostAsJsonAsync("/api/books", bookCommand);
         return (await response.Content.ReadFromJsonAsync<GetBookDto>())!;
@@ -41,8 +41,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task CreateLoan_ReturnsCreated_WithValidData()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9780451524935");
+        var book = await CreateTestBook("9780451524935");
         var command = new CreateLoanCommand(book.Id, "John Doe", DateTime.Now);
 
         // Act
@@ -62,8 +61,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task CreateLoan_ReturnsBadRequest_WithInvalidBorrowerName()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9780061120084");
+        var book = await CreateTestBook("9780061120084");
         var command = new CreateLoanCommand(book.Id, "", DateTime.Now); // Empty borrower name
 
         // Act
@@ -90,8 +88,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task CreateLoan_ReturnsBadRequest_WithFutureLoanDate()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9780743273565");
+        var book = await CreateTestBook("9780743273565");
         var command = new CreateLoanCommand(book.Id, "John Doe", DateTime.Now.AddDays(1));
 
         // Act
@@ -105,8 +102,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task ReturnLoan_ReturnsNoContent_WithValidData()
     {
         // Arrange - Create a loan first
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9780544003415");
+        var book = await CreateTestBook("9780544003415");
         var createCommand = new CreateLoanCommand(book.Id, "Jane Doe", DateTime.Now.AddDays(-5));
         var createResponse = await _client.PostAsJsonAsync("/api/loans", createCommand);
         var createdLoan = await createResponse.Content.ReadFromJsonAsync<GetLoanDto>();
@@ -137,8 +133,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task GetLoansByBook_ReturnsOk_WithLoans()
     {
         // Arrange - Create a book and some loans
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9781234567890");
+        var book = await CreateTestBook("9781234567890");
 
         var loan1 = new CreateLoanCommand(book.Id, "Alice", DateTime.Now.AddDays(-10));
         var loan2 = new CreateLoanCommand(book.Id, "Bob", DateTime.Now.AddDays(-5));
@@ -161,8 +156,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task GetLoansByBook_ReturnsEmptyList_WhenNoLoansExist()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9789876543210");
+        var book = await CreateTestBook("9789876543210");
 
         // Act
         var response = await _client.GetAsync($"/api/loans/book/{book.Id}");
@@ -178,8 +172,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task GetOverdueLoans_ReturnsOk_WithOverdueLoans()
     {
         // Arrange - Create an overdue loan (30 days ago, due date is 16 days ago)
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9781111111111");
+        var book = await CreateTestBook("9781111111111");
         var overdueCommand = new CreateLoanCommand(book.Id, "Charlie", DateTime.Now.AddDays(-30));
 
         await _client.PostAsJsonAsync("/api/loans", overdueCommand);
@@ -203,8 +196,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task GetOverdueLoans_ExcludesReturnedLoans()
     {
         // Arrange - Create an overdue loan and then return it
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9782222222222");
+        var book = await CreateTestBook("9782222222222");
         var overdueCommand = new CreateLoanCommand(book.Id, "David", DateTime.Now.AddDays(-30));
         var createResponse = await _client.PostAsJsonAsync("/api/loans", overdueCommand);
         var createdLoan = await createResponse.Content.ReadFromJsonAsync<GetLoanDto>();
@@ -228,8 +220,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task CreateLoan_DecreasesAvailableCopies()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9783333333333");
+        var book = await CreateTestBook("9783333333333");
         var initialCopies = book.AvailableCopies;
 
         var command = new CreateLoanCommand(book.Id, "Emma", DateTime.Now);
@@ -247,8 +238,7 @@ public class LoansEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task ReturnLoan_IncreasesAvailableCopies()
     {
         // Arrange - Create a loan
-        var author = await CreateTestAuthor();
-        var book = await CreateTestBook(author.Id, "9784444444444");
+        var book = await CreateTestBook("9784444444444");
         var createCommand = new CreateLoanCommand(book.Id, "Frank", DateTime.Now.AddDays(-5));
         var createResponse = await _client.PostAsJsonAsync("/api/loans", createCommand);
         var createdLoan = await createResponse.Content.ReadFromJsonAsync<GetLoanDto>();

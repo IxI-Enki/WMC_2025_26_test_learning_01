@@ -1,6 +1,5 @@
 using Api.Tests.Utilities;
 using Application.Dtos;
-using Application.Features.Authors.Commands.CreateAuthor;
 using Application.Features.Books.Commands.CreateBook;
 using Application.Features.Books.Commands.UpdateBook;
 using FluentAssertions;
@@ -22,11 +21,12 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
         _client = factory.CreateClient();
     }
 
-    private async Task<GetAuthorDto> CreateTestAuthor()
+    private async Task<int> GetFirstAuthorId()
     {
-        var authorCommand = new CreateAuthorCommand("Test", "Author", new DateTime(1970, 1, 1));
-        var response = await _client.PostAsJsonAsync("/api/autors", authorCommand);
-        return (await response.Content.ReadFromJsonAsync<GetAuthorDto>())!;
+        // Get first author from seeded data
+        var response = await _client.GetAsync("/api/autors");
+        var authors = await response.Content.ReadFromJsonAsync<List<GetAuthorDto>>();
+        return authors?.FirstOrDefault()?.Id ?? 1;
     }
 
     [Fact]
@@ -45,8 +45,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Create_ReturnsCreated_WithValidData()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var command = new CreateBookCommand("9780747532699", "Harry Potter", author.Id, 1997, 5);
+        var authorId = await GetFirstAuthorId();
+        var command = new CreateBookCommand("9780747532699", "Harry Potter", authorId, 1997, 5);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/books", command);
@@ -65,8 +65,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Create_ReturnsBadRequest_WithInvalidISBN()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var command = new CreateBookCommand("123", "Test Book", author.Id, 2020, 1); // Invalid ISBN
+        var authorId = await GetFirstAuthorId();
+        var command = new CreateBookCommand("123", "Test Book", authorId, 2020, 1); // Invalid ISBN
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/books", command);
@@ -92,8 +92,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task GetById_ReturnsOk_WhenBookExists()
     {
         // Arrange - Create a book first
-        var author = await CreateTestAuthor();
-        var createCommand = new CreateBookCommand("9780451524935", "1984", author.Id, 1949, 3);
+        var authorId = await GetFirstAuthorId();
+        var createCommand = new CreateBookCommand("9780451524935", "1984", authorId, 1949, 3);
         var createResponse = await _client.PostAsJsonAsync("/api/books", createCommand);
         var createdBook = await createResponse.Content.ReadFromJsonAsync<GetBookDto>();
 
@@ -122,8 +122,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Update_ReturnsOk_WithValidData()
     {
         // Arrange - Create a book first
-        var author = await CreateTestAuthor();
-        var createCommand = new CreateBookCommand("9780061120084", "To Kill a Mockingbird", author.Id, 1960, 2);
+        var authorId = await GetFirstAuthorId();
+        var createCommand = new CreateBookCommand("9780061120084", "To Kill a Mockingbird", authorId, 1960, 2);
         var createResponse = await _client.PostAsJsonAsync("/api/books", createCommand);
         var createdBook = await createResponse.Content.ReadFromJsonAsync<GetBookDto>();
 
@@ -131,7 +131,7 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
             createdBook!.Id,
             "9780061120084",
             "Updated Title",
-            author.Id,
+            authorId,
             1960,
             5
         );
@@ -150,8 +150,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Update_ReturnsBadRequest_WhenIdMismatch()
     {
         // Arrange
-        var author = await CreateTestAuthor();
-        var updateCommand = new UpdateBookCommand(1, "9780747532699", "Test", author.Id, 2020, 1);
+        var authorId = await GetFirstAuthorId();
+        var updateCommand = new UpdateBookCommand(1, "9780747532699", "Test", authorId, 2020, 1);
 
         // Act
         var response = await _client.PutAsJsonAsync("/api/books/2", updateCommand);
@@ -164,8 +164,8 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Delete_ReturnsNoContent_WhenBookExists()
     {
         // Arrange - Create a book first
-        var author = await CreateTestAuthor();
-        var createCommand = new CreateBookCommand("9780743273565", "The Great Gatsby", author.Id, 1925, 1);
+        var authorId = await GetFirstAuthorId();
+        var createCommand = new CreateBookCommand("9780743273565", "The Great Gatsby", authorId, 1925, 1);
         var createResponse = await _client.PostAsJsonAsync("/api/books", createCommand);
         var createdBook = await createResponse.Content.ReadFromJsonAsync<GetBookDto>();
 
@@ -194,12 +194,12 @@ public class BooksEndpointTests : IClassFixture<TestWebApplicationFactory<Progra
     public async Task Create_ReturnsConflict_WithDuplicateISBN()
     {
         // Arrange - Create a book with an ISBN
-        var author = await CreateTestAuthor();
-        var firstCommand = new CreateBookCommand("9780544003415", "The Lord of the Rings", author.Id, 1954, 3);
+        var authorId = await GetFirstAuthorId();
+        var firstCommand = new CreateBookCommand("9780544003415", "The Lord of the Rings", authorId, 1954, 3);
         await _client.PostAsJsonAsync("/api/books", firstCommand);
 
         // Try to create another book with the same ISBN
-        var duplicateCommand = new CreateBookCommand("9780544003415", "Different Title", author.Id, 2000, 1);
+        var duplicateCommand = new CreateBookCommand("9780544003415", "Different Title", authorId, 2000, 1);
 
         // Act
         var response = await _client.PostAsJsonAsync("/api/books", duplicateCommand);

@@ -49,8 +49,15 @@ public class Loan : BaseEntity
         
         var trimmedBorrowerName = (borrowerName ?? string.Empty).Trim();
         
-        // Domänenvalidierungen
-        LoanSpecifications.ValidateLoanInternal(book.Id, trimmedBorrowerName, loanDate);
+        // Domänenvalidierungen (BorrowerName und LoanDate)
+        // BookId validation is skipped here since we have the Book object directly
+        var borrowerNameValidation = LoanSpecifications.CheckBorrowerName(trimmedBorrowerName);
+        if (!borrowerNameValidation.IsValid)
+            throw new Exceptions.DomainValidationException(borrowerNameValidation.Property, borrowerNameValidation.ErrorMessage!);
+        
+        var loanDateValidation = LoanSpecifications.CheckLoanDate(loanDate);
+        if (!loanDateValidation.IsValid)
+            throw new Exceptions.DomainValidationException(loanDateValidation.Property, loanDateValidation.ErrorMessage!);
         
         return new Loan
         {
