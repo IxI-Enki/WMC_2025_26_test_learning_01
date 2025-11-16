@@ -51,20 +51,20 @@ public class Book : BaseEntity
     /// <summary>
     /// CreateAsync für Book.
     /// </summary>
-    public static Book CreateAsync(
+    public static async Task<Book> CreateAsync(
         string isbn,
         string title,
         Author author,
         int publicationYear,
         int availableCopies,
-        IBookUniquenessChecker uc 
+        IBookUniquenessChecker uc, CancellationToken ct = default   
         )
     {
-        //throw new NotImplementedException( "Book.CreateAsync muss noch implementiert werden!" );
         var trimmedIsbn = (isbn ?? string.Empty).Trim();
         var trimmedTitle = (title ?? string.Empty).Trim();
 
         ValidateBookProperties( trimmedIsbn, trimmedTitle, author, publicationYear, availableCopies );
+        await BookSpecifications.ValidateBookExternal( 0, trimmedIsbn, uc, ct );
 
         return new Book
         {
