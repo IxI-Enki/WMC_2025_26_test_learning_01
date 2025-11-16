@@ -100,6 +100,10 @@ public class Book : BaseEntity
     /// <summary>
     /// TODO: Implementiere UpdateAsync für Book.
     /// </summary>
+    /// <summary>
+    /// Aktualisiert die Book-Eigenschaften.
+    /// Führt Domänenvalidierungen durch und wirft DomainValidationException bei Fehlern.
+    /// </summary>
     public async Task UpdateAsync(
         string isbn,
         string title,
@@ -110,9 +114,26 @@ public class Book : BaseEntity
         CancellationToken ct = default
         )
     {
-
-        throw new NotImplementedException( "Book.UpdateAsync muss noch implementiert werden!" );
-
+        var trimmedIsbn = (isbn ?? string.Empty).Trim();
+        var trimmedTitle = (title ?? string.Empty).Trim();
+        
+        // Keine Änderung? Dann return
+        if (ISBN == trimmedIsbn && Title == trimmedTitle && AuthorId == authorId 
+            && PublicationYear == publicationYear && AvailableCopies == availableCopies)
+            return;
+        
+        // Interne Validierungen
+        ValidateBookProperties(trimmedIsbn, trimmedTitle, Author, publicationYear, availableCopies);
+        
+        // Externe Validierung (ISBN-Eindeutigkeit)
+        await ValidateBookUniqueness(Id, trimmedIsbn, uniquenessChecker, ct);
+        
+        // Update durchführen
+        ISBN = trimmedIsbn;
+        Title = trimmedTitle;
+        AuthorId = authorId;
+        PublicationYear = publicationYear;
+        AvailableCopies = availableCopies;
     }
 
     /// <summary>
