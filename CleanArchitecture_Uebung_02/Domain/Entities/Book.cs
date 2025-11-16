@@ -126,7 +126,7 @@ public class Book : BaseEntity
         ValidateBookProperties(trimmedIsbn, trimmedTitle, Author, publicationYear, availableCopies);
         
         // Externe Validierung (ISBN-Eindeutigkeit)
-        await ValidateBookUniqueness(Id, trimmedIsbn, uniquenessChecker, ct);
+        await BookSpecifications.ValidateBookExternal(Id, trimmedIsbn, uniquenessChecker, ct);
         
         // Update durchführen
         ISBN = trimmedIsbn;

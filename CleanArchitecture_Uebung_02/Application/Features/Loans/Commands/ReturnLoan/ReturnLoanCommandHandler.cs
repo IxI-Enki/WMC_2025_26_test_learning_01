@@ -1,7 +1,6 @@
 using Application.Common.Models;
 using Application.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Loans.Commands.ReturnLoan;
 

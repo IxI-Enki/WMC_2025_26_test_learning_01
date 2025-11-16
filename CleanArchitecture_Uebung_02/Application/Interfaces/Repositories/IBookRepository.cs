@@ -4,16 +4,17 @@ using System.Diagnostics.Metrics;
 namespace Application.Interfaces.Repositories;
 
 /// <summary>
-/// Book-spezifische Abfragen zusätzlich zu den generischen CRUDs.
+/// Book-spezifische Repository-Methoden zusätzlich zu den generischen CRUD-Operationen.
 /// </summary>
 public interface IBookRepository : IGenericRepository<Book>
 {
-    // TODO: Implementiere die spezifischen Repository-Methoden für Book.
-    Task<IReadOnlyCollection<Book>> GetBooksByhAuthorAsync( int authorId, CancellationToken ct = default );
-
-    Task<Book?> GetByISBNAsync( string ísbn, CancellationToken ct = default );
-
-    Task<Book?> GetByBookIdAsync( int bookId, CancellationToken ct = default );
-    //Task<Book?> GetByTitleAsync( string title, CancellationToken ct = default );
-    //Task<IReadOnlyCollection<Book>> GetByBookIdPagedAsync( int bookId, int skip, int take, CancellationToken ct = default );
+    /// <summary>
+    /// Findet ein Buch anhand seiner ISBN.
+    /// </summary>
+    Task<Book?> GetByISBNAsync( string isbn, CancellationToken ct = default );
+    
+    /// <summary>
+    /// Alle Bücher eines bestimmten Autors.
+    /// </summary>
+    Task<IReadOnlyCollection<Book>> GetBooksByAuthorAsync( int authorId, CancellationToken ct = default );
 }
