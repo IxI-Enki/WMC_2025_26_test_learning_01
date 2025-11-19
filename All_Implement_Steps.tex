@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[9pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[german]{babel}
 \usepackage[margin=1.5cm]{geometry}
@@ -29,21 +29,21 @@
     pdfauthor={Implementation Guide}
 }
 
-% Überschriften-Formatierung
+% Überschriften-Formatierung (kleinere Größen)
 \titleformat{\section}
-  {\normalfont\Large\bfseries\color{mediumblue}}{\thesection}{1em}{}
+  {\normalfont\large\bfseries\color{mediumblue}}{\thesection}{1em}{}
 \titleformat{\subsection}
-  {\normalfont\large\bfseries\color{lightblue}}{\thesubsection}{1em}{}
+  {\normalfont\normalsize\bfseries\color{lightblue}}{\thesubsection}{1em}{}
 \titleformat{\subsubsection}
-  {\normalfont\normalsize\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
+  {\normalfont\small\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
 
-% Listen mit weniger Abstand
-\setlist[enumerate]{itemsep=0pt,parsep=2pt,leftmargin=*}
-\setlist[itemize]{itemsep=0pt,parsep=2pt,leftmargin=*}
+% Listen mit weniger Abstand und kleinerer Schrift
+\setlist[enumerate]{itemsep=0pt,parsep=1pt,leftmargin=*,font=\small}
+\setlist[itemize]{itemsep=0pt,parsep=1pt,leftmargin=*,font=\small}
 
-% Code-Formatierung
+% Code-Formatierung (noch kleiner)
 \lstset{
-    basicstyle=\small\ttfamily\color{codeblue},
+    basicstyle=\footnotesize\ttfamily\color{codeblue},
     breaklines=true,
     frame=single,
     backgroundcolor=\color{gray!10}
@@ -52,12 +52,13 @@
 % Kopf- und Fußzeile
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{mediumblue}Clean Architecture - Implementation Guide}
-\fancyhead[R]{\small\color{mediumblue}\thepage}
+\fancyhead[L]{\footnotesize\color{mediumblue}Clean Architecture - Implementation Guide}
+\fancyhead[R]{\footnotesize\color{mediumblue}\thepage}
 \renewcommand{\headrulewidth}{0.5pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{lightblue}\leaders\hrule height \headrulewidth\hfill}}
 
 \begin{document}
+\small % Globale kleinere Schriftgröße für das gesamte Dokument
 
 \section*{Hinweise}
 \addcontentsline{toc}{section}{Hinweise}
