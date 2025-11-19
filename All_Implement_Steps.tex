@@ -1,0 +1,522 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{listings}
+
+% Farbdefinitionen - Dunkelblau / Blau-Schattierungen
+\definecolor{darkblue}{RGB}{0,51,102}
+\definecolor{mediumblue}{RGB}{0,102,204}
+\definecolor{lightblue}{RGB}{51,153,255}
+\definecolor{skyblue}{RGB}{102,178,255}
+\definecolor{codeblue}{RGB}{0,76,153}
+
+% Haupttext in Dunkelblau
+\color{darkblue}
+
+% Hyperlinks in Blau
+\hypersetup{
+    colorlinks=true,
+    linkcolor=mediumblue,
+    urlcolor=lightblue,
+    pdftitle={Clean Architecture Implementation Steps},
+    pdfauthor={Implementation Guide}
+}
+
+% Überschriften-Formatierung
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mediumblue}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{lightblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
+
+% Listen mit weniger Abstand
+\setlist[enumerate]{itemsep=0pt,parsep=2pt,leftmargin=*}
+\setlist[itemize]{itemsep=0pt,parsep=2pt,leftmargin=*}
+
+% Code-Formatierung
+\lstset{
+    basicstyle=\small\ttfamily\color{codeblue},
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+% Kopf- und Fußzeile
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{mediumblue}Clean Architecture - Implementation Guide}
+\fancyhead[R]{\small\color{mediumblue}\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{lightblue}\leaders\hrule height \headrulewidth\hfill}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge\bfseries\color{darkblue}Clean Architecture\\[0.3cm]Implementation Steps\par}
+    \vspace{1cm}
+    {\Large\color{mediumblue}Komplettanleitung\par}
+    \vspace{2cm}
+    {\large\color{lightblue}
+    190 Implementierungs-Schritte\\[0.3cm]
+    7 Phasen\\[0.3cm]
+    Domain $\rightarrow$ Application $\rightarrow$ Infrastructure $\rightarrow$ API $\rightarrow$ Tests\par}
+    \vfill
+    {\large\color{skyblue}
+    Template-Basis: Sensor/Measurement\\
+    Ziel-Implementierung: Library Management (Author/Book/Loan)\par}
+    \vspace{1cm}
+    {\color{mediumblue}Stand: 2025-11-19\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section*{Hinweise}
+\addcontentsline{toc}{section}{Hinweise}
+
+\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue,title={\color{white}Wichtige Grundregeln}]
+\begin{itemize}
+    \item \textbf{1:n-Beziehungen:} Immer zuerst die \textbf{"`1"'}-Seite implementieren, dann die \textbf{"`n"'}-Seite
+    \item \textbf{IDE-Features nutzen:} \texttt{Strg+.} für "`Generate Method"', "`Implement Interface"', "`Add using"', etc.
+    \item \textbf{Copy-Paste-Pattern:} Template kopieren, anpassen, generieren lassen
+\end{itemize}
+\end{tcolorbox}
+
+\section{Phase 1: Domain Layer (Entitäten \& Geschäftslogik)}
+
+\subsection{Entities - "`1"'-Seite zuerst (z.B. Author)}
+
+\begin{enumerate}
+    \item \texttt{Domain/Entities/Author.cs} erstellen, von \texttt{BaseEntity} erben
+    \item Private Properties definieren (Id von BaseEntity, eigene Properties mit \texttt{private set})
+    \item Private parameterloser Konstruktor für EF Core: \texttt{private Author() \{\}}
+    \item Navigation Property zur "`n"'-Seite: \texttt{public ICollection<Book> Books \{ get; set; \} = new List<Book>();}
+    \item Factory-Methode \texttt{CreateAsync()} als \texttt{public static async Task<Author>} definieren
+    \item In Factory: \texttt{ArgumentNullException} für Objekt-Parameter werfen
+    \item In Factory: String-Parameter trimmen: \texttt{var trimmed = (param ?? string.Empty).Trim();}
+    \item In Factory: Interne Validierung aufrufen: \texttt{ValidateAuthorProperties(...)}
+    \item In Factory: Externe Validierung (Uniqueness): \texttt{await AuthorSpecifications.ValidateAuthorExternal(...)}
+    \item In Factory: Neue Instanz mit private Konstruktor zurückgeben
+    \item Update-Methode \texttt{UpdateAsync()} analog zu Factory (ohne new, Properties direkt setzen)
+\end{enumerate}
+
+\subsection{Entities - "`n"'-Seite (z.B. Book)}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain/Entities/Book.cs} erstellen, von \texttt{BaseEntity} erben
+    \item Properties analog, aber: \texttt{public int AuthorId \{ get; private set; \}} für Fremdschlüssel
+    \item Navigation Property zur "`1"'-Seite: \texttt{public Author Author \{ get; set; \} = null!;}
+    \item Bei weiterer "`n"'-Seite: \texttt{public ICollection<Loan> Loans \{ get; set; \} = new List<Loan>();}
+    \item Factory mit Author-Objekt als Parameter: \texttt{CreateAsync(string isbn, Author author, ...)}
+    \item In Factory: \texttt{Book} und \texttt{Author} verknüpfen, \texttt{AuthorId} NICHT manuell setzen
+    \item Domain-Methoden für Business-Logik: \texttt{DecreaseCopies()}, \texttt{IncreaseCopies()}
+\end{enumerate}
+
+\subsection{Entities - Weitere "`n"'-Seite (z.B. Loan)}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain/Entities/Loan.cs} analog zu Book, mit \texttt{BookId} und \texttt{Book} Navigation Property
+    \item Spezielle Properties: \texttt{DateTime? ReturnDate} für optionale Werte
+    \item Factory-Methode mit Book-Objekt: \texttt{Create(Book book, ...)}
+    \item Business-Methoden: \texttt{MarkAsReturned(DateTime)}, \texttt{IsOverdue()}
+\end{enumerate}
+
+\subsection{Domain Specifications - "`1"'-Seite}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain/Specifications/AuthorSpecifications.cs} als static class erstellen
+    \item Konstanten definieren (\texttt{MinLength}, \texttt{MaxLength})
+    \item Einzelne Check-Methoden: \texttt{public static DomainValidationResult CheckFirstName(...)}
+    \item Pattern: Prüfung $\rightarrow$ \texttt{? Success(...) : Failure(...)}
+    \item \texttt{ValidateAuthorInternal()}: Liste von Checks, bei Fehler \texttt{DomainValidationException}
+    \item \texttt{ValidateAuthorExternal()}: Uniqueness-Check mit \texttt{IAuthorUniquenessChecker}
+\end{enumerate}
+
+\subsection{Domain Specifications - "`n"'-Seiten}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain/Specifications/BookSpecifications.cs} analog zu Author
+    \item Spezielle Checks: ISBN-Format (13 Ziffern), PublicationYear (Bereich)
+    \item \texttt{Domain/Specifications/LoanSpecifications.cs}: Checks für Dates, BorrowerName
+    \item Konstante: \texttt{public const int StandardLoanDurationDays = 14;}
+\end{enumerate}
+
+\subsection{Domain Contracts (Interfaces)}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain/Contracts/IAuthorUniquenessChecker.cs}: \texttt{Task<bool> IsUniqueAsync(...)}
+    \item \texttt{Domain/Contracts/IBookUniquenessChecker.cs}: \texttt{Task<bool> IsUniqueAsync(...)}
+\end{enumerate}
+
+\section{Phase 2: Application Layer (Use Cases)}
+
+\subsection{DTOs (Data Transfer Objects)}
+
+\begin{enumerate}[resume]
+    \item \texttt{Application/Dtos/GetAuthorDto.cs} als \texttt{public readonly record struct}
+    \item \texttt{Application/Dtos/GetBookDto.cs} mit \texttt{string? AuthorName} für lesbare Anzeige
+    \item \texttt{Application/Dtos/GetLoanDto.cs} mit \texttt{string? BookTitle} und \texttt{bool IsOverdue}
+\end{enumerate}
+
+\subsection{Application Interfaces}
+
+\begin{enumerate}[resume]
+    \item \texttt{Application/Interfaces/Repositories/IAuthorRepository.cs} von \texttt{IGenericRepository<Author>} erben
+    \item Zusätzliche Query-Methoden: \texttt{GetAuthorsWithBooksAsync()}, \texttt{GetByFullName()}, \texttt{GetByISBNAsync()}
+    \item \texttt{Application/Interfaces/Repositories/IBookRepository.cs} analog
+    \item \texttt{Application/Interfaces/Repositories/ILoanRepository.cs}: \texttt{GetLoansByBookIdAsync()}, \texttt{GetOverdueLoansAsync()}
+    \item \texttt{Application/Interfaces/IUnitOfWork.cs} erweitern: Properties für alle Repositories
+\end{enumerate}
+
+\subsection{Commands \& Command Handlers - Create}
+
+\begin{enumerate}[resume]
+    \item Folder: \texttt{Application/Features/Authors/Commands/CreateAuthor/}
+    \item \texttt{CreateAuthorCommand.cs}: \texttt{record struct (...) : IRequest<Result<GetAuthorDto>>}
+    \item \texttt{CreateAuthorCommandValidator.cs}: Von \texttt{AbstractValidator<>} erben, Rules im Konstruktor
+    \item \texttt{CreateAuthorCommandHandler.cs}: \texttt{IRequestHandler<>} implementieren (Strg+.)
+    \item Handler-Konstruktor: \texttt{IUnitOfWork}, \texttt{IAuthorUniquenessChecker} injizieren
+    \item Handle-Methode: Factory aufrufen, \texttt{AddAsync()}, \texttt{SaveChangesAsync()}, DTO mappen, \texttt{Result.Created()}
+    \item Analog für Book: \texttt{CreateBookCommand}, Validator, Handler (Author laden!)
+    \item Analog für Loan: \texttt{CreateLoanCommand}, Handler (Book laden, \texttt{DecreaseCopies()})
+\end{enumerate}
+
+\subsection{Commands \& Command Handlers - Update}
+
+\begin{enumerate}[resume]
+    \item \texttt{UpdateAuthorCommand.cs} mit \texttt{int Id} als ersten Parameter
+    \item \texttt{UpdateAuthorCommandValidator.cs} mit \texttt{Id > 0} Regel
+    \item \texttt{UpdateAuthorCommandHandler.cs}: Entity laden, NotFound prüfen, \texttt{UpdateAsync()}, Save
+    \item Analog für Book: \texttt{UpdateBookCommand}, Validator, Handler
+\end{enumerate}
+
+\subsection{Commands \& Command Handlers - Delete}
+
+\begin{enumerate}[resume]
+    \item \texttt{DeleteAuthorCommand.cs}: \texttt{record struct (int Id) : IRequest<Result<bool>>}
+    \item \texttt{DeleteAuthorCommandHandler.cs}: Entity laden, \texttt{Remove()}, Save, \texttt{Result.NoContent()}
+    \item Analog für Book: \texttt{DeleteBookCommand}, Handler
+\end{enumerate}
+
+\subsection{Commands - Spezielle Operationen}
+
+\begin{enumerate}[resume]
+    \item \texttt{ReturnLoanCommand.cs}: \texttt{record struct (int LoanId, DateTime ReturnDate)}
+    \item \texttt{ReturnLoanCommandHandler.cs}: Loan laden (mit Book!), \texttt{MarkAsReturned()}, \texttt{IncreaseCopies()}
+\end{enumerate}
+
+\subsection{Queries \& Query Handlers - GetById}
+
+\begin{enumerate}[resume]
+    \item \texttt{Features/Authors/Queries/GetAuthorById/GetAuthorByIdQuery.cs}: \texttt{record struct} mit \texttt{int Id}
+    \item \texttt{GetAuthorByIdQueryHandler.cs}: \texttt{IRequestHandler} implementieren, \texttt{GetByIdAsync()}, null-check
+    \item Analog für Book und Loan
+\end{enumerate}
+
+\subsection{Queries \& Query Handlers - GetAll}
+
+\begin{enumerate}[resume]
+    \item \texttt{GetAllAuthorsQuery.cs}: \texttt{record struct} ohne Parameter
+    \item \texttt{GetAllAuthorsQueryHandler.cs}: \texttt{GetAllAsync()}, Collection von DTOs mappen
+    \item Analog für Books und Loans
+\end{enumerate}
+
+\subsection{Queries - Spezielle Abfragen}
+
+\begin{enumerate}[resume]
+    \item \texttt{GetAuthorByIdQuery} mit Validator für \texttt{Id > 0}
+    \item \texttt{GetLoansByBookQuery.cs}: Query mit \texttt{int BookId} Parameter
+    \item \texttt{GetLoansByBookQueryHandler.cs}: \texttt{GetLoansByBookIdAsync()}, DTOs mappen
+    \item \texttt{GetOverdueLoansQuery.cs}: Query ohne Parameter
+    \item \texttt{GetOverdueLoansQueryHandler.cs}: \texttt{GetOverdueLoansAsync()}
+\end{enumerate}
+
+\subsection{Mapster Configuration}
+
+\begin{enumerate}[resume]
+    \item \texttt{Application/Common/Mappings/AuthorMappingConfig.cs}: Static class, \texttt{ConfigureAuthorMappings()}
+    \item In Methode: \texttt{TypeAdapterConfig<Author, GetAuthorDto>.NewConfig()}
+    \item \texttt{BookMappingConfig.cs}: \texttt{.Map(dest => dest.AuthorName, src => ...)}
+    \item \texttt{LoanMappingConfig.cs}: \texttt{.Map(dest => dest.IsOverdue, src => src.IsOverdue())}
+\end{enumerate}
+
+\subsection{Application Dependency Injection}
+
+\begin{enumerate}[resume]
+    \item In \texttt{Application/DependencyInjection.cs}: MediatR registrieren
+    \item FluentValidation: \texttt{services.AddValidatorsFromAssembly(...)}
+    \item ValidationBehavior: \texttt{services.AddTransient(typeof(IPipelineBehavior<,>), ...)}
+    \item Mapster-Configs aufrufen: \texttt{AuthorMappingConfig.ConfigureAuthorMappings();}
+\end{enumerate}
+
+\section{Phase 3: Infrastructure Layer (Datenzugriff)}
+
+\subsection{Persistence - AppDbContext}
+
+\begin{enumerate}[resume]
+    \item \texttt{Infrastructure/Persistence/AppDbContext.cs}: DbSet-Properties hinzufügen
+    \item DbSets für alle Entities: \texttt{Authors}, \texttt{Books}, \texttt{Loans}
+    \item In \texttt{OnModelCreating()}: Fluent-API für Author (MaxLength, Required, Unique, RowVersion)
+    \item Fluent-API für Book: ISBN unique, Beziehung zu Author mit \texttt{HasMany().WithOne().HasForeignKey()}
+    \item Fluent-API für Loan: Beziehung zu Book konfigurieren
+    \item OnDelete-Verhalten: Cascade, Restrict, etc.
+\end{enumerate}
+
+\subsection{Repositories - Generic Repository}
+
+\begin{enumerate}[resume]
+    \item \texttt{Infrastructure/Persistence/Repositories/GenericRepository.cs} prüfen/anpassen
+\end{enumerate}
+
+\subsection{Repositories - Spezifische Repositories}
+
+\begin{enumerate}[resume]
+    \item \texttt{Repositories/AuthorRepository.cs}: Von \texttt{GenericRepository<Author>} und \texttt{IAuthorRepository}
+    \item Konstruktor: \texttt{public AuthorRepository(AppDbContext ctx) : base(ctx) \{\}}
+    \item Spezielle Methoden: \texttt{GetAuthorsWithBooksAsync()} mit \texttt{.Include(a => a.Books)}
+    \item \texttt{GetByFullName()}: \texttt{.FirstOrDefaultAsync(a => (a.FirstName + " " + a.LastName) == fullName)}
+    \item \texttt{GetByISBNAsync()}: \texttt{.Include(a => a.Books).FirstOrDefaultAsync(a => a.Books.Any(...))}
+    \item \texttt{Repositories/BookRepository.cs} analog
+    \item BookRepository: \texttt{GetByIdAsync()} und \texttt{GetAllAsync()} overriden für \texttt{.Include(b => b.Author)}
+    \item \texttt{Repositories/LoanRepository.cs}: \texttt{GetLoansByBookIdAsync()}, alle mit \texttt{.Include(l => l.Book)}
+\end{enumerate}
+
+\subsection{Unit of Work}
+
+\begin{enumerate}[resume]
+    \item \texttt{Infrastructure/Persistence/UnitOfWork.cs}: Properties für alle Repositories
+    \item Lazy Initialization: \texttt{private IAuthorRepository? \_authors; public IAuthorRepository Authors => ...}
+    \item Analog für Books und Loans
+\end{enumerate}
+
+\subsection{Services - Uniqueness Checker}
+
+\begin{enumerate}[resume]
+    \item \texttt{Services/AuthorUniquenessChecker.cs}: \texttt{IAuthorUniquenessChecker} implementieren (Strg+.)
+    \item Konstruktor: \texttt{AppDbContext} injizieren
+    \item \texttt{IsUniqueAsync()}: Datenbank-Query ob Author existiert (außer eigene Id)
+    \item \texttt{Services/BookUniquenessChecker.cs} analog für ISBN-Prüfung
+\end{enumerate}
+
+\subsection{StartupDataSeeder}
+
+\begin{enumerate}[resume]
+    \item \texttt{Services/StartupDataSeeder.cs}: \texttt{IHostedService} implementieren
+    \item Nested class \texttt{SeedDataUniquenessChecker} mit explicit interface implementation
+    \item \texttt{StartAsync()}: CSV einlesen, Entities mit Factory-Methoden erstellen
+    \item Beziehungen auflösen (Author zu Book über ID-Mapping)
+    \item Alle Entities hinzufügen, EINMAL \texttt{SaveChangesAsync()}
+\end{enumerate}
+
+\subsection{StartupDataSeederOptions}
+
+\begin{enumerate}[resume]
+    \item \texttt{Services/StartupDataSeederOptions.cs}: Class mit \texttt{public string CsvPath \{ get; set; \}}
+\end{enumerate}
+
+\subsection{Infrastructure Dependency Injection}
+
+\begin{enumerate}[resume]
+    \item \texttt{Infrastructure/DependencyInjection.cs}: DbContext mit SQL Server registrieren
+    \item Repository-Registrierungen: \texttt{services.AddScoped<IAuthorRepository, AuthorRepository>();}
+    \item UnitOfWork: \texttt{services.AddScoped<IUnitOfWork, UnitOfWork>();}
+    \item Uniqueness-Checker: \texttt{services.AddScoped<IAuthorUniquenessChecker, ...>();}
+    \item StartupDataSeeder: \texttt{services.AddHostedService<StartupDataSeeder>();}
+    \item Options konfigurieren: \texttt{services.Configure<StartupDataSeederOptions>(...)}
+\end{enumerate}
+
+\section{Phase 4: API Layer (REST-Schnittstelle)}
+
+\subsection{Result Extensions}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/Extensions/ResultExtensions.cs} prüfen für \texttt{.ToActionResult()}
+\end{enumerate}
+
+\subsection{Controllers - "`1"'-Seite}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/Controllers/AuthorsController.cs}: \texttt{[ApiController]}, \texttt{[Route("api/[controller]")]}
+    \item Konstruktor: \texttt{IMediator mediator} per primary constructor injizieren
+    \item \texttt{[HttpGet]} GetAll: \texttt{await mediator.Send(new GetAllAuthorsQuery(), ct)}
+    \item \texttt{[HttpGet("\{id:int\}")} GetById mit ProducesResponseType-Attributen
+    \item \texttt{[HttpPost]} Create: Command senden, \texttt{result.ToActionResult(this, createdAtAction: ...)}
+    \item \texttt{[HttpPut("\{id:int\}")} Update: Id-Prüfung gegen Command.Id
+    \item \texttt{[HttpDelete("\{id:int\}")} Delete: Command senden
+    \item XML-Kommentare für Swagger
+\end{enumerate}
+
+\subsection{Controllers - "`n"'-Seiten}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/Controllers/BooksController.cs} analog zu Authors
+    \item \texttt{Api/Controllers/LoansController.cs} mit speziellen Endpoints:
+    \item \texttt{[HttpPost]} CreateLoan
+    \item \texttt{[HttpPut("\{id:int\}/return")]} ReturnLoan mit \texttt{DateTime returnDate} im Body
+    \item \texttt{[HttpGet("book/\{bookId:int\}")]} GetLoansByBook
+    \item \texttt{[HttpGet("overdue")]} GetOverdueLoans
+\end{enumerate}
+
+\subsection{Program.cs}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/Program.cs}: Builder erstellen, Services registrieren
+    \item \texttt{builder.Services.AddApplication();} aufrufen
+    \item \texttt{builder.Services.AddInfrastructure(builder.Configuration);} aufrufen
+    \item Swagger konfigurieren mit XML-Kommentaren
+    \item Middleware-Pipeline: UseSwagger, UseSwaggerUI, MapControllers
+\end{enumerate}
+
+\subsection{appsettings.json}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/appsettings.json}: ConnectionString unter "`ConnectionStrings"' hinzufügen
+    \item StartupDataSeeder-Konfiguration: \texttt{"StartupDataSeeder": \{ "CsvPath": "..." \}}
+\end{enumerate}
+
+\subsection{Seed-Daten}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api/Data/library\_seed\_data.csv} erstellen mit Spalten für Authors und Books
+\end{enumerate}
+
+\section{Phase 5: Datenbank-Migration}
+
+\begin{enumerate}[resume]
+    \item Terminal öffnen, zu Api-Projekt navigieren
+    \item \texttt{dotnet ef migrations add InitialCreate} ausführen
+    \item \texttt{dotnet ef database update} ausführen
+    \item Prüfen ob Datenbank erstellt wurde (SQL Server Object Explorer)
+\end{enumerate}
+
+\section{Phase 6: Tests (Domain \& Integration)}
+
+\subsection{Domain Tests}
+
+\begin{enumerate}[resume]
+    \item \texttt{Domain.Tests/AuthorTests.cs}: FakeUniquenessChecker-Klassen erstellen
+    \item Tests für Factory-Methode: \texttt{CreateAsync\_Succeeds\_WithValidData}
+    \item Tests für Validierungen mit \texttt{[Theory]} und \texttt{[InlineData]}
+    \item Tests für Duplikat-Erkennung: \texttt{CreateAsync\_DuplicateFullName\_Throws}
+    \item \texttt{Domain.Tests/BookTests.cs} analog
+    \item \texttt{Domain.Tests/LoanTests.cs}: \texttt{MarkAsReturned\_SetsReturnDate}, \texttt{IsOverdue\_ReturnsTrue}
+    \item \texttt{Domain.Tests/AuthorSpecificationsTests.cs} für einzelne Check-Methoden
+    \item Analog für BookSpecifications und LoanSpecifications
+\end{enumerate}
+
+\subsection{API Integration Tests - Setup}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api.Tests/Utilities/TestWebApplicationFactory.cs}: \texttt{WebApplicationFactory<Program>}
+    \item \texttt{ConfigureWebHost()}: InMemory-Database, Repositories manuell registrieren
+    \item \texttt{db.Database.EnsureCreated()} aufrufen
+\end{enumerate}
+
+\subsection{API Integration Tests - Endpoints}
+
+\begin{enumerate}[resume]
+    \item \texttt{Api.Tests/Books/BooksEndpointTests.cs}: \texttt{IClassFixture<TestWebApplicationFactory<Program>>}
+    \item \texttt{HttpClient \_client} im Konstruktor von Factory holen
+    \item Helper-Methode \texttt{GetFirstAuthorId()} um seeded Authors zu finden
+    \item Test: \texttt{GetAll\_ReturnsOk\_WithBooks} - einfacher GET-Test
+    \item Test: \texttt{Create\_ReturnsCreated\_WithValidData} - POST mit Command
+    \item Test: \texttt{Create\_ReturnsBadRequest\_WithInvalidISBN} - Validierungs-Test
+    \item Test: \texttt{Create\_ReturnsNotFound\_WithNonExistentAuthor} - Entity-Not-Found
+    \item Test: \texttt{GetById\_ReturnsOk\_WhenBookExists} - Erst erstellen, dann abrufen
+    \item Test: \texttt{Update\_ReturnsOk\_WithValidData} - PUT-Test
+    \item Test: \texttt{Update\_ReturnsBadRequest\_WhenIdMismatch} - Id-Prüfung
+    \item Test: \texttt{Delete\_ReturnsNoContent\_WhenBookExists} - DELETE-Test
+    \item Test: \texttt{Create\_ReturnsConflict\_WithDuplicateISBN} - Uniqueness-Test
+    \item \texttt{Api.Tests/Loans/LoansEndpointTests.cs} mit allen Loan-Endpunkt-Tests
+    \item Test: \texttt{CreateLoan\_DecreasesAvailableCopies} - Business-Logik testen
+    \item Test: \texttt{ReturnLoan\_IncreasesAvailableCopies} - Business-Logik testen
+    \item Test: \texttt{GetOverdueLoans\_ReturnsOk\_WithOverdueLoans} - Loan mit altem Datum
+    \item Test: \texttt{GetLoansByBook\_ReturnsOk\_WithLoans} - Mehrere Loans abrufen
+\end{enumerate}
+
+\section{Phase 7: Finale Prüfungen}
+
+\begin{enumerate}[resume]
+    \item Alle Warnings beheben (Strg+. für Quick Fixes)
+    \item Solution builden: \texttt{dotnet build} - muss erfolgreich sein
+    \item Alle Tests ausführen: \texttt{dotnet test} - alle grün
+    \item API starten: \texttt{dotnet run --project Api}
+    \item Swagger aufrufen: \texttt{https://localhost:xxxx/swagger}
+    \item Alle Endpoints manuell testen: Create $\rightarrow$ GetAll $\rightarrow$ GetById $\rightarrow$ Update $\rightarrow$ Delete
+    \item Validierungen testen: Leere Strings, ungültige ISBNs, nicht existierende FKs
+    \item Business-Logik testen: AvailableCopies ändern sich bei Loan/Return
+    \item Overdue-Loans abrufen
+    \item Code-Review: Namenskonventionen, XML-Kommentare, async/await
+    \item Git: Branch erstellen, alle Änderungen committen
+\end{enumerate}
+
+\section{Bonus: Optimierungen \& Best Practices}
+
+\begin{enumerate}[resume]
+    \item Globale Error-Handler-Middleware
+    \item Logging mit ILogger in Handlers
+    \item Rate Limiting für API-Endpoints
+    \item CORS-Policy konfigurieren
+    \item Health Checks hinzufügen
+    \item API-Versionierung einführen
+    \item Pagination für GetAll-Queries (Skip/Take)
+    \item Soft-Delete statt Hard-Delete
+    \item Caching-Layer für häufige Queries
+    \item Background-Jobs für zeitgesteuerte Operationen
+\end{enumerate}
+
+\section{Hilfreiche IDE-Shortcuts (Visual Studio)}
+
+\begin{tcolorbox}[colback=skyblue!10,colframe=lightblue,title={\color{white}Visual Studio Shortcuts}]
+\begin{itemize}
+    \item \textbf{Strg+.} - Quick Actions (Generate Method, Implement Interface, Add using)
+    \item \textbf{Strg+R, Strg+R} - Rename (Refactoring)
+    \item \textbf{Strg+K, Strg+D} - Format Document
+    \item \textbf{Strg+K, Strg+C} - Comment Selection
+    \item \textbf{Strg+K, Strg+U} - Uncomment Selection
+    \item \textbf{F12} - Go to Definition
+    \item \textbf{Strg+F12} - Go to Implementation
+    \item \textbf{Shift+F12} - Find All References
+    \item \textbf{Strg+T} - Go to All (Suche nach Typen/Files)
+    \item \textbf{Strg+,} - Navigate To (Suche innerhalb Solution)
+\end{itemize}
+\end{tcolorbox}
+
+\section{Typische Fehlerquellen \& Lösungen}
+
+\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue]
+\begin{itemize}
+    \item \textbf{CS0246 (Type not found):} \texttt{using} Statement fehlt $\rightarrow$ Strg+. "`Add using"'
+    \item \textbf{CS0535 (Interface not implemented):} $\rightarrow$ Strg+. "`Implement Interface"'
+    \item \textbf{EF Core Migration Fehler:} Falsche ConnectionString oder SQL Server nicht erreichbar
+    \item \textbf{Null Reference:} Navigation Properties nicht geladen $\rightarrow$ \texttt{.Include()} verwenden
+    \item \textbf{Validation Fehler:} FluentValidation Rules prüfen, DTO-Mapping korrekt?
+    \item \textbf{Circular Reference:} DTOs statt Entities in API zurückgeben
+    \item \textbf{Foreign Key Constraint:} Entities in korrekter Reihenfolge speichern (1-Seite vor n-Seite)
+    \item \textbf{Concurrency Exception:} RowVersion in UpdateAsync prüfen, OptimisticConcurrency in EF
+\end{itemize}
+\end{tcolorbox}
+
+\vfill
+
+\begin{center}
+\color{mediumblue}
+\rule{0.8\textwidth}{0.4pt}\\[0.3cm]
+{\large\bfseries 190 Schritte zum Erfolg}\\[0.2cm]
+Template-Basis: Sensor/Measurement\\
+Ziel: Library Management (Author/Book/Loan)\\[0.3cm]
+\rule{0.8\textwidth}{0.4pt}
+\end{center}
+
+\end{document}
+
