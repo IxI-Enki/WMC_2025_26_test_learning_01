@@ -159,6 +159,8 @@
     \item \hint{Factory:} Private Ctor + async Factory
     \item \hint{Trimmen:} \texttt{(param??"").Trim()}
     \item \hint{Nav Props:} \texttt{null!} (Required), \texttt{new List<>()} (Collection)
+    \item \hint{1:n-Beziehung:} Immer zuerst 1-Seite erstellen, dann n-Seite
+    \item \hint{n:m-Beziehung:} Join-Entity + 2x 1:n (z.B. BookAuthor)
 \end{itemize}
 \vspace{1mm}
 
@@ -345,6 +347,7 @@
     \item \hint{EF:} \texttt{.Include()} für Nav Props
     \item \hint{FK:} EF setzt automatisch via Nav Prop
     \item \hint{Seed:} Erst \texttt{Add()}, dann 1x \texttt{Save()}
+    \item \hint{n:m:} \texttt{HasMany().WithMany().UsingEntity<Join>()}
 \end{itemize}
 \vspace{1mm}
 
