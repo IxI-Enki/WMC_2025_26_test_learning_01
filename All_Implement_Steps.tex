@@ -1,7 +1,7 @@
-\documentclass[9pt,a4paper]{article}
+\documentclass[9pt,a4paper,twocolumn]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[german]{babel}
-\usepackage[margin=1cm]{geometry}
+\usepackage[top=0.8cm,bottom=0.8cm,left=0.8cm,right=0.8cm,columnsep=0.6cm]{geometry}
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{enumitem}
@@ -9,6 +9,7 @@
 \usepackage{fancyhdr}
 \usepackage{tcolorbox}
 \usepackage{listings}
+\usepackage{marginnote}
 
 % Farbdefinitionen - Dunkelblau / Blau-Schattierungen
 \definecolor{darkblue}{RGB}{0,51,102}
@@ -29,25 +30,34 @@
     pdfauthor={Implementation Guide}
 }
 
-% Überschriften-Formatierung (noch kleinere Größen)
+% Überschriften-Formatierung (optimal für 4 Seiten)
 \titleformat{\section}
-  {\normalfont\normalsize\bfseries\color{mediumblue}}{\thesection}{1em}{}
+  {\normalfont\normalsize\bfseries\color{mediumblue}}{\thesection}{0.7em}{}
+\titlespacing{\section}{0pt}{7pt plus 2pt minus 1pt}{5pt plus 1pt minus 1pt}
 \titleformat{\subsection}
-  {\normalfont\small\bfseries\color{lightblue}}{\thesubsection}{1em}{}
+  {\normalfont\small\bfseries\color{lightblue}}{\thesubsection}{0.6em}{}
+\titlespacing{\subsection}{0pt}{6pt plus 1pt minus 1pt}{4pt plus 1pt minus 1pt}
 \titleformat{\subsubsection}
-  {\normalfont\footnotesize\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
+  {\normalfont\footnotesize\bfseries\color{skyblue}}{\thesubsubsection}{0.5em}{}
+\titlespacing{\subsubsection}{0pt}{5pt plus 1pt minus 1pt}{3pt plus 1pt minus 1pt}
 
-% Listen mit weniger Abstand und noch kleinerer Schrift
-\setlist[enumerate]{itemsep=0pt,parsep=0.5pt,leftmargin=*,font=\footnotesize}
-\setlist[itemize]{itemsep=0pt,parsep=0.5pt,leftmargin=*,font=\footnotesize}
+% Listen mit optimalen Abständen für 4 Seiten
+\setlist[enumerate]{itemsep=2pt,parsep=1.5pt,topsep=3.5pt,leftmargin=*,font=\footnotesize}
+\setlist[itemize]{itemsep=2pt,parsep=1.5pt,topsep=3.5pt,leftmargin=*,font=\footnotesize}
 
-% Code-Formatierung (sehr klein)
+% Code-Formatierung (optimal)
 \lstset{
-    basicstyle=\scriptsize\ttfamily\color{codeblue},
+    basicstyle=\tiny\ttfamily\color{codeblue},
     breaklines=true,
-    frame=single,
-    backgroundcolor=\color{gray!10}
+    frame=none,
+    backgroundcolor=\color{gray!10},
+    aboveskip=2pt,
+    belowskip=2pt
 }
+
+% Hint-Box-Style für wichtige Tipps
+\definecolor{hintblue}{RGB}{200,230,255}
+\newcommand{\hint}[1]{\textcolor{skyblue}{\textbf{$\triangleright$ #1}}}
 
 % Kopf- und Fußzeile
 \pagestyle{fancy}
@@ -58,16 +68,19 @@
 \renewcommand{\headrule}{\hbox to\headwidth{\color{lightblue}\leaders\hrule height \headrulewidth\hfill}}
 
 \begin{document}
-\footnotesize % Globale sehr kleine Schriftgröße für das gesamte Dokument
+\footnotesize % Globale Schriftgröße für 4 Seiten
+\setlength{\parskip}{2pt}
+\setlength{\parindent}{0pt}
+\setlength{\columnsep}{0.9cm}
 
 \section*{Hinweise}
-\addcontentsline{toc}{section}{Hinweise}
 
-\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue,title={\footnotesize\color{white}Wichtige Grundregeln}]
+\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue,title={\scriptsize\color{white}Wichtige Grundregeln},boxsep=3pt,left=4pt,right=4pt,top=3pt,bottom=3pt]
 \begin{itemize}
-    \item \textbf{1:n-Beziehungen:} Immer zuerst die \textbf{"`1"'}-Seite implementieren, dann die \textbf{"`n"'}-Seite
-    \item \textbf{IDE-Features nutzen:} \texttt{Strg+.} für "`Generate Method"', "`Implement Interface"', "`Add using"', etc.
-    \item \textbf{Copy-Paste-Pattern:} Template kopieren, anpassen, generieren lassen
+    \item \textbf{1:n-Beziehungen:} Immer zuerst die \textbf{1}-Seite, dann die \textbf{n}-Seite implementieren
+    \item \textbf{IDE-Features:} \texttt{Strg+.} für "`Generate Method"', "`Implement Interface"', "`Add using"'
+    \item \textbf{Copy-Paste-Pattern:} Template kopieren $\rightarrow$ anpassen $\rightarrow$ generieren
+    \item \hint{EF Core setzt FK automatisch} | \hint{Immer \texttt{await} bei Factory} | \hint{\texttt{null!} für Required Nav. Props}
 \end{itemize}
 \end{tcolorbox}
 
@@ -136,6 +149,11 @@
     \item \texttt{Domain/Contracts/IAuthorUniquenessChecker.cs}: \texttt{Task<bool> IsUniqueAsync(...)}
     \item \texttt{Domain/Contracts/IBookUniquenessChecker.cs}: \texttt{Task<bool> IsUniqueAsync(...)}
 \end{enumerate}
+
+\vspace{2mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
+\hint{Domain-Tipp:} Private Konstruktor + Factory = Domänen-Schutz | \hint{Immer trimmen:} \texttt{(param ?? "").Trim()} | \hint{Navigation Props:} \texttt{= null!} für Required, \texttt{= new List<>()} für Collections
+\vspace{2mm}
 
 \section{Phase 2: Application Layer (Use Cases)}
 
@@ -314,6 +332,11 @@
     \item Options konfigurieren: \texttt{services.Configure<StartupDataSeederOptions>(...)}
 \end{enumerate}
 
+\vspace{2mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
+\hint{Infrastructure-Tipp:} \texttt{.Include()} für Navigation Props | \hint{EF Core:} Setzt FK automatisch bei Navigation Property | \hint{Seeding:} Erst \texttt{AddAsync()}, dann EINMAL \texttt{SaveChangesAsync()}
+\vspace{2mm}
+
 \section{Phase 4: API Layer (REST-Schnittstelle)}
 
 \subsection{Result Extensions}
@@ -422,6 +445,11 @@
     \item Test: \texttt{GetOverdueLoans\_ReturnsOk\_WithOverdueLoans} - Loan mit altem Datum
     \item Test: \texttt{GetLoansByBook\_ReturnsOk\_WithLoans} - Mehrere Loans abrufen
 \end{enumerate}
+
+\vspace{2mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
+\hint{Test-Tipp:} InMemoryDatabase für Tests | \hint{Helper-Methoden:} \texttt{GetFirstAuthorId()}, \texttt{CreateTestBook()} | \hint{Arrange-Act-Assert:} Klare Teststruktur | \hint{FluentAssertions:} \texttt{result.Should().BeOfType<OkObjectResult>()}
+\vspace{2mm}
 
 \section{Phase 7: Finale Prüfungen}
 
