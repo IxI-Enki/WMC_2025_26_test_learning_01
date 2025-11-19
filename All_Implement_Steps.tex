@@ -470,21 +470,6 @@
 \end{itemize}
 \end{tcolorbox}
 
-\section{Typische Fehlerquellen \& Lösungen}
-
-\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue]
-\begin{itemize}
-    \item \textbf{CS0246 (Type not found):} \texttt{using} Statement fehlt $\rightarrow$ Strg+. "`Add using"'
-    \item \textbf{CS0535 (Interface not implemented):} $\rightarrow$ Strg+. "`Implement Interface"'
-    \item \textbf{EF Core Migration Fehler:} Falsche ConnectionString oder SQL Server nicht erreichbar
-    \item \textbf{Null Reference:} Navigation Properties nicht geladen $\rightarrow$ \texttt{.Include()} verwenden
-    \item \textbf{Validation Fehler:} FluentValidation Rules prüfen, DTO-Mapping korrekt?
-    \item \textbf{Circular Reference:} DTOs statt Entities in API zurückgeben
-    \item \textbf{Foreign Key Constraint:} Entities in korrekter Reihenfolge speichern (1-Seite vor n-Seite)
-    \item \textbf{Concurrency Exception:} RowVersion in UpdateAsync prüfen, OptimisticConcurrency in EF
-\end{itemize}
-\end{tcolorbox}
-
 \vfill
 
 \begin{center}
