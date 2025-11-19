@@ -1,7 +1,7 @@
 \documentclass[9pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[german]{babel}
-\usepackage[margin=1.5cm]{geometry}
+\usepackage[margin=1cm]{geometry}
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{enumitem}
@@ -29,21 +29,21 @@
     pdfauthor={Implementation Guide}
 }
 
-% Überschriften-Formatierung (kleinere Größen)
+% Überschriften-Formatierung (noch kleinere Größen)
 \titleformat{\section}
-  {\normalfont\large\bfseries\color{mediumblue}}{\thesection}{1em}{}
+  {\normalfont\normalsize\bfseries\color{mediumblue}}{\thesection}{1em}{}
 \titleformat{\subsection}
-  {\normalfont\normalsize\bfseries\color{lightblue}}{\thesubsection}{1em}{}
+  {\normalfont\small\bfseries\color{lightblue}}{\thesubsection}{1em}{}
 \titleformat{\subsubsection}
-  {\normalfont\small\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
+  {\normalfont\footnotesize\bfseries\color{skyblue}}{\thesubsubsection}{1em}{}
 
-% Listen mit weniger Abstand und kleinerer Schrift
-\setlist[enumerate]{itemsep=0pt,parsep=1pt,leftmargin=*,font=\small}
-\setlist[itemize]{itemsep=0pt,parsep=1pt,leftmargin=*,font=\small}
+% Listen mit weniger Abstand und noch kleinerer Schrift
+\setlist[enumerate]{itemsep=0pt,parsep=0.5pt,leftmargin=*,font=\footnotesize}
+\setlist[itemize]{itemsep=0pt,parsep=0.5pt,leftmargin=*,font=\footnotesize}
 
-% Code-Formatierung (noch kleiner)
+% Code-Formatierung (sehr klein)
 \lstset{
-    basicstyle=\footnotesize\ttfamily\color{codeblue},
+    basicstyle=\scriptsize\ttfamily\color{codeblue},
     breaklines=true,
     frame=single,
     backgroundcolor=\color{gray!10}
@@ -58,12 +58,12 @@
 \renewcommand{\headrule}{\hbox to\headwidth{\color{lightblue}\leaders\hrule height \headrulewidth\hfill}}
 
 \begin{document}
-\small % Globale kleinere Schriftgröße für das gesamte Dokument
+\footnotesize % Globale sehr kleine Schriftgröße für das gesamte Dokument
 
 \section*{Hinweise}
 \addcontentsline{toc}{section}{Hinweise}
 
-\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue,title={\color{white}Wichtige Grundregeln}]
+\begin{tcolorbox}[colback=lightblue!10,colframe=mediumblue,title={\footnotesize\color{white}Wichtige Grundregeln}]
 \begin{itemize}
     \item \textbf{1:n-Beziehungen:} Immer zuerst die \textbf{"`1"'}-Seite implementieren, dann die \textbf{"`n"'}-Seite
     \item \textbf{IDE-Features nutzen:} \texttt{Strg+.} für "`Generate Method"', "`Implement Interface"', "`Add using"', etc.
