@@ -258,9 +258,9 @@
 
 \begin{enumerate}[resume]
     \item In \texttt{Application/DependencyInjection.cs}: MediatR registrieren
-    \item FluentValidation: \texttt{services.AddValidatorsFromAssembly(...)}
-    \item ValidationBehavior: \texttt{services.AddTransient(typeof(IPipelineBehavior<,>), ...)}
-    \item Mapster-Configs aufrufen: \texttt{AuthorMappingConfig.ConfigureAuthorMappings();}
+    \item FluentValidation: \texttt{.AddValidatorsFromAssembly(...)}
+    \item ValidationBehavior: \texttt{.AddTransient(typeof(IPipeline<,>)...)}
+    \item Mapster-Configs: \texttt{AuthorMappingConfig.Configure...();}
 \end{enumerate}
 
 \section{Phase 3: Infrastructure Layer (Datenzugriff)}
@@ -331,13 +331,12 @@
 \subsection{Infrastructure Dependency Injection}
 
 \begin{enumerate}[resume]
-    \item \texttt{Infrastructure/DependencyInjection.cs}: DbContext mit SQL Server registrieren
-    \item Repository-Registrierungen: \texttt{services.AddScoped<IAuthorRepository, AuthorRepository>();}
-    \item UnitOfWork: \texttt{services.AddScoped<IUnitOfWork, UnitOfWork>();}
-    \item Uniqueness-Checker: \texttt{services.AddScoped<IAuthorUniquenessChecker, ...>();}
-    \item StartupDataSeeder: \texttt{services.AddHostedService<StartupDataSeeder>();}
-    \item Options konfigurieren: \texttt{services.Configure<StartupDataSeederOptions>(...)}
-\end{enumerate}
+    \item \texttt{Infrastructure/DependencyInjection.cs}: DbContext registrieren
+    \item Repository: \texttt{.AddScoped<IAuthorRepo, AuthorRepo>();}
+    \item UnitOfWork: \texttt{.AddScoped<IUnitOfWork, UnitOfWork>();}
+    \item Uniqueness: \texttt{.AddScoped<IAuthorUniqueness...>();}
+    \item DataSeeder: \texttt{.AddHostedService<StartupSeeder>();}
+    \item Options: \texttt{.Configure<StartupSeederOptions>(...)}\end{enumerate}
 
 \vspace{1mm}
 \noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}
@@ -384,18 +383,18 @@
 \subsection{Program.cs}
 
 \begin{enumerate}[resume]
-    \item \texttt{Api/Program.cs}: Builder erstellen, Services registrieren
+    \item \texttt{Api/Program.cs}: Builder, Services registrieren
     \item \texttt{builder.Services.AddApplication();} aufrufen
-    \item \texttt{builder.Services.AddInfrastructure(builder.Configuration);} aufrufen
-    \item Swagger konfigurieren mit XML-Kommentaren
-    \item Middleware-Pipeline: UseSwagger, UseSwaggerUI, MapControllers
+    \item \texttt{builder.Services.AddInfrastructure(...);} aufrufen
+    \item Swagger mit XML-Kommentaren konfigurieren
+    \item Middleware: UseSwagger, UseSwaggerUI, MapControllers
 \end{enumerate}
 
 \subsection{appsettings.json}
 
 \begin{enumerate}[resume]
-    \item \texttt{Api/appsettings.json}: ConnectionString unter "`ConnectionStrings"' hinzufügen
-    \item StartupDataSeeder-Konfiguration: \texttt{"StartupDataSeeder": \{ "CsvPath": "..." \}}
+    \item \texttt{Api/appsettings.json}: ConnectionString hinzufügen
+    \item Seeder-Config: \texttt{"StartupDataSeeder": \{ "CsvPath": "..." \}}
 \end{enumerate}
 
 \subsection{Seed-Daten}
