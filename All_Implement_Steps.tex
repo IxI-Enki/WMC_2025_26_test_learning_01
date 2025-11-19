@@ -49,6 +49,8 @@
 \lstset{
     basicstyle=\tiny\ttfamily\color{codeblue},
     breaklines=true,
+    breakatwhitespace=true,
+    postbreak=\mbox{\textcolor{codeblue}{$\hookrightarrow$}\space},
     frame=none,
     backgroundcolor=\color{gray!10},
     aboveskip=2pt,
@@ -150,10 +152,15 @@
     \item \texttt{Domain/Contracts/IBookUniquenessChecker.cs}: \texttt{Task<bool> IsUniqueAsync(...)}
 \end{enumerate}
 
-\vspace{2mm}
-\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
-\hint{Domain-Tipp:} Private Konstruktor + Factory = Domänen-Schutz | \hint{Immer trimmen:} \texttt{(param ?? "").Trim()} | \hint{Navigation Props:} \texttt{= null!} für Required, \texttt{= new List<>()} für Collections
-\vspace{2mm}
+\vspace{1mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}
+\vspace{-1mm}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \hint{Factory:} Private Ctor + async Factory
+    \item \hint{Trimmen:} \texttt{(param??"").Trim()}
+    \item \hint{Nav Props:} \texttt{null!} (Required), \texttt{new List<>()} (Collection)
+\end{itemize}
+\vspace{1mm}
 
 \section{Phase 2: Application Layer (Use Cases)}
 
@@ -332,10 +339,15 @@
     \item Options konfigurieren: \texttt{services.Configure<StartupDataSeederOptions>(...)}
 \end{enumerate}
 
-\vspace{2mm}
-\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
-\hint{Infrastructure-Tipp:} \texttt{.Include()} für Navigation Props | \hint{EF Core:} Setzt FK automatisch bei Navigation Property | \hint{Seeding:} Erst \texttt{AddAsync()}, dann EINMAL \texttt{SaveChangesAsync()}
-\vspace{2mm}
+\vspace{1mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}
+\vspace{-1mm}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \hint{EF:} \texttt{.Include()} für Nav Props
+    \item \hint{FK:} EF setzt automatisch via Nav Prop
+    \item \hint{Seed:} Erst \texttt{Add()}, dann 1x \texttt{Save()}
+\end{itemize}
+\vspace{1mm}
 
 \section{Phase 4: API Layer (REST-Schnittstelle)}
 
@@ -446,10 +458,16 @@
     \item Test: \texttt{GetLoansByBook\_ReturnsOk\_WithLoans} - Mehrere Loans abrufen
 \end{enumerate}
 
-\vspace{2mm}
-\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}\\[-2mm]
-\hint{Test-Tipp:} InMemoryDatabase für Tests | \hint{Helper-Methoden:} \texttt{GetFirstAuthorId()}, \texttt{CreateTestBook()} | \hint{Arrange-Act-Assert:} Klare Teststruktur | \hint{FluentAssertions:} \texttt{result.Should().BeOfType<OkObjectResult>()}
-\vspace{2mm}
+\vspace{1mm}
+\noindent\textcolor{skyblue}{\rule{\linewidth}{0.4pt}}
+\vspace{-1mm}
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+    \item \hint{InMemory:} DB für schnelle Tests
+    \item \hint{Helper:} \texttt{GetFirstAuthorId()}, \texttt{CreateTestBook()}
+    \item \hint{AAA:} Arrange-Act-Assert Pattern
+    \item \hint{Assert:} \texttt{.Should().BeOfType<Ok>()}
+\end{itemize}
+\vspace{1mm}
 
 \section{Phase 7: Finale Prüfungen}
 
